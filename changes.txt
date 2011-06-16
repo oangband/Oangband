@@ -1,0 +1,8 @@
+Oangband 1.1.0 tweaked version
+==============================
+
+This is the list of changes from vanilla Oangband 1.1.0.
+
+Gameplay changes
+================
+- Highlight spell stat when choosing a character.

@@ -958,9 +958,18 @@ static void class_aux_hook(birth_menu c_str)
 	/* Display relevant details. */
 	for (i = 0; i < A_MAX; i++)
 	{
+		byte attr = TERM_WHITE;
+
 		sprintf(s, "%s%+d", stat_names_reduced[i],
 		cp_info[class].c_adj[i]);
-		Term_putstr(CLASS_AUX_COL, TABLE_ROW + i, -1, TERM_WHITE, s);
+
+		/* Highlight spell stat */
+		mp_ptr = &mp_info[class];
+		if (i == mp_ptr->spell_stat)
+		{
+			attr = TERM_L_BLUE;
+		}
+		Term_putstr(CLASS_AUX_COL, TABLE_ROW + i, -1, attr, s);
 	}
 
 	sprintf(s, "Hit die: %d ", cp_info[class].c_mhp);

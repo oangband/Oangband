@@ -59,7 +59,7 @@
  * setenv ANGBAND_X11_FONT_2 8x13
  * setenv ANGBAND_X11_AT_X_2 635
  * setenv ANGBAND_X11_AT_Y_2 182
- * setenv ANGBAND_X11_ROWS_3 23
+ * setenv ANGBAND_X11_ROWS_2 23
  *
  * # Equipment window
  * setenv ANGBAND_X11_FONT_3 8x13
@@ -1350,7 +1350,7 @@ static errr Infofnt_text_std(int x, int y, cptr str, int len)
 		}
 	}
 
-	/* Assume monoospaced font */
+	/* Assume monospaced font */
 	else
 	{
 		/* Note that the Infoclr is set up to contain the Infofnt */
@@ -2464,7 +2464,7 @@ static errr term_data_init(term_data *td, int i)
 	if (ch == NULL) quit("XAllocClassHint failed");
 
 	strcpy(res_name, name);
-	res_name[0] = FORCELOWER(res_name[0]);
+	res_name[0] = tolower((unsigned char)res_name[0]);
 	ch->res_name = res_name;
 
 	strcpy(res_class, "Angband");
@@ -2779,7 +2779,7 @@ errr init_x11(int argc, char *argv[])
 	if (arg_graphics)
 	{
 		/* Try the "16x16.bmp" file */
-		path_build(filename, 1024, ANGBAND_DIR_XTRA, "graf/16x16.bmp");
+		path_build(filename, sizeof(filename), ANGBAND_DIR_XTRA, "graf/16x16.bmp");
 
 		/* Use the "16x16.bmp" file if it exists */
 		if (0 == fd_close(fd_open(filename, O_RDONLY)))
@@ -2796,7 +2796,7 @@ errr init_x11(int argc, char *argv[])
 		else
 		{
 			/* Try the "8x8.bmp" file */
-			path_build(filename, 1024, ANGBAND_DIR_XTRA, "graf/8x8.bmp");
+			path_build(filename, sizeof(filename), ANGBAND_DIR_XTRA, "graf/8x8.bmp");
 
 			/* Use the "8x8.bmp" file if it exists */
 			if (0 == fd_close(fd_open(filename, O_RDONLY)))

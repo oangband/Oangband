@@ -1,5 +1,7 @@
 ## Makefile.am -- Process this file with automake to process Makefile.in
 
+AM_CFLAGS = -Wall
+
 bin_PROGRAMS = oangband
 
 WRES = windres

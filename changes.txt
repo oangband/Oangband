@@ -10,6 +10,7 @@ User interface
 - Show the effects of Clarity and Atheletics a bit better in character screen.
 - Show the power of beguiling spells in spellbooks (slow, sleep,
 confusion and fear), to encourage their use.
+- Inscribe drops from uniques.
 
 Coding changes
 ==============

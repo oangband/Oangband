@@ -2268,6 +2268,14 @@ void monster_death(int m_idx)
 			/* Make an object */
 			if (make_object(i_ptr, good, great, FALSE))
 			{
+				/* Hack - if an unique, inscribe with his name */
+				if (r_ptr->flags1 & (RF1_UNIQUE))
+				{
+					char m_name[80];
+
+					monster_desc(m_name, m_ptr, 0x88);
+					i_ptr->note = quark_add(m_name);
+				}
 
 				/* Assume seen XXX XXX XXX */
 				dump_item++;

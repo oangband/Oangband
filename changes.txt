@@ -3,6 +3,12 @@ Oangband 1.1.0 tweaked version
 
 This is the list of changes from vanilla Oangband 1.1.0.
 
-Gameplay changes
-================
+User interface
+==============
 - Highlight spell stat when choosing a character.
+- Added x11-settings.prf support to main-x11.
+
+
+Coding changes
+==============
+- Clean up X11 stuff on exit.

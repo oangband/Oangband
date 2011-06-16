@@ -2301,6 +2301,9 @@ void monster_death(int m_idx)
 		lore_treasure(m_idx, dump_item, dump_gold);
 	}
 
+	/* Update monster list window */
+	p_ptr->window |= PW_MONLIST;
+
 
 	/* Only process "Quest Monsters" */
 	if (!(r_ptr->flags1 & (RF1_QUESTOR))) return;

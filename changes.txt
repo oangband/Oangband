@@ -17,6 +17,7 @@ User interface
 - Show the power of beguiling spells in spellbooks (slow, sleep,
 confusion and fear), to encourage their use.
 - Inscribe drops from uniques.
+- Added monster list window.
 
 Coding changes
 ==============

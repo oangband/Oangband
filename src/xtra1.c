@@ -1376,6 +1376,40 @@ static void prt_frame_extra(void)
 
 
 /*
+ * Hack -- display monsters in sub-windows
+ */
+static void fix_monlist(void)
+{
+	int j;
+
+	/* Scan windows */
+	for (j = 0; j < TERM_WIN_MAX; j++)
+	{
+		term *old = Term;
+
+		/* No window */
+		if (!angband_term[j]) continue;
+
+		/* No relevant flags */
+		if (!(op_ptr->window_flag[j] & (PW_MONLIST))) continue;
+
+		/* Activate */
+		Term_activate(angband_term[j]);
+
+		/* Display inventory */
+		display_monlist();
+
+		/* Fresh */
+		Term_fresh();
+
+		/* Restore */
+		Term_activate(old);
+	}
+}
+
+
+
+/*
  * Hack -- display inventory in sub-windows
  */
 static void fix_inven(void)
@@ -4237,6 +4271,13 @@ void window_stuff(void)
 	{
 		p_ptr->window &= ~(PW_INVEN);
 		fix_inven();
+	}
+
+	/* Display monster list */
+	if (p_ptr->window & (PW_MONLIST))
+	{
+		p_ptr->window &= ~(PW_MONLIST);
+		fix_monlist();
 	}
 
 	/* Display equipment */

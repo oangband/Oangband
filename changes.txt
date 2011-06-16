@@ -26,4 +26,5 @@ Coding changes
 - Removed files modified by autobuild system from repository.
 - Fixed warning in acinclude.m4.
 - Slight clean ups in birth.c.
-- Sliggt clean ups in main-x11.c.
+- Slight clean ups in main-x11.c.
+- Started cleaning up the h-xxx.h files.

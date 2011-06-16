@@ -104,8 +104,8 @@ int stricmp(cptr a, cptr b)
 	/* Scan the strings */
 	for (s1 = a, s2 = b; TRUE; s1++, s2++)
 	{
-		z1 = FORCEUPPER(*s1);
-		z2 = FORCEUPPER(*s2);
+		z1 = toupper((unsigned char) *s1);
+		z2 = toupper((unsigned char) *s2);
 		if (z1 < z2) return (-1);
 		if (z1 > z2) return (1);
 		if (!z1) return (0);

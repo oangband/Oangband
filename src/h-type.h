@@ -28,7 +28,6 @@
  * On Sparc's, a long takes 4 bytes (8 is legal)
  * On Sparc's, a huge takes 4 bytes (8 is legal)
  * On Sparc's, a vptr takes 4 bytes (8 is legal)
- * On Sparc's, a real takes 8 bytes (4 is legal)
  *
  * Note that some files have already been included by "h-include.h"
  * These include <stdio.h> and <sys/types>, which define some types
@@ -49,10 +48,6 @@ typedef void *vptr;
 
 /* A simple pointer (to unmodifiable strings) */
 typedef const char *cptr;
-
-
-/* Since float's are silly, hard code real numbers as doubles */
-typedef double real;
 
 
 /* Error codes for function return values */
@@ -85,11 +80,6 @@ typedef int errr;
 #define bool bool_hack
 
 
-/* Note that "signed char" is not always "defined" */
-/* So always use "s16b" to hold small signed values */
-/* A signed byte of memory */
-/* typedef signed char syte; */
-
 /* Note that unsigned values can cause math problems */
 /* An unsigned byte of memory */
 typedef unsigned char byte;
@@ -105,9 +95,6 @@ typedef int sint;
 /* An unsigned, "standard" integer (often pre-defined) */
 typedef unsigned int uint;
 
-
-/* The largest possible signed integer (pre-defined) */
-/* typedef long long; */
 
 /* The largest possible unsigned integer */
 typedef unsigned long huge;
@@ -131,36 +118,15 @@ typedef unsigned long u32b;
 
 /*** Pointers to all the basic types defined above ***/
 
-typedef real *real_ptr;
-typedef errr *errr_ptr;
 typedef char *char_ptr;
 typedef byte *byte_ptr;
-typedef bool *bool_ptr;
-typedef sint *sint_ptr;
-typedef uint *uint_ptr;
-typedef long *long_ptr;
-typedef huge *huge_ptr;
-typedef s16b *s16b_ptr;
-typedef u16b *u16b_ptr;
-typedef s32b *s32b_ptr;
-typedef u32b *u32b_ptr;
-typedef vptr *vptr_ptr;
-typedef cptr *cptr_ptr;
 
 
 
 /*** Pointers to Functions with simple return types and any args ***/
 
-typedef void	(*func_void)();
 typedef errr	(*func_errr)();
-typedef char	(*func_char)();
-typedef byte	(*func_byte)();
 typedef bool	(*func_bool)();
-typedef sint	(*func_sint)();
-typedef uint	(*func_uint)();
-typedef real	(*func_real)();
-typedef vptr	(*func_vptr)();
-typedef cptr	(*func_cptr)();
 
-#endif
+#endif /* INCLUDED_H_TYPE_H */
 

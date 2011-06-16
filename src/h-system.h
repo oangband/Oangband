@@ -13,16 +13,28 @@
  * This file has been rebuilt -- it may need a little more work.
  */
 
-
-#include <stdio.h>
+/** ANSI C headers **/
 #include <ctype.h>
 #include <errno.h>
+/* limits.h */
+/* assert.h */
 
+#include <stdarg.h>
+#include <stdio.h>
 #if defined(NeXT)
 # include <libc.h>
 #else
 # include <stdlib.h>
-#endif
+#endif /* NeXT */
+/* stddef.h */
+#include <string.h>
+#include <time.h>
+
+
+/** Other headers **/
+
+
+
 
 
 #ifdef SET_UID
@@ -40,10 +52,9 @@
 #  include <sys/timeb.h>
 # endif
 
-#endif
+#endif /* SET_UID */
 
 
-#include <time.h>
 
 
 
@@ -91,17 +102,15 @@
 #  include <netdb.h>
 # endif
 
-#endif
+#endif /* SET_UID */
 
 #if defined(__DJGPP__) || defined(__MWERKS__)
 #include <unistd.h>
 #endif /* __DJGPP__ || __MWERKS__ */
 
-#include <string.h>
-
-#include <stdarg.h>
 
 
-#endif
+
+#endif /* INCLUDE_H_SYSTEM_H */
 
 

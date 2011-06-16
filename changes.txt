@@ -8,6 +8,8 @@ User interface
 - Highlight spell stat when choosing a character.
 - Added x11-settings.prf support to main-x11.
 - Show the effects of Clarity and Atheletics a bit better in character screen.
+- Show the power of beguiling spells in spellbooks (slow, sleep,
+confusion and fear), to encourage their use.
 
 Coding changes
 ==============

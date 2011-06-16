@@ -3163,8 +3163,12 @@ void spell_info(char *p, int spell_index)
 
 	int beam, beam_low;
 
+	bool beguile;
+
         /* Specialty Ability */
 	plev += get_spell_level_boost();
+
+	beguile = check_ability(SP_BEGUILE);
 
 	/* Beaming chance */
 	beam = (((check_ability(SP_BEAM)))
@@ -3185,13 +3189,17 @@ void spell_info(char *p, int spell_index)
 			1 + (plev / 5), ( plev / 10) + 1); break;
 		case 5: sprintf(p, " heal 2d%d", plev / 4 + 5); break;
 		case 8: sprintf(p, " dam %d, rad 2", 5 + (plev / 3)); break;
+		case 9: sprintf(p, " pow %d", (beguile ? (int)((plev + 10) * 3 / 2) : plev + 10)); break;
 		case 10: sprintf(p, " dam %dd8, beam %d%%", (2+((plev-5)/5)), beam);
 			break;
+		case 12: sprintf(p, " pow %d", (beguile ? (int)((plev + 10) * 3 / 2) : plev + 10)); break;
 		case 14: sprintf(p, " range %d", 50 + plev * 2); break;
 		case 15: strcpy(p, " dam 4d5"); break;
 		case 17: sprintf(p, " dam %d, range %d", 20+plev, 3+plev/10); break;
+		case 22: sprintf(p, " pow %d", (beguile ? (int)((plev + 10) * 3 / 2) : plev + 10)); break;
 		case 23: sprintf(p, " dam %dd8, beam %d%%", (7+((plev-5)/5)), beam);
 			break;
+		case 24: sprintf(p, " pow %d", (beguile ? (int)((plev + 10) * 3 / 2) : plev + 10)); break;
 		case 26: sprintf(p, " dam %d, rad 2", 30 + plev); break;
 		case 28: sprintf(p, " dist %d", 45 + (plev/2)); break;
 		case 29: sprintf(p, " dur %d+d20", plev); break;
@@ -3205,6 +3213,7 @@ void spell_info(char *p, int spell_index)
 		case 37: strcpy(p, " dur 20+d20"); break;
 		case 42: strcpy(p, " range 25"); break;
 		case 45: strcpy(p, " radius 10"); break;
+		case 46: sprintf(p, " pow %d", (beguile ? (int)((5 * plev / 3) * 3 / 2) : (5 *  plev / 3))); break;
 		case 47: sprintf(p, " dam %d, rad %d", 5 * plev / 2, plev / 12); break;
 		case 48: sprintf(p, " recover %d", 1 + plev / 12); break;
 		case 49: strcpy(p, " dur 30+d20"); break;
@@ -3225,8 +3234,10 @@ void spell_info(char *p, int spell_index)
 		case 68: sprintf(p, " dam 2d%d, rad %d", 1 + plev/3, plev/10+1); break;
 		case 71: strcpy(p, " halve poison"); break;
 		case 72: sprintf(p, " heal 4d%d", plev / 4 + 6); break;
+		case 73: sprintf(p, " pow %d", (beguile ? (int)(((3 * plev / 2) + 10) * 3 / 2) : (int)(3 * plev / 2) + 10)); break;
 		case 74: sprintf(p, " range %d", 2 * plev); break;
 		case 75: strcpy(p, " dur 24+d24"); break;
+		case 76: sprintf(p, " pow %d", (beguile ? (int)((plev + 25) * 3 / 2) : plev + 25)); break;
 		case 79: sprintf(p, " dur %d+d10", plev / 2); break;
 		case 81: sprintf(p, " dam %d+3d6, rad %d", plev / 4 +
 			(plev / ((check_ability(SP_STRONG_MAGIC)) ? 2 : 4)),
@@ -3235,6 +3246,7 @@ void spell_info(char *p, int spell_index)
 		case 83: sprintf(p, " dur %d+d24", 3 * plev / 2); break;
 		case 84: sprintf(p, " heal 9d%d, any cut", plev / 3 + 12); break;
 		case 85: strcpy(p, " radius 10"); break;
+		case 87: sprintf(p, " pow %d", (beguile ? (int)(((3 * plev / 2) + 10) * 3 / 2) : (3 * plev / 2) + 10)); break;
 		case 88: strcpy(p, " dur 48+d48"); break;
 		case 89: sprintf(p, " dam d%d", 3 * plev); break;
 		case 90: strcpy(p, " heal 300, any cut"); break;
@@ -3249,6 +3261,7 @@ void spell_info(char *p, int spell_index)
 		case 118: sprintf(p, " dam %d", 3 * plev / 2); break;
 		case 120: sprintf(p, " dam %d+d100", plev * 3); break;
 		case 121: sprintf(p, " dam %d, heal 500", plev * 5); break;
+		case 124: sprintf(p, " pow %d", (beguile ? (int)((plev) * 3 / 2) : plev)); break;
 		case 125: sprintf(p, " dam %d+d%d", 25 + plev, plev); break;
 
 
@@ -3261,6 +3274,8 @@ void spell_info(char *p, int spell_index)
 		case 135: strcpy(p, " dam 20+d30"); break;
 		case 136: strcpy(p, " dam 4d5"); break;
 		case 138: sprintf(p, " dam %dd8, beam %d%%", 2+plev/5, beam_low); break;
+		case 139: sprintf(p, " pow %d", (beguile ? (int)((plev + 10) * 3 / 2) : plev + 10)); break;
+		case 140: sprintf(p, " pow %d", (beguile ? (int)((plev + 10) * 3 / 2) : plev + 10)); break;
 		case 142: sprintf(p, " dam %d", 2 + plev / 5); break;
 		case 143: sprintf(p, " dam %dd8, beam %d%%", 3 + plev / 5, beam_low);
 			break;
@@ -3278,6 +3293,7 @@ void spell_info(char *p, int spell_index)
 			1 + plev / 15); break;
 		case 160: sprintf(p, " dam %d+d%d, rad %d", plev, 40 + plev * 2,
 			plev / 8); break;
+		case 167: sprintf(p, " pow %d", (beguile ? (int)((3 * plev / 2 + 10) * 3 / 2) : 3 * plev / 2 + 10)); break;
 		case 169: strcpy(p, " dur 24+d24"); break;
 		case 170: sprintf(p, " heal %dd12, any cut", 25 + plev / 2); break;
 		case 171: sprintf(p, " dam %d+d%d, rad %d", plev, 50 + plev * 2,
@@ -3289,6 +3305,7 @@ void spell_info(char *p, int spell_index)
 		case 174: sprintf(p, " dam %d+d%d, rad 1", 35+(2*plev), 90+plev*4); break;
 		case 175: sprintf(p, " dam %d+d%d, rad %d", 40 + (3 * plev / 2), plev * 3,
 			plev / 10); break;
+		case 176: sprintf(p, " pow %d", (beguile ? (int)((5 * plev / 3) * 3 / 2) : 5 * plev / 3)); break;
 		case 177: sprintf(p, " dur %d+d30", plev / 2); break;
 		case 178: sprintf(p, " dam d%d", plev * 2); break;
 		case 181: sprintf(p, " dam %dd8, beam %d%%", plev / 6, plev * 2); break;
@@ -3300,13 +3317,20 @@ void spell_info(char *p, int spell_index)
 
 		case 192: sprintf(p, " dam 2d%d", 5 + plev / 7); break;
 		case 194: strcpy(p, " dur 70+d70"); break;
+		case 196: sprintf(p, " pow %d", (beguile ? (int)((plev + 5) * 3 / 2) : plev + 5)); break;
+		case 197: sprintf(p, " pow %d", (beguile ? (int)((plev + 5) * 3 / 2) : plev + 5)); break;
+		case 198: sprintf(p, " pow %d", (beguile ? (int)((plev + 15) * 3 / 2) : plev + 15)); break;
 		case 199: strcpy(p, " hurt 2d4"); break;
 		case 201: sprintf(p, " dam %dd8, beam %d%%", 3+plev/7, beam_low); break;
 		case 202: sprintf(p, " dam %d, poison", 10 + plev); break;
+		case 203: sprintf(p, " pow %d", (beguile ? (int)((3 * plev / 2) * 3 / 2) : (3 * plev / 2))); break;
+		case 204: sprintf(p, " pow %d", (beguile ? (int)((5 * plev / 4) * 3 / 2) : (5 * plev / 4))); break;
 		case 206: sprintf(p, " dam %d+d%d", plev + 15, 3 * plev / 2); break;
 		case 207: sprintf(p, " dam %d+d%d", plev, plev); break;
 		case 208: sprintf(p, " dur 20+d%d", plev / 2); break;
 		case 209: strcpy(p, " range 16, hurt 1d4"); break;
+		case 212: sprintf(p, " pow %d", (beguile ? (int)((plev + 5) * 3 / 2) : plev + 5)); break;
+		case 213: sprintf(p, " pow %d", (beguile ? (int)((plev + 5) * 3 / 2) : plev + 5)); break;
 		case 215: sprintf(p, " dam %dd8, hurt 1d6", 2 + plev / 3); break;
 		case 216: sprintf(p, " dur %d+d20", plev / 2); break;
 		case 217: sprintf(p, " dam %d+d%d", 2 * plev, 2 * plev); break;

@@ -1210,6 +1210,7 @@ static bool player_birth_aux_1(void)
 #define MIN_POINT_STAT_VALUE 10 /* Minimum stat value - no points used */
 #define MAX_POINT_STAT_VALUE 18 /* Maximum stat value - full points used */
 #define BUY_POINTS 48 /* Number of points available to buy stats */
+#define GOLD_POINT 50 /* Each stat point is worth this much gold */
 
  /*
   * Initial stat costs (initial stats always range from 10 to 18 inclusive).
@@ -1224,7 +1225,6 @@ static int birth_stat_costs[(MAX_POINT_STAT_VALUE-MIN_POINT_STAT_VALUE)+1] = { 0
  *
  * each costing a certain amount of points (as above), from a pool of
  * BUY_POINTS available points, to which race/class modifiers are then applied.
- * available points, to which race/class modifiers are then applied.
  *
  * Each unused point is converted into 50 gold pieces.
  */
@@ -1292,7 +1292,7 @@ static bool player_birth_aux_2(void)
 		}
 
 		/* Gold is inversely proportional to cost */
-		p_ptr->au = (50 * (BUY_POINTS - cost)) + 100;
+		p_ptr->au = (GOLD_POINT * (BUY_POINTS - cost)) + 100;
 
 		/* She charmed the banker into it! */
 		/* Mum and Dad figure she won't blow it on beer! */
@@ -1347,13 +1347,13 @@ static bool player_birth_aux_2(void)
 		/* Prev stat */
 		if (ch == '8')
 		{
-			stat = (stat + 5) % 6;
+			stat = (stat + A_MAX - 1) % A_MAX;
 		}
 
 		/* Next stat */
 		if (ch == '2')
 		{
-			stat = (stat + 1) % 6;
+			stat = (stat + 1) % A_MAX;
 		}
 
 		/* Decrease stat */
@@ -1851,8 +1851,8 @@ void player_birth(void)
 		/* Save for last */
 		if (n == STORE_BLACKM) continue;
 
-	/* Maintain the shop (ten times) */
-	for (i = 0; i < 10; i++) store_maint(n);
+		/* Maintain the shop (ten times) */
+		for (i = 0; i < 10; i++) store_maint(n);
 	}
 
        	/* Maintain the black market (ten times) */

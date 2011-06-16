@@ -2273,12 +2273,33 @@ static void display_player_stat_info(void)
 		a = TERM_SLATE;
 		c = '.';
 
+		/* Boost */
+		if (check_ability(SP_CLARITY))
+		{
+			if ((stat == A_INT) || (stat == A_WIS))
+			{
+				/* Good */
+				a = TERM_L_GREEN;
+				c = '2';
+			}
+		}
+
+		if (check_ability(SP_ATHLETICS))
+		{
+			if ((stat == A_DEX) || (stat == A_CON))
+			{
+				/* Good */
+				a = TERM_L_GREEN;
+				c = '2';
+			}
+		}
+
 		/* Sustain */
 		if (f2 & 1<<stat)
 		{
-			/* Dark green "s" */
+			/* Dark green, "s" if no stat bonus. */
 			a = TERM_GREEN;
-			c = 's';
+			if (c == '.') c = 's';
 		}
 
 		/* Dump */

@@ -83,8 +83,8 @@ static int value_check_aux2(object_type *o_ptr)
 	/* Good weapon bonuses */
 	if (o_ptr->to_h + o_ptr->to_d > 0) return FEEL_GOOD;
 
-	/* No feeling */
-	return FEEL_NONE;
+	/* Default to "average" */
+	return FEEL_AVERAGE;
 }
 
 

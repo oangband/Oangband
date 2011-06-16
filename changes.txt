@@ -3,6 +3,11 @@ Oangband 1.1.0 tweaked version
 
 This is the list of changes from vanilla Oangband 1.1.0.
 
+Gameplay changes
+================
+- Improved infravision to allow it to see walls and stuff but not take actions
+that require light.
+
 User interface
 ==============
 - Highlight spell stat when choosing a character.

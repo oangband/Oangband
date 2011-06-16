@@ -309,7 +309,12 @@ bool no_lite(void)
 
 	if (check_ability(SP_UNLIGHT)) return(FALSE);
 
-	return (!player_can_see_bold(py, px));
+	/* Player has light */
+	if (p_ptr->cur_lite > 0)
+		return (!player_can_see_bold(py, px));
+	/* No light, require CAVE_GLOW */
+	else
+		return (!((cave_info[py][px] & (CAVE_GLOW)) != 0));
 }
 
 
@@ -2903,7 +2908,7 @@ void update_view(void)
 	fast_view_n = 0;
 
 	/* Extract "radius" value */
-	radius = p_ptr->cur_lite;
+	radius = MAX(p_ptr->cur_lite, p_ptr->see_infra);
 
 	/* Handle real light */
 	if (radius > 0) ++radius;

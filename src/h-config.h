@@ -51,13 +51,6 @@
 #endif
 
 /*
- * OPTION: Compile on an SGI running IRIX
- */
-#ifndef SGI
-/* #define SGI */
-#endif
-
-/*
  * OPTION: Compile on a SunOS machine
  */
 #ifndef SUNOS
@@ -89,15 +82,6 @@
 #if defined(ultrix) || defined(Pyramid)
 # ifndef ULTRIX
 #  define ULTRIX
-# endif
-#endif
-
-/*
- * Extract the "SGI" flag from the compiler
- */
-#ifdef sgi
-# ifndef SGI
-#  define SGI
 # endif
 #endif
 

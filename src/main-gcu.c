@@ -81,6 +81,14 @@
 # include <termios.h>
 #endif
 
+/*
+ * If you have errors relating to curs_set(), comment out the following line
+ */
+#define USE_CURS_SET
+
+
+
+
 
 /*
  * OPTION: some machines lack "cbreak()"

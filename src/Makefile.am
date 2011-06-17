@@ -19,7 +19,7 @@ oangband_SOURCES = \
   cmd1.c cmd2.c cmd3.c cmd4.c cmd5.c cmd6.c \
   store.c birth.c load1.c load2.c \
   wizard1.c wizard2.c \
-  main-cap.c main-gcu.c main-x11.c main-xaw.c main.c \
+  main-gcu.c main-x11.c main-xaw.c main.c \
   main-win.c \
   generate.c dungeon.c init1.c init2.c randart.c \
   squelch.c info.c attack.c \
@@ -29,12 +29,12 @@ oangband_SOURCES = \
   z-virt.h main.h 
 
 EXTRA_oangband_SOURCES = \
-  main-ros.c main-ami.c main-dos.c main-emx.c \
-  main-ibm.c main-lsl.c main-mac.c main-sla.c main-vme.c \
+  main-ros.c main-dos.c \
+  main-ibm.c main-mac.c main-sla.c \
   main-xxx.c main-crb.c \
-  Makefile.ros Makefile.ami Makefile.bcc Makefile.cyg \
-  Makefile.dos Makefile.emx Makefile.gtk Makefile.ibm \
-  Makefile.lcc Makefile.lsl Makefile.std Makefile.wat \
+  Makefile.bcc Makefile.cyg \
+  Makefile.dos Makefile.gtk Makefile.ibm \
+  Makefile.lcc Makefile.std Makefile.wat \
   Makefile.win Makefile.mpw Makefile.osx \
   angband.rc angband.ico readdib.c readdib.h \
   maid-x11.c maid-x11.h 

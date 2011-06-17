@@ -486,10 +486,6 @@ int main(int argc, char *argv[])
 				puts("  -- -x    No extra sub-windows");
 #endif /* USE_GCU */
 
-#ifdef USE_CAP
-				puts("  -mcap    To use CAP (\"Termcap\" calls)");
-#endif /* USE_CAP */
-
 #ifdef USE_DOS
 				puts("  -mdos    To use DOS (Graphics)");
 #endif /* USE_DOS */
@@ -564,20 +560,6 @@ int main(int argc, char *argv[])
 		}
 	}
 #endif
-
-#ifdef USE_CAP
-	/* Attempt to use the "main-cap.c" support */
-	if (!done && (!mstr || (streq(mstr, "cap"))))
-	{
-		extern errr init_cap(int, char**);
-		if (0 == init_cap(argc, argv))
-		{
-			ANGBAND_SYS = "cap";
-			done = TRUE;
-		}
-	}
-#endif
-
 
 #ifdef USE_DOS
 	/* Attempt to use the "main-dos.c" support */

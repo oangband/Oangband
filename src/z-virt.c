@@ -28,12 +28,12 @@ static long virt_size = 0;
 /*
  * Optional auxiliary "rnfree" function
  */
-vptr (*rnfree_aux)(vptr, huge) = NULL;
+vptr (*rnfree_aux)(vptr, size_t) = NULL;
 
 /*
  * Free some memory (allocated by ralloc), return NULL
  */
-vptr rnfree(vptr p, huge len)
+void *rnfree(vptr p, size_t len)
 {
 	/* Easy to free zero bytes */
 	if (len == 0) return (NULL);
@@ -68,7 +68,7 @@ vptr rnfree(vptr p, huge len)
 /*
  * Optional auxiliary "rpanic" function
  */
-vptr (*rpanic_aux)(huge) = NULL;
+vptr (*rpanic_aux)(size_t) = NULL;
 
 /*
  * The system is out of memory, so panic.  If "rpanic_aux" is set,
@@ -76,7 +76,7 @@ vptr (*rpanic_aux)(huge) = NULL;
  * or if not, it can be used to save things, clean up, and exit.
  * By default, this function simply crashes the computer.
  */
-vptr rpanic(huge len)
+void *rpanic(size_t len)
 {
 	/* Hopefully, we have a real "panic" function */
 	if (rpanic_aux) return ((*rpanic_aux)(len));
@@ -92,18 +92,18 @@ vptr rpanic(huge len)
 /*
  * Optional auxiliary "ralloc" function
  */
-vptr (*ralloc_aux)(huge) = NULL;
+vptr (*ralloc_aux)(size_t) = NULL;
 
 
 /*
  * Allocate some memory
  */
-vptr ralloc(huge len)
+void *ralloc(size_t len)
 {
 	vptr mem;
 
 	/* Allow allocation of "zero bytes" */
-	if (len == 0) return ((vptr)(NULL));
+	if (len == 0) return ((void *)(NULL));
 
 #ifdef VERBOSE_RALLOC
 
@@ -140,9 +140,9 @@ vptr ralloc(huge len)
 /*
  * Allocate a constant string, containing the same thing as 'str'
  */
-cptr string_make(cptr str)
+char *string_make(char *str)
 {
-	huge len = 0;
+	size_t len = 0;
 	cptr t = str;
 	char *s, *res;
 
@@ -167,9 +167,9 @@ cptr string_make(cptr str)
  * Un-allocate a string allocated above.
  * Depends on no changes being made to the string.
  */
-errr string_free(cptr str)
+errr string_free(char *str)
 {
-	huge len = 0;
+	size_t len = 0;
 
 	/* Succeed on non-strings */
 	if (!str) return (0);

@@ -872,7 +872,7 @@ extern errr check_modification_date(int fd, cptr template_file);
 extern void text_to_ascii(char *buf, cptr str);
 extern void ascii_to_text(char *buf, cptr str);
 extern sint macro_find_exact(cptr pat);
-extern errr macro_add(cptr pat, cptr act);
+extern errr macro_add(char *pat, char *act);
 extern errr macro_init(void);
 extern void flush(void);
 extern char inkey(void);

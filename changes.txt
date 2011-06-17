@@ -34,3 +34,4 @@ Coding changes
 - Slight clean ups in main-x11.c.
 - Started cleaning up the h-xxx.h files.
 - Cleaned up terminal handling, use POSIX instead of old methods.
+- Cleaned up z-virt a bit.

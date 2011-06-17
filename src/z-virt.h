@@ -46,67 +46,49 @@
 /**** Available macros ****/
 
 
-/* Size of 'N' things of type 'T' */
-#define C_SIZE(N,T) \
-	((huge)((N)*(sizeof(T))))
-
-/* Size of one thing of type 'T' */
-#define SIZE(T) \
-	((huge)(sizeof(T)))
-
-
-/* Compare two arrays of type T[N], at locations P1 and P2 */
-#define C_DIFF(P1,P2,N,T) \
-	(memcmp((char*)(P1),(char*)(P2),C_SIZE(N,T)))
-
-/* Compare two things of type T, at locations P1 and P2 */
-#define DIFF(P1,P2,T) \
-	(memcmp((char*)(P1),(char*)(P2),SIZE(T)))
-
-
 /* Set every byte in an array of type T[N], at location P, to V, and return P */
 #define C_BSET(P,V,N,T) \
-	(T*)(memset((char*)(P),(V),C_SIZE(N,T)))
+	(T*)(memset((char*)(P),(V), (N) * sizeof(T)))
 
 /* Set every byte in a thing of type T, at location P, to V, and return P */
 #define BSET(P,V,T) \
-	(T*)(memset((char*)(P),(V),SIZE(T)))
+	(T*)(memset((char*)(P),(V), sizeof(T)))
 
 
 /* Wipe an array of type T[N], at location P, and return P */
 #define C_WIPE(P,N,T) \
-	(T*)(memset((char*)(P),0,C_SIZE(N,T)))
+	(T*)(memset((char*)(P), 0, (N) * sizeof(T)))
 
 /* Wipe a thing of type T, at location P, and return P */
 #define WIPE(P,T) \
-	(T*)(memset((char*)(P),0,SIZE(T)))
+	(T*)(memset((char*)(P), 0, sizeof(T)))
 
 
 /* Load an array of type T[N], at location P1, from another, at location P2 */
 #define C_COPY(P1,P2,N,T) \
-	(T*)(memcpy((char*)(P1),(char*)(P2),C_SIZE(N,T)))
+	(T*)(memcpy((char*)(P1),(char*)(P2), (N) * sizeof(T)))
 
 /* Load a thing of type T, at location P1, from another, at location P2 */
 #define COPY(P1,P2,T) \
-	(T*)(memcpy((char*)(P1),(char*)(P2),SIZE(T)))
+	(T*)(memcpy((char*)(P1),(char*)(P2), sizeof(T)))
 
 
 /* Free an array of N things of type T at P, return NULL */
 #define C_FREE(P,N,T) \
-	(T*)(rnfree(P,C_SIZE(N,T)))
+	(T*)(rnfree(P, (N) * sizeof(T)))
 
 /* Free one thing of type T at P, return NULL */
 #define FREE(P,T) \
-	(T*)(rnfree(P,SIZE(T)))
+	(T*)(rnfree(P, sizeof(T)))
 
 
 /* Allocate, and return, an array of type T[N] */
 #define C_RNEW(N,T) \
-	((T*)(ralloc(C_SIZE(N,T))))
+	((T*)(ralloc((N) * sizeof(T))))
 
 /* Allocate, and return, a thing of type T */
 #define RNEW(T) \
-	((T*)(ralloc(SIZE(T))))
+	((T*)(ralloc(sizeof(T))))
 
 
 /* Allocate, wipe, and return an array of type T[N] */
@@ -140,31 +122,31 @@
 /**** Available variables ****/
 
 /* Replacement hook for "rnfree()" */
-extern vptr (*rnfree_aux)(vptr, huge);
+extern vptr (*rnfree_aux)(void *, size_t);
 
 /* Replacement hook for "rpanic()" */
-extern vptr (*rpanic_aux)(huge);
+extern vptr (*rpanic_aux)(size_t);
 
 /* Replacement hook for "ralloc()" */
-extern vptr (*ralloc_aux)(huge);
+extern vptr (*ralloc_aux)(size_t);
 
 
 /**** Available functions ****/
 
 /* De-allocate a given amount of memory */
-extern vptr rnfree(vptr p, huge len);
+extern void *rnfree(void *p, size_t len);
 
 /* Panic, attempt to Allocate 'len' bytes */
-extern vptr rpanic(huge len);
+extern void *rpanic(size_t len);
 
 /* Allocate (and return) 'len', or dump core */
-extern vptr ralloc(huge len);
+extern void *ralloc(size_t len);
 
 /* Create a "dynamic string" */
-extern cptr string_make(cptr str);
+extern char *string_make(char *str);
 
 /* Free a string allocated with "string_make()" */
-extern errr string_free(cptr str);
+extern errr string_free(char *str);
 
 
 

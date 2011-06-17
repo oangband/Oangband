@@ -78,7 +78,6 @@
  * POSIX stuff
  */
 #ifdef USE_TPOSIX
-# include <sys/ioctl.h>
 # include <termios.h>
 #endif
 

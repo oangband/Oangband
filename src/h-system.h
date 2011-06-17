@@ -38,29 +38,11 @@
 
 /** Other headers **/
 
-
-
-
-
 #ifdef SET_UID
 
 # include <sys/types.h>
 
-# if defined(Pyramid) || defined(NeXT) || defined(SUNOS) || \
-     defined(NCR3K) || defined(SUNOS) || defined(ibm032) || \
-     defined(__osf__) || defined(ISC) || defined(SGI) || \
-     defined(linux)
-#  include <sys/time.h>
-# endif
-
-# if !defined(SGI) && !defined(ULTRIX)
-#  include <sys/timeb.h>
-# endif
-
 #endif /* SET_UID */
-
-
-
 
 
 #if defined(MACINTOSH) && defined(__MWERKS__)
@@ -80,18 +62,13 @@
 # endif
 #endif
 
-
 #if !defined(NeXT) && !defined(RISCOS)
 # include <fcntl.h>
 #endif
 
-
 #if defined(__DJGPP__) || defined(__MWERKS__)
 #include <unistd.h>
 #endif /* __DJGPP__ || __MWERKS__ */
-
-
-
 
 #endif /* INCLUDE_H_SYSTEM_H */
 

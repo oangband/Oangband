@@ -216,17 +216,6 @@ void user_name(char *buf, int id)
  */
 
 
-#ifdef ACORN
-
-
-/*
- * Most of the "file" routines for "ACORN" should be in "main-acn.c"
- */
-
-
-#else /* ACORN */
-
-
 #ifdef SET_UID
 
 /*
@@ -430,9 +419,6 @@ errr my_fclose(FILE *fff)
 }
 
 
-#endif /* ACORN */
-
-
 #ifdef HAVE_MKSTEMP
 
 FILE *my_fopen_temp(char *buf, size_t max)
@@ -545,20 +531,6 @@ errr my_fputs(FILE *fff, cptr buf, huge n)
 	/* Success */
 	return (0);
 }
-
-
-#ifdef ACORN
-
-
-/*
- * Most of the "file" routines for "ACORN" should be in "main-acn.c"
- *
- * Many of them can be rewritten now that only "fd_open()" and "fd_make()"
- * and "my_fopen()" should ever create files.
- */
-
-
-#else /* ACORN */
 
 
 /*
@@ -898,9 +870,6 @@ errr check_modification_date(int fd, cptr template_file)
 }
 
 #endif /* CHECK_MODIFICATION_TIME */
-
-#endif /* ACORN */
-
 
 
 /*

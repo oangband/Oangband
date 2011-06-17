@@ -17,7 +17,7 @@
  */
 
 
-#if !defined(MACINTOSH) && !defined(WINDOWS) && !defined(ACORN)
+#if !defined(MACINTOSH) && !defined(WINDOWS)
 
 #ifdef USE_SCRIPT
 
@@ -743,7 +743,7 @@ int main(int argc, char *argv[])
 	return (0);
 }
 
-#endif
+#endif /* MACINTOSH / WINDOWS */
 
 
 

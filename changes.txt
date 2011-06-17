@@ -18,6 +18,7 @@ User interface
 confusion and fear), to encourage their use.
 - Inscribe drops from uniques.
 - Added monster list window.
+- Removed acorn port.
 
 Coding changes
 ==============

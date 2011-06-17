@@ -91,16 +91,6 @@
 # endif
 #endif
 
-/*
- * Hack -- Amiga uses "fake curses" and cannot do any of this stuff
- */
-#if defined(AMIGA)
-# undef USE_TPOSIX
-# undef USE_TERMIO
-# undef USE_TCHARS
-#endif
-
-
 
 
 /*

@@ -66,7 +66,7 @@
 # include <io.h>
 #endif
 
-#if !defined(MACINTOSH) && !defined(AMIGA) && \
+#if !defined(MACINTOSH) && \
     !defined(RISCOS) && !defined(__MWERKS__)
 # if defined(__TURBOC__) || defined(__WATCOMC__)
 #  include <mem.h>

@@ -49,15 +49,6 @@ static void quit_hook(cptr s)
 
 
 /*
- * Set the stack size (for the Amiga)
- */
-#ifdef AMIGA
-# include <dos.h>
-__near long __stack = 32768L;
-#endif
-
-
-/*
  * Set the stack size and overlay buffer (see main-286.c")
  */
 #ifdef USE_286
@@ -89,13 +80,6 @@ static void init_stuff(void)
 {
 	char path[1024];
 
-#if defined(AMIGA)
-
-	/* Hack -- prepare "path" */
-	strcpy(path, "Angband:");
-
-#else /* AMIGA */
-
 	cptr tail;
 
 	/* Get the environment variable */
@@ -109,8 +93,6 @@ static void init_stuff(void)
 
 	/* Hack -- Add a path separator (only if needed) */
 	if (!suffix(path, PATH_SEP)) strcat(path, PATH_SEP);
-
-#endif /* AMIGA */
 
 	/* Initialize */
 	init_file_paths(path);
@@ -524,10 +506,6 @@ int main(int argc, char *argv[])
 				puts("  -mlsl    To use LSL (Linux-SVGALIB)");
 #endif /* USE_LSL */
 
-#ifdef USE_AMI
-				puts("  -mami    To use AMI (Amiga)");
-#endif /* USE_AMI */
-
 				/* Actually abort the process */
 				quit(NULL);
 			}
@@ -675,21 +653,6 @@ int main(int argc, char *argv[])
 		}
 	}
 #endif
-
-
-#ifdef USE_AMI
-	/* Attempt to use the "main-ami.c" support */
-	if (!done && (!mstr || (streq(mstr, "ami"))))
-	{
-		extern errr init_ami(void);
-		if (0 == init_ami())
-		{
-			ANGBAND_SYS = "ami";
-			done = TRUE;
-		}
-	}
-#endif
-
 
 	/* Grab privs (dropped above for X11) */
 #ifndef USE_LSL

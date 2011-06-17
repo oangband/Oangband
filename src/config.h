@@ -379,12 +379,6 @@
  */
 /* #define CHECK_TIME */
 
-/*
- * OPTION: Check the "load" against "lib/file/load.txt"
- * This may require the 'rpcsvs' library
- */
-/* #define CHECK_LOAD */
-
 
 /*
  * OPTION: Capitalize the "user_name" (for "default" player name)

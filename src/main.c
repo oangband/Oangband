@@ -313,12 +313,6 @@ int main(int argc, char *argv[])
 		quit("The gates to Angband are closed (bad time).");
 	}
 
-	/* Initialize the "load" checker */
-	if (check_load_init() || check_load())
-	{
-		quit("The gates to Angband are closed (bad load).");
-	}
-
 #ifdef PRIVATE_USER_PATH
 
 	/* Create directories for the users files */

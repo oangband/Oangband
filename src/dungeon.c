@@ -395,12 +395,12 @@ static void process_world(void)
 	if ((check_ability(SP_ENHANCE_MAGIC)) && ((turn/10) % EXTEND_MAGIC_FRACTION))
 		extend_magic = TRUE;
 
-	/*** Check the Time and Load ***/
+	/*** Check the Time ***/
 
 	if (!(turn % 1000))
 	{
-		/* Check time and load */
-		if ((0 != check_time()) || (0 != check_load()))
+		/* Check time */
+		if (0 != check_time())
 		{
 			/* Warning */
 			if (closing_flag <= 2)

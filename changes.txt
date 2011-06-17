@@ -22,6 +22,7 @@ confusion and fear), to encourage their use.
 - Removed VM/ESA port.
 - Removed Amiga port.
 - Removed Linux SVGALib port.
+- Removed OS/2 EMX port.
 
 Coding changes
 ==============

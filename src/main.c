@@ -606,20 +606,6 @@ int main(int argc, char *argv[])
 #endif
 
 
-#ifdef USE_EMX
-	/* Attempt to use the "main-emx.c" support */
-	if (!done && (!mstr || (streq(mstr, "emx"))))
-	{
-		extern errr init_emx(void);
-		if (0 == init_emx())
-		{
-			ANGBAND_SYS = "emx";
-			done = TRUE;
-		}
-	}
-#endif
-
-
 #ifdef USE_SLA
 	/* Attempt to use the "main-sla.c" support */
 	if (!done && (!mstr || (streq(mstr, "sla"))))

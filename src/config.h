@@ -37,7 +37,7 @@
  * The old "USE_NCU" option has been replaced with "USE_GCU".
  *
  * Several other such options are available for non-unix machines,
- * such as "MACINTOSH", "WINDOWS", "USE_IBM", "USE_EMX".
+ * such as "MACINTOSH", "WINDOWS", "USE_IBM".
  *
  * You may also need to specify the "system", using defines such as
  * "SOLARIS" (for Solaris), etc, see "h-config.h" for more info.
@@ -330,17 +330,6 @@
  * OPTION: Hack -- Windows stuff
  */
 #ifdef WINDOWS
-
-/* Do not handle signals */
-# undef HANDLE_SIGNALS
-
-#endif
-
-
-/*
- * OPTION: Hack -- EMX stuff
- */
-#ifdef USE_EMX
 
 /* Do not handle signals */
 # undef HANDLE_SIGNALS

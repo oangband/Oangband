@@ -175,9 +175,7 @@ extern char *mp_c;
 extern byte *mp_ta;
 extern char *mp_tc;
 #endif /* USE_TRANSPARENCY */
-extern int player_uid;
 extern int player_euid;
-extern int player_egid;
 extern char savefile[1024];
 extern s16b macro__num;
 extern cptr *macro__pat;
@@ -494,8 +492,6 @@ extern void do_cmd_unchange(void);
 extern void play_game(bool new_game);
 
 /* files.c */
-extern void safe_setuid_drop(void);
-extern void safe_setuid_grab(void);
 extern s16b tokenize(char *buf, s16b num, char **tokens);
 extern errr process_pref_file_command(char *buf);
 extern errr process_pref_file(cptr name);

@@ -80,48 +80,6 @@
 /* #define USE_NCURSES */
 
 
-/*
- * OPTION: for multi-user machines running the game setuid to some other
- * user (like 'games') this SAFE_SETUID option allows the program to drop
- * its privileges when saving files that allow for user specified pathnames.
- * This lets the game be installed system wide without major security
- * concerns.  There should not be any side effects on any machines.
- *
- * This will handle "gids" correctly once the permissions are set right.
- */
-#define SAFE_SETUID
-
-
-/*
- * This flag enables the "POSIX" methods for "SAFE_SETUID".
- */
-#ifdef _POSIX_SAVED_IDS
-# define SAFE_SETUID_POSIX
-#endif
-
-
-/*
- * Prevent problems on (non-Solaris) Suns using "SAFE_SETUID".
- * The SAFE_SETUID code is weird, use it at your own risk...
- */
-#if defined(SUNOS) && !defined(SOLARIS)
-# undef SAFE_SETUID_POSIX
-#endif
-
-
-
-
-/*
- * OPTION: for the AFS distributed file system, define this to ensure that
- * the program is secure with respect to the setuid code.  This option has
- * not been tested (to the best of my knowledge).  This option may require
- * some weird tricks with "player_uid" and such involving "defines".
- * Note that this option used the AFS library routines Authenticate(),
- * bePlayer(), beGames() to enforce the proper priviledges.
- * You may need to turn "SAFE_SETUID" off to use this option.
- */
-/* #define SECURE */
-
 
 
 

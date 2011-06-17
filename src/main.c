@@ -260,11 +260,6 @@ int main(int argc, char *argv[])
 	/* Default permissions on files */
 	(void)umask(022);
 
-# ifdef SECURE
-	/* Authenticate */
-	Authenticate();
-# endif
-
 #endif
 
 
@@ -281,8 +276,6 @@ int main(int argc, char *argv[])
 	/* Mega-Hack -- Factor group id */
 	player_uid += (getgid() * 1000);
 #endif
-
-# ifdef SAFE_SETUID
 
 #  ifdef _POSIX_SAVED_IDS
 
@@ -309,9 +302,7 @@ int main(int argc, char *argv[])
 
 #  endif
 
-# endif
-
-#endif
+#endif /* SET_UID */
 
 
 #ifdef SET_UID

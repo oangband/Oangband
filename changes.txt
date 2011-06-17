@@ -38,4 +38,4 @@ Coding changes
 - Cleaned up z-virt, z-form and z-util a bit. Core and panic functions
 removed.
 - Trimming down a number of compile-time options.
-
+- Cleaned up setuid code a bit, started on z-file.

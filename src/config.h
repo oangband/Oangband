@@ -37,9 +37,6 @@
  *
  * Several other such options are available for non-unix machines,
  * such as "MACINTOSH", "WINDOWS", "USE_IBM".
- *
- * You may also need to specify the "system", using defines such as
- * "SOLARIS" (for Solaris), etc, see "h-config.h" for more info.
  */
 
 

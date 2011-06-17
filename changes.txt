@@ -37,4 +37,5 @@ Coding changes
 - Cleaned up terminal handling, use POSIX instead of old methods.
 - Cleaned up z-virt, z-form and z-util a bit. Core and panic functions
 removed.
+- Trimming down a number of compile-time options.
 

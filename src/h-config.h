@@ -37,13 +37,6 @@
 #endif
 
 /*
- * OPTION: Compile on a SYS III version of UNIX
- */
-#ifndef SYS_III
-/* #define SYS_III */
-#endif
-
-/*
  * OPTION: Compile on a SYS V version of UNIX
  */
 #ifndef SYS_V
@@ -69,13 +62,6 @@
  */
 #ifndef SUNOS
 /* #define SUNOS */
-#endif
-
-/*
- * OPTION: Compile on a Solaris machine
- */
-#ifndef SOLARIS
-/* #define SOLARIS */
 #endif
 
 /*
@@ -202,23 +188,6 @@
 
 
 /*
- * OPTION: Set "USG" for "System V" versions of Unix
- * This is used to choose a "lock()" function, and to choose
- * which header files ("string.h" vs "strings.h") to include.
- * It is also used to allow certain other options, such as options
- * involving userid's, or multiple users on a single machine, etc.
- */
-#ifdef SET_UID
-# if defined(SYS_III) || defined(SYS_V) || defined(SOLARIS) || \
-     defined(HPUX) || defined(SGI) || defined(ATARI)
-#  ifndef USG
-#   define USG
-#  endif
-# endif
-#endif
-
-
-/*
  * Every system seems to use its own symbol as a path separator.
  *
  * Default to the standard Unix slash, but attempt to change this
@@ -259,17 +228,6 @@
 # define FILE_TYPE(X) (_ftype = (X))
 #else
 # define FILE_TYPE(X) ((void)0)
-#endif
-
-
-/*
- * OPTION: Hack -- Make sure "strchr()" and "strrchr()" will work
- */
-#if defined(SYS_III) || defined(SYS_V) || defined(MSDOS)
-# if !defined(__TURBOC__) && !defined(__WATCOMC__) && !defined(__DJGPP__)
-#  define strchr(S,C) index((S),(C))
-#  define strrchr(S,C) rindex((S),(C))
-# endif
 #endif
 
 

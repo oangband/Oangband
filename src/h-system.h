@@ -21,14 +21,19 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#if defined(NeXT)
-# include <libc.h>
-#else
-# include <stdlib.h>
-#endif /* NeXT */
+#include <stdlib.h>
 /* stddef.h */
 #include <string.h>
 #include <time.h>
+
+/** POSIX headers **/
+
+#if defined(SET_UID) || defined(MACH_O_CARBON)
+# include <pwd.h>
+# include <sys/stat.h>
+# include <unistd.h>
+#endif /* SET_UID */
+
 
 
 /** Other headers **/
@@ -80,29 +85,6 @@
 # include <fcntl.h>
 #endif
 
-
-#ifdef SET_UID
-
-# ifndef USG
-#  include <sys/param.h>
-#  include <sys/file.h>
-# endif
-
-# ifdef linux
-#  include <sys/file.h>
-# endif
-
-# include <pwd.h>
-
-# include <unistd.h>
-
-# include <sys/stat.h>
-
-# if defined(SOLARIS)
-#  include <netdb.h>
-# endif
-
-#endif /* SET_UID */
 
 #if defined(__DJGPP__) || defined(__MWERKS__)
 #include <unistd.h>

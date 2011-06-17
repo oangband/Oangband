@@ -781,13 +781,8 @@ errr init_gcu(int argc, char *argv[])
 	keymap_norm_prepare();
 
 
-#if defined(USG)
-	/* Initialize for USG Unix */
+	/* Initialize */
 	if (initscr() == NULL) return (-1);
-#else
-	/* Initialize for others systems */
-	if (initscr() == (WINDOW*)ERR) return (-1);
-#endif
 
 
 	/* Hack -- Require large screen, or Quit with message */

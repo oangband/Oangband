@@ -129,7 +129,7 @@ int usleep(huge usecs)
 	struct timeval      Timer;
 
 	/* Paranoia -- No excessive sleeping */
-	if (usecs > 4000000L) core("Illegal usleep() call");
+	if (usecs > 4000000L) quit("Illegal usleep() call");
 
 	/* Wait for it */
 	Timer.tv_sec = (usecs / 1000000L);

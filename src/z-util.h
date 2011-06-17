@@ -29,7 +29,6 @@ extern cptr argv0;
 /* Aux functions */
 extern void (*plog_aux)(cptr);
 extern void (*quit_aux)(cptr);
-extern void (*core_aux)(cptr);
 
 
 /**** Available Functions ****/
@@ -56,10 +55,7 @@ extern void plog(cptr str);
 /* Exit, with optional message */
 extern void quit(cptr str);
 
-/* Dump core, with optional message */
-extern void core(cptr str);
 
 
-
-#endif
+#endif /* INCLUDED_Z_UTIL_H */
 

@@ -16,16 +16,6 @@
 
 
 /*
- * Allow debugging messages to track memory usage.
- */
-#ifdef VERBOSE_RALLOC
-static long virt_make = 0;
-static long virt_kill = 0;
-static long virt_size = 0;
-#endif
-
-
-/*
  * Optional auxiliary "rnfree" function
  */
 vptr (*rnfree_aux)(vptr, size_t) = NULL;
@@ -33,26 +23,10 @@ vptr (*rnfree_aux)(vptr, size_t) = NULL;
 /*
  * Free some memory (allocated by ralloc), return NULL
  */
-void *rnfree(vptr p, size_t len)
+void *rnfree(void *p, size_t len)
 {
 	/* Easy to free zero bytes */
 	if (len == 0) return (NULL);
-
-#ifdef VERBOSE_RALLOC
-
-	/* Decrease memory count */
-	virt_kill += len;
-
-	/* Message */
-	if (len > virt_size)
-	{
-		char buf[80];
-		sprintf(buf, "Kill (%ld): %ld - %ld = %ld.",
-			len, virt_make, virt_kill, virt_make - virt_kill);
-		plog(buf);
-	}
-
-#endif
 
 	/* Use the "aux" function */
 	if (rnfree_aux) return ((*rnfree_aux)(p, len));
@@ -66,30 +40,6 @@ void *rnfree(vptr p, size_t len)
 
 
 /*
- * Optional auxiliary "rpanic" function
- */
-vptr (*rpanic_aux)(size_t) = NULL;
-
-/*
- * The system is out of memory, so panic.  If "rpanic_aux" is set,
- * it can be used to free up some memory and do a new "ralloc()",
- * or if not, it can be used to save things, clean up, and exit.
- * By default, this function simply crashes the computer.
- */
-void *rpanic(size_t len)
-{
-	/* Hopefully, we have a real "panic" function */
-	if (rpanic_aux) return ((*rpanic_aux)(len));
-
-	/* Attempt to crash before icky things happen */
-	core("Out of Memory!");
-
-	/* Paranoia */
-	return ((vptr)(NULL));
-}
-
-
-/*
  * Optional auxiliary "ralloc" function
  */
 vptr (*ralloc_aux)(size_t) = NULL;
@@ -97,29 +47,15 @@ vptr (*ralloc_aux)(size_t) = NULL;
 
 /*
  * Allocate some memory
+ *
+ * Doesn't return on out of memory.
  */
 void *ralloc(size_t len)
 {
-	vptr mem;
+	void *mem;
 
 	/* Allow allocation of "zero bytes" */
 	if (len == 0) return ((void *)(NULL));
-
-#ifdef VERBOSE_RALLOC
-
-	/* Count allocated memory */
-	virt_make += len;
-
-	/* Log important allocations */
-	if (len > virt_size)
-	{
-		char buf[80];
-		sprintf(buf, "Make (%ld): %ld - %ld = %ld.",
-			len, virt_make, virt_kill, virt_make - virt_kill);
-		plog(buf);
-	}
-
-#endif
 
 	/* Use the aux function if set */
 	if (ralloc_aux) mem = (*ralloc_aux)(len);
@@ -127,8 +63,8 @@ void *ralloc(size_t len)
 	/* Use malloc() to allocate some memory */
 	else mem = ((vptr)(malloc((size_t)(len))));
 
-	/* We were able to acquire memory */
-	if (!mem) mem = rpanic(len);
+	if (!mem)
+		quit("Out of Memory!");
 
 	/* Return the memory, if any */
 	return (mem);

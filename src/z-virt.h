@@ -18,7 +18,6 @@
  *
  * Set ralloc_aux to modify the memory allocation routine.
  * Set rnfree_aux to modify the memory de-allocation routine.
- * Set rpanic_aux to let the program react to memory failures.
  *
  * These routines work best as a *replacement* for malloc/free.
  *
@@ -124,9 +123,6 @@
 /* Replacement hook for "rnfree()" */
 extern vptr (*rnfree_aux)(void *, size_t);
 
-/* Replacement hook for "rpanic()" */
-extern vptr (*rpanic_aux)(size_t);
-
 /* Replacement hook for "ralloc()" */
 extern vptr (*ralloc_aux)(size_t);
 
@@ -136,10 +132,7 @@ extern vptr (*ralloc_aux)(size_t);
 /* De-allocate a given amount of memory */
 extern void *rnfree(void *p, size_t len);
 
-/* Panic, attempt to Allocate 'len' bytes */
-extern void *rpanic(size_t len);
-
-/* Allocate (and return) 'len', or dump core */
+/* Allocate (and return) 'len', or exit */
 extern void *ralloc(size_t len);
 
 /* Create a "dynamic string" */

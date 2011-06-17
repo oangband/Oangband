@@ -21,6 +21,7 @@ confusion and fear), to encourage their use.
 - Removed Acorn port.
 - Removed VM/ESA port.
 - Removed Amiga port.
+- Removed Linux SVGALib port.
 
 Coding changes
 ==============

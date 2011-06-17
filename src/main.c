@@ -502,10 +502,6 @@ int main(int argc, char *argv[])
 				puts("  -msla    To use SLA (SLANG)");
 #endif /* USE_SLA */
 
-#ifdef USE_LSL
-				puts("  -mlsl    To use LSL (Linux-SVGALIB)");
-#endif /* USE_LSL */
-
 				/* Actually abort the process */
 				quit(NULL);
 			}
@@ -527,11 +523,8 @@ int main(int argc, char *argv[])
 	quit_aux = quit_hook;
 
 
-	/* Drop privs (so X11 will work correctly), unless we are running */
-	/* the Linux-SVGALib version. */
-#ifndef USE_LSL
+	/* Drop privs (so X11 will work correctly) */
  	safe_setuid_drop();
-#endif
 
 #ifdef USE_XAW
 	/* Attempt to use the "main-xaw.c" support */
@@ -640,25 +633,8 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-
-#ifdef USE_LSL
-	/* Attempt to use the "main-lsl.c" support */
-	if (!done && (!mstr || (streq(mstr, "lsl"))))
-	{
-		extern errr init_lsl(void);
-		if (0 == init_lsl())
-		{
-			ANGBAND_SYS = "lsl";
-			done = TRUE;
-		}
-	}
-#endif
-
 	/* Grab privs (dropped above for X11) */
-#ifndef USE_LSL
  	safe_setuid_grab();
-#endif
-
 
 	/* Make sure we have a display! */
 	if (!done) quit("Unable to prepare any 'display module'!");

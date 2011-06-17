@@ -1002,16 +1002,6 @@ extern void do_squelch_item(int item, object_type *);
  * Hack -- conditional (or "bizarre") externs
  */
 
-#ifndef HAS_MEMSET
-/* util.c */
-extern char *memset(char*, int, huge);
-#endif
-
-#ifndef HAS_STRICMP
-/* util.c */
-extern int stricmp(cptr a, cptr b);
-#endif
-
 #ifdef SET_UID
 # ifndef HAVE_USLEEP
 /* util.c */

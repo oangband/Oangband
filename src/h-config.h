@@ -93,15 +93,6 @@
 #endif
 
 /*
- * Extract the "ATARI" flag from the compiler [cjh]
- */
-#if defined(__atarist) || defined(__atarist__)
-# ifndef ATARI
-#  define ATARI
-# endif
-#endif
-
-/*
  * Extract the "SGI" flag from the compiler
  */
 #ifdef sgi
@@ -181,8 +172,7 @@
  * Basically, SET_UID should *only* be set for "Unix" machines,
  * or for the "Atari" platform which is Unix-like, apparently
  */
-#if !defined(MACINTOSH) && !defined(WINDOWS) && \
-    !defined(MSDOS)
+#if !defined(MACINTOSH) && !defined(WINDOWS) && !defined(MSDOS)
 # define SET_UID
 #endif
 
@@ -229,26 +219,6 @@
 #else
 # define FILE_TYPE(X) ((void)0)
 #endif
-
-
-/*
- * OPTION: Define "HAS_STRICMP" only if "stricmp()" exists.
- */
-/* #define HAS_STRICMP */
-
-/*
- * Linux has "stricmp()" with a different name
- */
-#if defined(linux)
-# define HAS_STRICMP
-# define stricmp(S,T) strcasecmp((S),(T))
-#endif
-
-
-/*
- * OPTION: Define "HAS_MEMSET" only if "memset()" exists.
- */
-#define HAS_MEMSET
 
 
 /*

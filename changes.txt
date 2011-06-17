@@ -24,7 +24,7 @@ confusion and fear), to encourage their use.
 - Removed Linux SVGALib port.
 - Removed OS/2 EMX port.
 - Removed termcap port.
-- Removed check_load code.
+- Removed check_load & check_time code.
 
 Coding changes
 ==============

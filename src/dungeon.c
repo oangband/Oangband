@@ -395,42 +395,6 @@ static void process_world(void)
 	if ((check_ability(SP_ENHANCE_MAGIC)) && ((turn/10) % EXTEND_MAGIC_FRACTION))
 		extend_magic = TRUE;
 
-	/*** Check the Time ***/
-
-	if (!(turn % 1000))
-	{
-		/* Check time */
-		if (0 != check_time())
-		{
-			/* Warning */
-			if (closing_flag <= 2)
-			{
-				/* Disturb */
-				disturb(0, 0);
-
-				/* Count warnings */
-				closing_flag++;
-
-				/* Message */
-				msg_print("The gates to ANGBAND are closing...");
-				msg_print("Please finish up and/or save your game.");
-			}
-
-			/* Slam the gate */
-			else
-			{
-				/* Message */
-				msg_print("The gates to ANGBAND are now closed.");
-
-				/* Stop playing */
-				p_ptr->playing = FALSE;
-
-				/* Leaving */
-				p_ptr->leaving = TRUE;
-			}
-		}
-	}
-
 	/*** Attempt timed autosave.  From Zangband. ***/
 	if (autosave && autosave_freq)
 	{

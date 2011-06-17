@@ -307,12 +307,6 @@ int main(int argc, char *argv[])
 
 #ifdef SET_UID
 
-	/* Initialize the "time" checker */
-	if (check_time_init() || check_time())
-	{
-		quit("The gates to Angband are closed (bad time).");
-	}
-
 #ifdef PRIVATE_USER_PATH
 
 	/* Create directories for the users files */

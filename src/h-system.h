@@ -67,7 +67,7 @@
 #endif
 
 #if !defined(MACINTOSH) && !defined(AMIGA) && \
-    !defined(RISCOS) && !defined(VM) && !defined(__MWERKS__)
+    !defined(RISCOS) && !defined(__MWERKS__)
 # if defined(__TURBOC__) || defined(__WATCOMC__)
 #  include <mem.h>
 # else

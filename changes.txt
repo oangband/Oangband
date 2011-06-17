@@ -19,6 +19,7 @@ confusion and fear), to encourage their use.
 - Inscribe drops from uniques.
 - Added monster list window.
 - Removed acorn port.
+- Removed VM/ESA port.
 
 Coding changes
 ==============

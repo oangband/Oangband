@@ -81,9 +81,6 @@ extern unsigned _ovrbuffer = 0x1500;
  * since the "init_file_paths()" function will simply append the
  * relevant "sub-directory names" to the given path.
  *
- * Note that the "path" must be "Angband:" for the Amiga, and it
- * is ignored for "VM/ESA", so I just combined the two.
- *
  * Make sure that the path doesn't overflow the buffer.  We have
  * to leave enough space for the path separator, directory, and
  * filenames.
@@ -92,12 +89,12 @@ static void init_stuff(void)
 {
 	char path[1024];
 
-#if defined(AMIGA) || defined(VM)
+#if defined(AMIGA)
 
 	/* Hack -- prepare "path" */
 	strcpy(path, "Angband:");
 
-#else /* AMIGA / VM */
+#else /* AMIGA */
 
 	cptr tail;
 
@@ -113,7 +110,7 @@ static void init_stuff(void)
 	/* Hack -- Add a path separator (only if needed) */
 	if (!suffix(path, PATH_SEP)) strcat(path, PATH_SEP);
 
-#endif /* AMIGA / VM */
+#endif /* AMIGA */
 
 	/* Initialize */
 	init_file_paths(path);
@@ -531,10 +528,6 @@ int main(int argc, char *argv[])
 				puts("  -mami    To use AMI (Amiga)");
 #endif /* USE_AMI */
 
-#ifdef USE_VME
-				puts("  -mvme    To use VME (VAX/ESA)");
-#endif /* USE_VME */
-
 				/* Actually abort the process */
 				quit(NULL);
 			}
@@ -692,20 +685,6 @@ int main(int argc, char *argv[])
 		if (0 == init_ami())
 		{
 			ANGBAND_SYS = "ami";
-			done = TRUE;
-		}
-	}
-#endif
-
-
-#ifdef USE_VME
-	/* Attempt to use the "main-vme.c" support */
-	if (!done && (!mstr || (streq(mstr, "vme"))))
-	{
-		extern errr init_vme(void);
-		if (0 == init_vme())
-		{
-			ANGBAND_SYS = "vme";
 			done = TRUE;
 		}
 	}

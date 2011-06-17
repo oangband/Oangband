@@ -197,7 +197,7 @@
  */
 #if !defined(MACINTOSH) && !defined(WINDOWS) && \
     !defined(MSDOS) && !defined(USE_EMX) && \
-    !defined(AMIGA) && !defined(VM)
+    !defined(AMIGA)
 # define SET_UID
 #endif
 
@@ -251,10 +251,6 @@
 #ifdef __GO32__
 # undef PATH_SEP
 # define PATH_SEP "/"
-#endif
-#ifdef VM
-# undef PATH_SEP
-# define PATH_SEP ""
 #endif
 
 

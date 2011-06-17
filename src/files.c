@@ -3133,11 +3133,6 @@ void build_savefile_path(void)
 	sprintf(temp, "%s", op_ptr->base_name);
 #endif
 
-#ifdef VM
-	/* Hack -- support "flat directory" usage on VM/ESA */
-	sprintf(temp, "%s.sv", op_ptr->base_name);
-#endif /* VM */
-
 	/* Build the filename */
 	path_build(savefile, 1024, ANGBAND_DIR_SAVE, temp);
 }

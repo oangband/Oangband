@@ -56,16 +56,6 @@
  */
 /* #define USE_TPOSIX */
 
-/*
- * OPTION: Use the "termio" methods in "main-gcu.c"
- */
-/* #define USE_TERMIO */
-
-/*
- * OPTION: Use the icky BSD "tchars" methods in "main-gcu.c"
- */
-/* #define USE_TCHARS */
-
 
 /*
  * OPTION: Use "blocking getch() calls" in "main-gcu.c".

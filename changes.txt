@@ -32,3 +32,4 @@ Coding changes
 - Slight clean ups in birth.c.
 - Slight clean ups in main-x11.c.
 - Started cleaning up the h-xxx.h files.
+- Cleaned up terminal handling, use POSIX instead of old methods.

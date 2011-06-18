@@ -646,7 +646,7 @@ static void term_data_link(int i)
 	td->t->pict_hook = Term_pict_xxx;
 
 	/* Remember where we came from */
-	td->t->data = (vptr)(td);
+	td->t->data = (void *)(td);
 
 	/* Activate it */
 	Term_activate(td->t);

@@ -802,7 +802,7 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
 		/* Use file */
 		if (fd >= 0)
 		{
-			huge pos;
+			unsigned long pos;
 
 			/* Starting position */
 			pos = a_ptr->text;
@@ -849,7 +849,7 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
 		/* Use file */
 		if (fd >= 0)
 		{
-			huge pos;
+			unsigned long pos;
 
 			/* Starting position */
 			pos = k_ptr->text;
@@ -1048,7 +1048,7 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
 			/* Use file */
 			if (fd >= 0)
 			{
-				huge pos;
+				unsigned long pos;
 
 				/* Starting position */
 				pos = e_ptr->text;

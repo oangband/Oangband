@@ -18,7 +18,7 @@
 /*
  * Optional auxiliary "rnfree" function
  */
-vptr (*rnfree_aux)(vptr, size_t) = NULL;
+void * (*rnfree_aux)(void *, size_t) = NULL;
 
 /*
  * Free some memory (allocated by ralloc), return NULL
@@ -42,7 +42,7 @@ void *rnfree(void *p, size_t len)
 /*
  * Optional auxiliary "ralloc" function
  */
-vptr (*ralloc_aux)(size_t) = NULL;
+void * (*ralloc_aux)(size_t) = NULL;
 
 
 /*
@@ -61,7 +61,7 @@ void *ralloc(size_t len)
 	if (ralloc_aux) mem = (*ralloc_aux)(len);
 
 	/* Use malloc() to allocate some memory */
-	else mem = ((vptr)(malloc((size_t)(len))));
+	else mem = ((void *)(malloc((size_t)(len))));
 
 	if (!mem)
 		quit("Out of Memory!");
@@ -114,7 +114,7 @@ errr string_free(char *str)
 	while (str[len++]) /* loop */;
 
 	/* Kill the buffer of chars we must have allocated above */
-	rnfree((vptr)(str), len);
+	rnfree((void *)(str), len);
 
 	/* Success */
 	return (0);

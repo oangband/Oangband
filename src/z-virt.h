@@ -121,10 +121,10 @@
 /**** Available variables ****/
 
 /* Replacement hook for "rnfree()" */
-extern vptr (*rnfree_aux)(void *, size_t);
+extern void *(*rnfree_aux)(void *, size_t);
 
 /* Replacement hook for "ralloc()" */
-extern vptr (*ralloc_aux)(size_t);
+extern void *(*ralloc_aux)(size_t);
 
 
 /**** Available functions ****/

@@ -159,9 +159,9 @@ typedef struct term term;
 
 struct term
 {
-	vptr user;
+	void * user;
 
-	vptr data;
+	void * data;
 
 	bool user_flag;
 

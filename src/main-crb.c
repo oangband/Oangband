@@ -6074,7 +6074,7 @@ static void *lifeboat = NULL;
 #ifdef NEW_ZVIRT_HOOKS /* [V] removed the unused 'size' argument. */
 static void *hook_rnfree(void *v)
 #else
-static void *hook_rnfree(void *v, huge size)
+static void *hook_rnfree(void *v, size_t size)
 #endif /* NEW_ZVIRT_HOOKS */
 {
 
@@ -6097,7 +6097,7 @@ static void *hook_rnfree(void *v, huge size)
 /*
  * Hook to "allocate" memory
  */
-static void *hook_ralloc(huge size)
+static void *hook_ralloc(size_t size)
 {
 
 #ifdef USE_MALLOC

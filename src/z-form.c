@@ -56,7 +56,7 @@
  *   Save the current length into (*np).
  *   No legal modifiers.
  *
- * Format("%p", vptr v)
+ * Format("%p", void * v)
  *   Append the pointer "v" (implementation varies).
  *   No legal modifiers.
  *
@@ -105,9 +105,9 @@
  *   Do not use the "+" or "0" flags.
  *   Note that a "NULL" value of "s" is converted to the empty string.
  *
- * Format("%V", vptr v)
+ * Format("%V", void * v)
  *   Note -- possibly significant mode flag
- * Format("%v", vptr v)
+ * Format("%v", void * v)
  *   Append the object "v", using the current "user defined print routine".
  *   User specified modifiers, often ignored.
  *
@@ -152,12 +152,12 @@
 /*
  * The "type" of the "user defined print routine" pointer
  */
-typedef uint (*vstrnfmt_aux_func)(char *buf, uint max, cptr fmt, vptr arg);
+typedef uint (*vstrnfmt_aux_func)(char *buf, uint max, cptr fmt, void * arg);
 
 /*
  * The "default" user defined print routine.  Ignore the "fmt" string.
  */
-static uint vstrnfmt_aux_dflt(char *buf, uint max, cptr fmt, vptr arg)
+static uint vstrnfmt_aux_dflt(char *buf, uint max, cptr fmt, void * arg)
 {
 	uint len;
 	char tmp[32];
@@ -548,10 +548,10 @@ uint vstrnfmt(char *buf, uint max, cptr fmt, va_list vp)
 			/* Pointer -- implementation varies */
 			case 'p':
 			{
-				vptr arg;
+				void * arg;
 
 				/* Access next argument */
-				arg = va_arg(vp, vptr);
+				arg = va_arg(vp, void *);
 
 				/* Format the argument */
 				sprintf(tmp, aux, arg);
@@ -582,10 +582,10 @@ uint vstrnfmt(char *buf, uint max, cptr fmt, va_list vp)
 			case 'V':
 			case 'v':
 			{
-				vptr arg;
+				void * arg;
 
 				/* Access next argument */
-				arg = va_arg(vp, vptr);
+				arg = va_arg(vp, void *);
 
 				/* Format the "user data" */
 				(void)vstrnfmt_aux(tmp, 1000, aux, arg);
@@ -652,7 +652,7 @@ uint vstrnfmt(char *buf, uint max, cptr fmt, va_list vp)
 char *vformat(cptr fmt, va_list vp)
 {
 	static char *format_buf = NULL;
-	static huge format_len = 0;
+	static unsigned long format_len = 0;
 
 	/* Initial allocation */
 	if (!format_buf)

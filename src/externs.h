@@ -319,8 +319,8 @@ extern cptr ANGBAND_DIR_XTRA;
 extern bool item_tester_full;
 extern byte item_tester_tval;
 extern bool (*item_tester_hook)(object_type*);
-extern bool (*ang_sort_comp)(vptr u, vptr v, int a, int b);
-extern void (*ang_sort_swap)(vptr u, vptr v, int a, int b);
+extern bool (*ang_sort_comp)(void * u, void * v, int a, int b);
+extern void (*ang_sort_swap)(void * u, void * v, int a, int b);
 extern bool (*get_mon_num_hook)(int r_idx);
 extern bool (*get_obj_num_hook)(int k_idx);
 extern int highscore_fd;
@@ -437,8 +437,8 @@ extern void do_cmd_target(void);
 extern void do_cmd_look(void);
 extern void do_cmd_locate(void);
 extern void do_cmd_query_symbol(void);
-extern bool ang_sort_comp_hook(vptr u, vptr v, int a, int b);
-extern void ang_sort_swap_hook(vptr u, vptr v, int a, int b);
+extern bool ang_sort_comp_hook(void * u, void * v, int a, int b);
+extern void ang_sort_swap_hook(void * u, void * v, int a, int b);
 extern void py_steal(int y, int x);
 extern void py_set_trap(int y, int x);
 extern void py_modify_trap(int y, int x);
@@ -969,8 +969,8 @@ extern void monster_death(int m_idx);
 extern bool mon_take_hit(int m_idx, int dam, bool *fear, cptr note);
 extern void verify_panel(void);
 extern cptr look_mon_desc(int m_idx);
-extern void ang_sort_aux(vptr u, vptr v, int p, int q);
-extern void ang_sort(vptr u, vptr v, int n);
+extern void ang_sort_aux(void * u, void * v, int p, int q);
+extern void ang_sort(void * u, void * v, int n);
 extern int target_dir(char ch);
 extern bool target_able(int m_idx);
 extern bool target_okay(void);
@@ -999,7 +999,7 @@ extern void do_squelch_item(int item, object_type *);
 #ifdef SET_UID
 # ifndef HAVE_USLEEP
 /* util.c */
-extern int usleep(huge usecs);
+extern int usleep(unsigned long usecs);
 # endif
 extern void user_name(char *buf, int id);
 #endif

@@ -244,7 +244,7 @@ errr process_pref_file_command(char *buf)
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
 			monster_race *r_ptr;
-			i = (huge)strtol(zz[0], NULL, 0);
+			i = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			if (i >= MAX_R_IDX) return (1);
@@ -262,7 +262,7 @@ errr process_pref_file_command(char *buf)
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
 			object_kind *k_ptr;
-			i = (huge)strtol(zz[0], NULL, 0);
+			i = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			if (i >= MAX_K_IDX) return (1);
@@ -280,7 +280,7 @@ errr process_pref_file_command(char *buf)
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
 			feature_type *f_ptr;
-			i = (huge)strtol(zz[0], NULL, 0);
+			i = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			if (i >= MAX_F_IDX) return (1);
@@ -313,7 +313,7 @@ errr process_pref_file_command(char *buf)
 	{
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
-			j = (huge)strtol(zz[0], NULL, 0);
+			j = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			for (i = 1; i < MAX_K_IDX; i++)
@@ -3695,7 +3695,7 @@ static void death_examine(void)
 static int highscore_seek(int i)
 {
 	/* Seek for the requested record */
-	return (fd_seek(highscore_fd, (huge)(i) * sizeof(high_score)));
+	return (fd_seek(highscore_fd, (unsigned long)(i) * sizeof(high_score)));
 }
 
 

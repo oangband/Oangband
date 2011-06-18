@@ -5,11 +5,8 @@
 #define INCLUDED_H_TYPE_H
 
 
-/* Remove: vptr, cptr, uint, huge */
+/* Remove: cptr, uint */
 
-
-/* A standard pointer (to "void" because ANSI C says so) */
-typedef void *vptr;
 
 /* A simple pointer (to unmodifiable strings) */
 typedef const char *cptr;
@@ -21,20 +18,8 @@ typedef const char *cptr;
 #undef uint
 #define uint uint_hack
 
-/*
- * Hack -- prevent problems with WINDOWS
- */
-#undef huge
-#define huge huge_hack
-
-
 /* An unsigned, "standard" integer (often pre-defined) */
 typedef unsigned int uint;
-
-
-/* The largest possible unsigned integer */
-typedef unsigned long huge;
-
 
 
 

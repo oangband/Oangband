@@ -812,7 +812,7 @@ errr check_modification_date(int fd, cptr template_file)
 /*
  * Convert a decimal to a single digit hex number
  */
-static char hexify(uint i)
+static char hexify(unsigned int i)
 {
 	return (hexsym[i%16]);
 }
@@ -3330,7 +3330,7 @@ void request_command(bool shopping)
 /*
  * Generates damage for "2d6" style dice rolls
  */
-uint damroll(uint num, uint sides)
+unsigned int damroll(unsigned int num, unsigned int sides)
 {
    unsigned int i = 0;
    unsigned int sum = num;
@@ -3345,7 +3345,7 @@ uint damroll(uint num, uint sides)
 /*
  * Same as above, but always maximal
  */
-uint maxroll(uint num, uint sides)
+unsigned int maxroll(unsigned int num, unsigned int sides)
 {
 	return (num * sides);
 }

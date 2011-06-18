@@ -28,13 +28,13 @@
 /**** Available Functions ****/
 
 /* Format arguments into given bounded-length buffer */
-extern uint vstrnfmt(char *buf, uint max, cptr fmt, va_list vp);
+extern unsigned int vstrnfmt(char *buf, unsigned int max, cptr fmt, va_list vp);
 
 /* Simple interface to "vstrnfmt()" */
-extern uint strnfmt(char *buf, uint max, cptr fmt, ...);
+extern unsigned int strnfmt(char *buf, unsigned int max, cptr fmt, ...);
 
 /* Simple interface to "vstrnfmt()", assuming infinite length */
-extern uint strfmt(char *buf, cptr fmt, ...);
+extern unsigned int strfmt(char *buf, cptr fmt, ...);
 
 /* Format arguments into a static resizing buffer */
 extern char *vformat(cptr fmt, va_list vp);

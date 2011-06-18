@@ -942,9 +942,9 @@ void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3)
  */
 #define object_desc_num_macro(T,N) do { \
  \
-	uint n = (N); \
+	unsigned int n = (N); \
  \
-	uint p; \
+	unsigned int p; \
  \
 	/* Find "size" of "n" */ \
 	for (p = 1; n >= p * 10; p = p * 10) /* loop */; \

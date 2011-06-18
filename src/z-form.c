@@ -152,14 +152,14 @@
 /*
  * The "type" of the "user defined print routine" pointer
  */
-typedef uint (*vstrnfmt_aux_func)(char *buf, uint max, cptr fmt, void * arg);
+typedef unsigned int (*vstrnfmt_aux_func)(char *buf, unsigned int max, cptr fmt, void * arg);
 
 /*
  * The "default" user defined print routine.  Ignore the "fmt" string.
  */
-static uint vstrnfmt_aux_dflt(char *buf, uint max, cptr fmt, void * arg)
+static unsigned int vstrnfmt_aux_dflt(char *buf, unsigned int max, cptr fmt, void * arg)
 {
-	uint len;
+	unsigned int len;
 	char tmp[32];
 
 	/* XXX XXX */
@@ -232,7 +232,7 @@ static vstrnfmt_aux_func vstrnfmt_aux = vstrnfmt_aux_dflt;
  * the given buffer to a length of zero, and return a "length" of zero.
  * The contents of "buf", except for "buf[0]", may then be undefined.
  */
-uint vstrnfmt(char *buf, uint max, cptr fmt, va_list vp)
+unsigned int vstrnfmt(char *buf, unsigned int max, cptr fmt, va_list vp)
 {
 	cptr s;
 
@@ -243,10 +243,10 @@ uint vstrnfmt(char *buf, uint max, cptr fmt, va_list vp)
 	bool do_xtra;
 
 	/* Bytes used in buffer */
-	uint n;
+	unsigned int n;
 
 	/* Bytes used in format sequence */
-	uint q;
+	unsigned int q;
 
 	/* Format sequence */
 	char aux[128];
@@ -667,7 +667,7 @@ char *vformat(cptr fmt, va_list vp)
 	/* Keep going until successful */
 	while (1)
 	{
-		uint len;
+		unsigned int len;
 
 		/* Build the string */
 		len = vstrnfmt(format_buf, format_len, fmt, vp);
@@ -690,9 +690,9 @@ char *vformat(cptr fmt, va_list vp)
 /*
  * Do a vstrnfmt (see above) into a buffer of a given size.
  */
-uint strnfmt(char *buf, uint max, cptr fmt, ...)
+unsigned int strnfmt(char *buf, unsigned int max, cptr fmt, ...)
 {
-	uint len;
+	unsigned int len;
 
 	va_list vp;
 
@@ -714,9 +714,9 @@ uint strnfmt(char *buf, uint max, cptr fmt, ...)
  * Do a vstrnfmt (see above) into a buffer of unknown size.
  * Since the buffer size is unknown, the user better verify the args.
  */
-uint strfmt(char *buf, cptr fmt, ...)
+unsigned int strfmt(char *buf, cptr fmt, ...)
 {
-	uint len;
+	unsigned int len;
 
 	va_list vp;
 

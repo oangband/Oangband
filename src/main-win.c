@@ -361,21 +361,21 @@ struct _term_data
 	DWORD dwStyle;
 	DWORD dwExStyle;
 
-	uint keys;
+	unsigned int keys;
 
 	byte rows;
 	byte cols;
 
-	uint pos_x;
-	uint pos_y;
+	unsigned int pos_x;
+	unsigned int pos_y;
 
-	uint size_wid;
-	uint size_hgt;
+	unsigned int size_wid;
+	unsigned int size_hgt;
 
-	uint size_ow1;
-	uint size_oh1;
-	uint size_ow2;
-	uint size_oh2;
+	unsigned int size_ow1;
+	unsigned int size_oh1;
+	unsigned int size_ow2;
+	unsigned int size_oh2;
 
 	bool size_hack;
 
@@ -392,14 +392,14 @@ struct _term_data
 
 	HFONT font_id;
 
-	uint font_wid;
-	uint font_hgt;
+	unsigned int font_wid;
+	unsigned int font_hgt;
 
-	uint tile_wid;
-	uint tile_hgt;
+	unsigned int tile_wid;
+	unsigned int tile_hgt;
 
-	uint map_tile_wid;
-	uint map_tile_hgt;
+	unsigned int map_tile_wid;
+	unsigned int map_tile_hgt;
 
 	bool variable_rows;
 	bool map_active;

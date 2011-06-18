@@ -195,9 +195,9 @@ struct metadpy
 
 	int fd;
 
-	uint width;
-	uint height;
-	uint depth;
+	unsigned int width;
+	unsigned int height;
+	unsigned int depth;
 
 	Pixell black;
 	Pixell white;
@@ -206,9 +206,9 @@ struct metadpy
 	Pixell fg;
 	Pixell zg;
 
-	uint mono:1;
-	uint color:1;
-	uint nuke:1;
+	unsigned int mono:1;
+	unsigned int color:1;
+	unsigned int nuke:1;
 };
 
 
@@ -254,16 +254,16 @@ struct infowin
 
 	byte byte1;
 
-	uint mapped:1;
-	uint redraw:1;
-	uint resize:1;
+	unsigned int mapped:1;
+	unsigned int redraw:1;
+	unsigned int resize:1;
 
-	uint nuke:1;
+	unsigned int nuke:1;
 
-	uint flag1:1;
-	uint flag2:1;
-	uint flag3:1;
-	uint flag4:1;
+	unsigned int flag1:1;
+	unsigned int flag2:1;
+	unsigned int flag3:1;
+	unsigned int flag4:1;
 };
 
 
@@ -290,9 +290,9 @@ struct infoclr
 	Pixell fg;
 	Pixell bg;
 
-	uint code:4;
-	uint stip:1;
-	uint nuke:1;
+	unsigned int code:4;
+	unsigned int stip:1;
+	unsigned int nuke:1;
 };
 
 
@@ -325,8 +325,8 @@ struct infofnt
 
 	byte off;
 
-	uint mono:1;
-	uint nuke:1;
+	unsigned int mono:1;
+	unsigned int nuke:1;
 };
 
 
@@ -1496,7 +1496,7 @@ static void react_keypress(XKeyEvent *xev)
 {
 	int i, n, mc, ms, mo, mx;
 
-	uint ks1;
+	unsigned int ks1;
 
 	XKeyEvent *ev = (XKeyEvent*)(xev);
 
@@ -1518,7 +1518,7 @@ static void react_keypress(XKeyEvent *xev)
 
 
 	/* Hack -- convert into an unsigned int */
-	ks1 = (uint)(ks);
+	ks1 = (unsigned int)(ks);
 
 	/* Extract four "modifier flags" */
 	mc = (ev->state & ControlMask) ? TRUE : FALSE;

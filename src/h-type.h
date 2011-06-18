@@ -5,22 +5,8 @@
 #define INCLUDED_H_TYPE_H
 
 
-/* Remove: cptr, uint */
-
-
-/* A simple pointer (to unmodifiable strings) */
+/* A simple pointer (to unmodifiable strings) XXX REMOVE XXX */
 typedef const char *cptr;
-
-
-/*
- * Hack -- prevent problems with non-MACINTOSH
- */
-#undef uint
-#define uint uint_hack
-
-/* An unsigned, "standard" integer (often pre-defined) */
-typedef unsigned int uint;
-
 
 
 /*** Define the basic game types ***/

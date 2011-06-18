@@ -902,8 +902,8 @@ extern bool get_check(cptr prompt);
 extern bool get_com(cptr prompt, char *command);
 extern void pause_line(int row);
 extern void request_command(bool shopping);
-extern uint damroll(uint num, uint sides);
-extern uint maxroll(uint num, uint sides);
+extern unsigned int damroll(unsigned int num, unsigned int sides);
+extern unsigned int maxroll(unsigned int num, unsigned int sides);
 extern bool is_a_vowel(int ch);
 
 extern void repeat_push(int what);

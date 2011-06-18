@@ -28,7 +28,7 @@
  * Note the macros below which simplify the details of allocation,
  * deallocation, setting, clearing, casting, size extraction, etc.
  *
- * The macros MAKE/C_MAKE and KILL/C_KILL have a "procedural" metaphor,
+ * The macros MAKE/C_MAKE have a "procedural" metaphor,
  * and they actually modify their arguments.
  *
  * Note that, for some reason, some allocation macros may disallow
@@ -72,13 +72,9 @@
 	(T*)(memcpy((char*)(P1),(char*)(P2), sizeof(T)))
 
 
-/* Free an array of N things of type T at P, return NULL */
-#define C_FREE(P,N,T) \
-	(T*)(rnfree(P))
-
-/* Free one thing of type T at P, return NULL */
-#define FREE(P,T) \
-	(T*)(rnfree(P))
+/* Free one thing at P, return NULL */
+#define FREE(P) \
+	(rnfree(P), P = NULL)
 
 
 /* Allocate, and return, an array of type T[N] */
@@ -106,16 +102,6 @@
 /* Allocate a wiped thing of type T, assign to pointer P */
 #define MAKE(P,T) \
 	((P)=ZNEW(T))
-
-
-/* Free an array of type T[N], at location P, and set P to NULL */
-#define C_KILL(P,N,T) \
-	((P)=C_FREE(P,N,T))
-
-/* Free a thing of type T, at location P, and set P to NULL */
-#define KILL(P,T) \
-	((P)=FREE(P,T))
-
 
 
 /**** Available variables ****/

@@ -302,7 +302,7 @@ static XImage *ReadBMP(Display *dpy, char *Name)
 	/* Failure */
 	if (Res == NULL)
 	{
-		C_KILL(Data, total, char);
+		FREE(Data);
 		fclose(f);
 		return (NULL);
 	}

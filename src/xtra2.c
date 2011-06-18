@@ -4479,8 +4479,8 @@ void get_closest_los_monster(int n, int y0, int x0, int *ty, int *tx,
 	if (monster_count <= n)
 	{
 		/* Free some arrays */
-		C_KILL(monster_dist, m_max, int);
-		C_KILL(monster_index, m_max, int);
+		FREE(monster_dist);
+		FREE(monster_index);
 
 		return;
 	}
@@ -4521,8 +4521,8 @@ void get_closest_los_monster(int n, int y0, int x0, int *ty, int *tx,
 	*tx = m_ptr->fx;
 
 	/* Free some arrays */
-	C_KILL(monster_dist, m_max, int);
-	C_KILL(monster_index, m_max, int);
+	FREE(monster_dist);
+	FREE(monster_index);
 }
 
 

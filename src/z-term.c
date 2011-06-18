@@ -286,22 +286,22 @@ term *Term = NULL;
 static errr term_win_nuke(term_win *s, int w, int h)
 {
 	/* Free the window access arrays */
-	C_KILL(s->a, h, byte*);
-	C_KILL(s->c, h, char*);
+	FREE(s->a);
+	FREE(s->c);
 
 	/* Free the window content arrays */
-	C_KILL(s->va, h * w, byte);
-	C_KILL(s->vc, h * w, char);
+	FREE(s->va);
+	FREE(s->vc);
 
 #ifdef USE_TRANSPARENCY
 
 	/* Free the terrain access arrays */
-	C_KILL(s->ta, h, byte*);
-	C_KILL(s->tc, h, char*);
+	FREE(s->ta);
+	FREE(s->tc);
 
 	/* Free the terrain content arrays */
-	C_KILL(s->vta, h * w, byte);
-	C_KILL(s->vtc, h * w, char);
+	FREE(s->vta);
+	FREE(s->vtc);
 
 #endif /* USE_TRANSPARENCY */
 
@@ -2414,14 +2414,14 @@ errr Term_resize(int w, int h)
 	}
 
 	/* Free some arrays */
-	C_KILL(hold_x1, Term->hgt, byte);
-	C_KILL(hold_x2, Term->hgt, byte);
+	FREE(hold_x1);
+	FREE(hold_x2);
 
 	/* Nuke */
 	term_win_nuke(hold_old, Term->wid, Term->hgt);
 
 	/* Kill */
-	KILL(hold_old, term_win);
+	FREE(hold_old);
 
 	/* Illegal cursor */
 	if (Term->old->cx >= w) Term->old->cu = 1;
@@ -2431,7 +2431,7 @@ errr Term_resize(int w, int h)
 	term_win_nuke(hold_scr, Term->wid, Term->hgt);
 
 	/* Kill */
-	KILL(hold_scr, term_win);
+	FREE(hold_scr);
 
 	/* Illegal cursor */
 	if (Term->scr->cx >= w) Term->scr->cu = 1;
@@ -2444,7 +2444,7 @@ errr Term_resize(int w, int h)
 		term_win_nuke(hold_mem, Term->wid, Term->hgt);
 
 		/* Kill */
-		KILL(hold_mem, term_win);
+		FREE(hold_mem);
 
 		/* Illegal cursor */
 		if (Term->mem->cx >= w) Term->mem->cu = 1;
@@ -2458,7 +2458,7 @@ errr Term_resize(int w, int h)
 		term_win_nuke(hold_tmp, Term->wid, Term->hgt);
 
 		/* Kill */
-		KILL(hold_tmp, term_win);
+		FREE(hold_tmp);
 
 		/* Illegal cursor */
 		if (Term->tmp->cx >= w) Term->tmp->cu = 1;
@@ -2565,13 +2565,13 @@ errr term_nuke(term *t)
 	term_win_nuke(t->old, w, h);
 
 	/* Kill "displayed" */
-	KILL(t->old, term_win);
+	FREE(t->old);
 
 	/* Nuke "requested" */
 	term_win_nuke(t->scr, w, h);
 
 	/* Kill "requested" */
-	KILL(t->scr, term_win);
+	FREE(t->scr);
 
 	/* If needed */
 	if (t->mem)
@@ -2580,7 +2580,7 @@ errr term_nuke(term *t)
 		term_win_nuke(t->mem, w, h);
 
 		/* Kill "memorized" */
-		KILL(t->mem, term_win);
+		FREE(t->mem);
 	}
 
 	/* If needed */
@@ -2590,15 +2590,15 @@ errr term_nuke(term *t)
 		term_win_nuke(t->tmp, w, h);
 
 		/* Kill "temporary" */
-		KILL(t->tmp, term_win);
+		FREE(t->tmp);
 	}
 
 	/* Free some arrays */
-	C_KILL(t->x1, h, byte);
-	C_KILL(t->x2, h, byte);
+	FREE(t->x1);
+	FREE(t->x2);
 
 	/* Free the input queue */
-	C_KILL(t->key_queue, t->key_size, char);
+	FREE(t->key_queue);
 
 	/* Success */
 	return (0);

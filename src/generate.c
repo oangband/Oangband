@@ -7253,14 +7253,14 @@ void map_panel_size(void)
 
 #ifdef USE_TRANSPARENCY
 	/* String of terrain characters along one row of the map */
-	if (mp_ta) C_KILL(mp_ta, map_wid_old, byte);
-	if (mp_tc) C_KILL(mp_tc, map_wid_old, char);
+	if (mp_ta) FREE(mp_ta);
+	if (mp_tc) FREE(mp_tc);
 
 #endif /* USE_TRANSPARENCY */
 
 	/* String of characters along one row of the map */
-	if (mp_a) C_KILL(mp_a, map_wid_old, byte);
-	if (mp_c) C_KILL(mp_c, map_wid_old, char);
+	if (mp_a) FREE(mp_a);
+	if (mp_c) FREE(mp_c);
 
 	/* Save size */
 	map_wid_old = wid;

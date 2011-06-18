@@ -2575,12 +2575,12 @@ static void hook_quit(const char * str)
 		/* Free fonts */
 		Infofnt_set(td->fnt);
 		(void)Infofnt_nuke();
-		KILL(td->fnt, infofnt);
+		FREE(td->fnt);
 
 		/* Free window */
 		Infowin_set(td->win);
 		(void)Infowin_nuke();
-		KILL(td->win, infowin);
+		FREE(td->win);
 
 		/* Free term */
 		(void)term_nuke(t);
@@ -2589,13 +2589,13 @@ static void hook_quit(const char * str)
 	/* Free colors */
 	Infoclr_set(xor);
 	(void)Infoclr_nuke();
-	KILL(xor, infoclr);
+	FREE(xor);
 
 	for (i = 0; i < 256; ++i)
 	{
 		Infoclr_set(clr[i]);
 		(void)Infoclr_nuke();
-		KILL(clr[i], infoclr);
+		FREE(clr[i]);
 	}
 
 	/* Close link to display */

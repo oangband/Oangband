@@ -1792,15 +1792,15 @@ void display_map(int *cy, int *cx)
 	for (i = 0; i < (hgt + 2); i++)
 	{
 		/* Free one row each array */
-		C_FREE(ma[i], (wid + 2), byte);
-		C_FREE(mc[i], (wid + 2), char);
-		C_FREE(mp[i], (wid + 2), byte);
+		FREE(ma[i]);
+		FREE(mc[i]);
+		FREE(mp[i]);
 	}
 
 	/* Free the maps */
-	C_FREE(ma, (hgt + 2), byte *);
-	C_FREE(mc, (hgt + 2), char *);
-	C_FREE(mp, (hgt + 2), byte *);
+	FREE(ma);
+	FREE(mc);
+	FREE(mp);
 }
 
 /*
@@ -2711,7 +2711,7 @@ errr vinfo_init(void)
 
 
 	/* Kill hack */
-	KILL(hack, vinfo_hack);
+	FREE(hack);
 
 
 	/* Success */

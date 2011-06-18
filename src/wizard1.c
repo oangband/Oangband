@@ -1657,7 +1657,7 @@ static void spoil_mon_desc(const char * fname)
 	fprintf(fff, "\n");
 
 	/* Free the "who" array */
-	C_KILL(who, MAX_R_IDX, u16b);
+	FREE(who);
 
 	/* Check for errors */
 	if (ferror(fff) || my_fclose(fff))

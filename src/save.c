@@ -431,7 +431,7 @@ static errr wr_savefile(void)
 
 
 	/* Kill array XXX XXX XXX */
-	C_KILL(data_head, 65535, byte);
+	FREE(data_head);
 
 
 	/* Success */
@@ -597,7 +597,7 @@ static errr rd_savefile(void)
 
 
 	/* Kill array XXX XXX XXX */
-	C_KILL(data_head, 65535, byte);
+	FREE(data_head);
 
 
 	/* Success */

@@ -32,8 +32,8 @@ EXTRA_oangband_SOURCES = \
   main-mac.c main-sla.c \
   main-xxx.c main-crb.c \
   Makefile.bcc Makefile.cyg \
-  Makefile.dos Makefile.gtk Makefile.ibm \
-  Makefile.lcc Makefile.std Makefile.wat \
+  Makefile.gtk \
+  Makefile.lcc Makefile.std \
   Makefile.win Makefile.mpw Makefile.osx \
   angband.rc angband.ico readdib.c readdib.h \
   maid-x11.c maid-x11.h 

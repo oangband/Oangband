@@ -30,13 +30,6 @@
 #endif
 
 /*
- * OPTION: Compile on an MSDOS machine
- */
-#ifndef MSDOS
-/* #define MSDOS */
-#endif
-
-/*
  * OPTION: Compile on a SYS V version of UNIX
  */
 #ifndef SYS_V
@@ -86,15 +79,6 @@
 #endif
 
 /*
- * Extract the "MSDOS" flag from the compiler
- */
-#ifdef __MSDOS__
-# ifndef MSDOS
-#  define MSDOS
-# endif
-#endif
-
-/*
  * Extract the "WINDOWS" flag from the compiler
  */
 #if defined(_Windows) || defined(__WINDOWS__) || \
@@ -102,15 +86,6 @@
     defined(__WINNT__) || defined(__NT__)
 # ifndef WINDOWS
 #  define WINDOWS
-# endif
-#endif
-
-/*
- * Remove the MSDOS flag when using WINDOWS
- */
-#ifdef WINDOWS
-# ifdef MSDOS
-#  undef MSDOS
 # endif
 #endif
 
@@ -156,7 +131,7 @@
  * Basically, SET_UID should *only* be set for "Unix" machines,
  * or for the "Atari" platform which is Unix-like, apparently
  */
-#if !defined(MACINTOSH) && !defined(WINDOWS) && !defined(MSDOS)
+#if !defined(MACINTOSH) && !defined(WINDOWS)
 # define SET_UID
 #endif
 
@@ -179,10 +154,6 @@
 # define PATH_SEP ":"
 #endif
 #if defined(WINDOWS) || defined(WINNT)
-# undef PATH_SEP
-# define PATH_SEP "\\"
-#endif
-#if defined(MSDOS)
 # undef PATH_SEP
 # define PATH_SEP "\\"
 #endif

@@ -138,36 +138,13 @@ else
 
   if test "$no_x" != "yes"; then
     AC_DEFINE([USE_X11], 1, [Use the X11 front-end])
-    AC_DEFINE([USE_XPJ], 1, [Use the isometric X11 front-end])
 
     LIBS="-lX11 $X_EXTRA_LIBS $LIBS"
     CFLAGS="$CFLAGS $X_CFLAGS"
     LDFLAGS="$LDFLAGS $X_LIBS"
     dnl X_PRE_LIBS is prepended to LIBS below.
 
-    dnl Check for the Athena widget set
-    dnl
-    dnl Does anyone know if it is OK to put '-lXmu -lXt' *before* X_PRE_LIBS?
-    dnl If so this code can be simplified by inserting X_PRE_LIBS in LIBS above.
-    dnl Today libraries come in the same sequence as in the old src/Makefile.std,
-    dnl since that is presumably the way which has been tested most.
-    x_more_libs="$X_PRE_LIBS -lXt"
-    AC_CHECK_LIB(Xmu, main, x_more_libs="$X_PRE_LIBS -lXmu -lXt", , $x_more_libs)
-    AC_CHECK_LIB(Xext, main, x_more_libs="-lXext $x_more_libs", , $x_more_libs)
-
-    dnl Note: Both Xaw libraries and includes may be in nostandard places.
-    ac_save_LIBS="$LIBS"
-    LIBS="-lXaw $x_more_libs $LIBS"
-    AC_CACHE_CHECK(for X11 Athena widget set, ac_cv_athena_widget,
-                   [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <X11/IntrinsicP.h>
-#include <X11/Xaw/SimpleP.h>
-#include <X11/Xaw/Simple.h>
-#include <X11/Xaw/XawInit.h>]], [[XawInitializeWidgetSet();]])],[ac_cv_athena_widget=yes],[ac_cv_athena_widget=no])])
-    case "$ac_cv_athena_widget" in
-    yes) AC_DEFINE([USE_XAW], 1, [Use the Athena Widget set front-end]) ;;
-    *)	  LIBS="$X_PRE_LIBS $ac_save_LIBS" ;;
-    esac
+    LIBS="$X_PRE_LIBS $LIBS"
   fi
 fi
 

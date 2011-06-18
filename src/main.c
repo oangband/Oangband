@@ -443,14 +443,6 @@ int main(int argc, char *argv[])
 				puts("  -u<who>  Use your <who> savefile");
 				puts("  -d<def>  Define a 'lib' dir sub-path");
 
-#ifdef USE_XAW
-				puts("  -mxaw    To use XAW");
-				puts("  --       Sub options");
-				puts("  -- -d    Set display name");
-				puts("  -- -s    Turn off smoothscaling graphics");
-				puts("  -- -n#   Number of terms to use");
-#endif /* USE_XAW */
-
 #ifdef USE_X11
 				puts("  -mx11    To use X11");
 				puts("  --       Sub options");
@@ -500,19 +492,6 @@ int main(int argc, char *argv[])
 
 	/* Drop privs (so X11 will work correctly) */
  	safe_setuid_drop();
-
-#ifdef USE_XAW
-	/* Attempt to use the "main-xaw.c" support */
-	if (!done && (!mstr || (streq(mstr, "xaw"))))
-	{
-		extern errr init_xaw(int, char**);
-		if (0 == init_xaw(argc, argv))
-		{
-			ANGBAND_SYS = "xaw";
-			done = TRUE;
-		}
-	}
-#endif
 
 #ifdef USE_X11
 	/* Attempt to use the "main-x11.c" support */

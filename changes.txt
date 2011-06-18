@@ -25,6 +25,7 @@ confusion and fear), to encourage their use.
 - Removed OS/2 EMX port.
 - Removed termcap port.
 - Removed check_load & check_time code.
+- Removed X11 Athena widgets port.
 
 Coding changes
 ==============

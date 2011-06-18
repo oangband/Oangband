@@ -337,7 +337,7 @@ static void recharged_notice(object_type *o_ptr)
 {
 	char o_name[120];
 
-	cptr s;
+	const char * s;
 
 	/* No inscription */
 	if (!o_ptr->note) return;

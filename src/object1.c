@@ -34,7 +34,7 @@
  * Rings (adjectives and colors)
  */
 
-static cptr ring_adj[MAX_ROCKS] =
+static const char * ring_adj[MAX_ROCKS] =
 {
 	"Adamantite", "Agate", "Alexandrite", "Amethyst", "Aquamarine",
 	"Azurite", "Beryl", "Bloodstone", "Bronze", "Calcite",
@@ -67,7 +67,7 @@ static byte ring_col[MAX_ROCKS] =
  * Amulets (adjectives and colors)
  */
 
-static cptr amulet_adj[MAX_AMULETS] =
+static const char * amulet_adj[MAX_AMULETS] =
 {
 	"Agate", "Amber", "Azure", "Bead", "Bone",
 	"Brass", "Bronze", "Cochineal", "Copper", "Coral",
@@ -92,7 +92,7 @@ static byte amulet_col[MAX_AMULETS] =
  * Staffs (adjectives and colors)
  */
 
-static cptr staff_adj[MAX_WOODS] =
+static const char * staff_adj[MAX_WOODS] =
 {
 	"Applewood", "Ash", "Aspen", "Balsa", "Bamboo",
 	"Banyan", "Baobab", "Beech", "Birch", "Butternut",
@@ -127,7 +127,7 @@ static byte staff_col[MAX_WOODS] =
  * Wands (adjectives and colors)
  */
 
-static cptr wand_adj[MAX_METALS] =
+static const char * wand_adj[MAX_METALS] =
 {
 	"Adamantium", "Adamantium-plated", "Aluminum", "Antimony", "Beryllium",
 	"Billon", "Bismuth", "Brass", "Bronze", "Carbonized",
@@ -163,7 +163,7 @@ static byte wand_col[MAX_METALS] =
  * Efficiency -- copied from wand arrays
  */
 
-static cptr rod_adj[MAX_METALS];
+static const char * rod_adj[MAX_METALS];
 
 static byte rod_col[MAX_METALS];
 
@@ -172,7 +172,7 @@ static byte rod_col[MAX_METALS];
  * Mushrooms (adjectives and colors)
  */
 
-static cptr food_adj[MAX_SHROOM] =
+static const char * food_adj[MAX_SHROOM] =
 {
 	"Blue", "Black", "Black Spotted", "Brown", "Dark Blue",
 	"Dark Green", "Dark Red", "Yellow", "Furry", "Fuzzy",
@@ -198,7 +198,7 @@ static byte food_col[MAX_SHROOM] =
  * (water, apple juice, slime mold juice, something)
  */
 
-static cptr potion_adj[MAX_COLORS] =
+static const char * potion_adj[MAX_COLORS] =
 {
 	"Clear", "Light Brown", "Icky Green", "xxx",
 
@@ -246,7 +246,7 @@ static byte potion_col[MAX_COLORS] =
  * Syllables for scrolls (must be 1-4 letters each)
  */
 
-static cptr syllables[MAX_SYLLABLES] =
+static const char * syllables[MAX_SYLLABLES] =
 {
 	"a", "ab", "ag", "aks", "ala", "an", "ankh", "app", "arg", "arze",
 	"ash", "aus", "ban", "bar", "bat", "bek", "bie", "bin", "bit", "bjor",
@@ -440,7 +440,7 @@ void flavor_init(void)
 
 	byte temp_col;
 
-	cptr temp_adj;
+	const char * temp_adj;
 
 
 	/* Hack -- Use the "simple" RNG */
@@ -594,8 +594,8 @@ void flavor_init(void)
 			/* Check for "duplicate" scroll titles */
 			for (j = 0; j < i; j++)
 			{
-				cptr hack1 = scroll_adj[j];
-				cptr hack2 = scroll_adj[i];
+				const char * hack1 = scroll_adj[j];
+				const char * hack2 = scroll_adj[i];
 
 				/* Compare first four characters */
 				if (*hack1++ != *hack2++) continue;
@@ -928,7 +928,7 @@ void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3)
  */
 #define object_desc_str_macro(T,S) do { \
  \
-	cptr s = (S); \
+	const char * s = (S); \
  \
 	/* Copy the string */ \
 	while (*s) *(T)++ = *s++; \
@@ -1065,7 +1065,7 @@ void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3)
  */
 void object_desc(char *buf, object_type *o_ptr, int pref, int mode)
 {
-	cptr basenm, modstr;
+	const char * basenm, *modstr;
 
 	int power;
 
@@ -1086,9 +1086,9 @@ void object_desc(char *buf, object_type *o_ptr, int pref, int mode)
 
 	char *t;
 
-	cptr s;
-	cptr u;
-	cptr v = NULL;
+	const char * s;
+	const char * u;
+	const char * v = NULL;
 
 	char p1 = '(', p2 = ')';
 	char b1 = '[', b2 = ']';
@@ -1504,7 +1504,7 @@ void object_desc(char *buf, object_type *o_ptr, int pref, int mode)
 	if (fake_art)
 	{
 		/* Find the '#'. Everything after it is the fake artifact name. */
-		cptr str = strchr(quark_str(o_ptr->note), '#');
+		const char * str = strchr(quark_str(o_ptr->note), '#');
 
 		/* Add the false name. */
 		object_desc_chr_macro(t, ' ');
@@ -1539,7 +1539,7 @@ void object_desc(char *buf, object_type *o_ptr, int pref, int mode)
 	/* Hack -- Chests must be described in detail */
 	if (o_ptr->tval == TV_CHEST)
 	{
-		cptr tail = "";
+		const char * tail = "";
 
 		/* Not searched yet */
 		if (!known)
@@ -1860,8 +1860,8 @@ void object_desc(char *buf, object_type *o_ptr, int pref, int mode)
 	   /* Dump "pval" flags for wearable items */
 	   if (known && (f1 & (TR1_PVAL_MASK)))
 	   {
-		cptr tail = "";
-		cptr tail2 = "";
+		const char * tail = "";
+		const char * tail2 = "";
 
 		/* Start the display */
 		object_desc_chr_macro(t, ' ');
@@ -2153,7 +2153,7 @@ void strip_name(char *buf, int k_idx)
 
 	object_kind *k_ptr = &k_info[k_idx];
 
-	cptr str = (k_name + k_ptr->name);
+	const char * str = (k_name + k_ptr->name);
 
 
 	/* Skip past leading characters */
@@ -2329,9 +2329,9 @@ s16b wield_slot(object_type *o_ptr)
 /*
  * Return a string mentioning how a given item is carried
  */
-cptr mention_use(int i)
+const char * mention_use(int i)
 {
-	cptr p;
+	const char * p;
 
 	/* Examine the location */
 	switch (i)
@@ -2393,9 +2393,9 @@ cptr mention_use(int i)
  * Return a string describing how a given item is being worn.
  * Currently, only used for items in the equipment, not inventory.
  */
-cptr describe_use(int i)
+const char * describe_use(int i)
 {
-	cptr p;
+	const char * p;
 
 	switch (i)
 	{
@@ -3043,7 +3043,7 @@ void toggle_inven_equip(void)
  *
  * The item can be negative to mean "item on floor".
  */
-static bool verify_item(cptr prompt, int item)
+static bool verify_item(const char * prompt, int item)
 {
 	char o_name[120];
 
@@ -3081,7 +3081,7 @@ static bool verify_item(cptr prompt, int item)
  */
 static bool get_item_allow(int item)
 {
-	cptr s;
+	const char * s;
 
 	object_type *o_ptr;
 
@@ -3160,7 +3160,7 @@ static bool get_item_okay(int item)
 static int get_tag(int *cp, char tag)
 {
 	int i, start;
-	cptr s;
+	const char * s;
 
 
 	if (p_ptr->command_wrk == USE_EQUIP) start = INVEN_WIELD;
@@ -3457,7 +3457,7 @@ void show_floor(const int *floor_list, int floor_num, bool gold)
  *       '#' - The first legal item in order from equip, inven, floor
  *
  */
-bool get_item(int *cp, cptr pmt, cptr str, int mode)
+bool get_item(int *cp, const char * pmt, const char * str, int mode)
 {
 	int py = p_ptr->py;
 	int px = p_ptr->px;
@@ -4265,7 +4265,7 @@ bool get_item(int *cp, cptr pmt, cptr str, int mode)
 /*
  * Link to various object coloring functions from info.c. -LM-
  */
-cptr object_adj(int tval, int sval)
+const char * object_adj(int tval, int sval)
 {
 	switch (tval)
 	{
@@ -4285,7 +4285,7 @@ cptr object_adj(int tval, int sval)
  */
 static bool item_tester_squelched(object_type *o_ptr)
 {
-	cptr s;
+	const char * s;
 
 	/* Should be inscribed */
 	if (!o_ptr->note) return (FALSE);

@@ -79,7 +79,7 @@ void *ralloc(size_t len)
 char *string_make(char *str)
 {
 	size_t len = 0;
-	cptr t = str;
+	const char * t = str;
 	char *s, *res;
 
 	/* Simple sillyness */

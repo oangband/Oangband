@@ -745,11 +745,11 @@ void display_monlist(void)
  */
 void monster_desc(char *desc, monster_type *m_ptr, int mode)
 {
-	cptr res;
+	const char * res;
 
 	monster_race *r_ptr = &r_info[m_ptr->r_idx];
 
-	cptr name = (r_name + r_ptr->name);
+	const char * name = (r_name + r_ptr->name);
 	char racial_name[40] = "oops";
 
 	bool seen, pron;
@@ -1554,7 +1554,7 @@ static bool place_monster_one(int y, int x, int r_idx, bool slp)
 	monster_type *n_ptr;
 	monster_type monster_type_body;
 
-	cptr name;
+	const char * name;
 
 	/* Paranoia */
 	if (!r_idx) return (FALSE);

@@ -2008,7 +2008,7 @@ void lose_exp(s32b amount)
  */
 static int get_coin_type(monster_race *r_ptr)
 {
-	cptr name = (r_name + r_ptr->name);
+	const char * name = (r_name + r_ptr->name);
 
 	/* Analyze "coin" monsters */
 	if (r_ptr->d_char == '$')
@@ -2385,7 +2385,7 @@ void monster_death(int m_idx)
  *
  * Hack -- we "delay" fear messages by passing around a "fear" flag.
  */
-bool mon_take_hit(int m_idx, int dam, bool *fear, cptr note)
+bool mon_take_hit(int m_idx, int dam, bool *fear, const char * note)
 {
 	monster_type *m_ptr = &m_list[m_idx];
 
@@ -2898,7 +2898,7 @@ void panel_center(void)
 /*
  * Monster health description
  */
-cptr look_mon_desc(int m_idx)
+const char * look_mon_desc(int m_idx)
 {
 	monster_type *m_ptr = &m_list[m_idx];
 	monster_race *r_ptr = &r_info[m_ptr->r_idx];
@@ -3023,9 +3023,9 @@ int target_dir(char ch)
 
 	int mode;
 
-	cptr act;
+	const char * act;
 
-	cptr s;
+	const char * s;
 
 
 	/* Already a direction? */
@@ -3481,11 +3481,11 @@ static void target_set_interactive_prepare(int mode)
  *
  * This function must handle blindness/hallucination.
  */
-static int target_set_interactive_aux(int y, int x, int mode, cptr info)
+static int target_set_interactive_aux(int y, int x, int mode, const char * info)
 {
 	s16b this_o_idx, next_o_idx = 0;
 
-	cptr s1, s2, s3;
+	const char * s1, *s2, *s3;
 
 	bool boring;
 
@@ -3527,7 +3527,7 @@ static int target_set_interactive_aux(int y, int x, int mode, cptr info)
 		/* Hack -- hallucination */
 		if (p_ptr->image)
 		{
-			cptr name = "something strange";
+			const char * name = "something strange";
 
 			/* Display a message */
 			sprintf(out_val, "%s%s%s%s [%s]", s1, s2, s3, name, info);
@@ -3808,7 +3808,7 @@ static int target_set_interactive_aux(int y, int x, int mode, cptr info)
 		/* Terrain feature if needed */
 		if (boring || (feat > FEAT_INVIS))
 		{
-			cptr name = f_name + f_info[feat].name;
+			const char * name = f_name + f_info[feat].name;
 
 			/* Hack -- handle unknown grids */
 			if (feat == FEAT_NONE) name = "unknown grid";
@@ -4549,7 +4549,7 @@ bool get_aim_dir(int *dp)
 
 	char ch;
 
-	cptr p;
+	const char * p;
 
 #ifdef ALLOW_REPEAT /* TNB */
 
@@ -4721,7 +4721,7 @@ bool get_rep_dir(int *dp)
 
 	char ch;
 
-	cptr p;
+	const char * p;
 
 #ifdef ALLOW_REPEAT /* TNB */
 

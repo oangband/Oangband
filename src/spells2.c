@@ -178,7 +178,7 @@ bool warding_glyph(void)
 /*
  * Array of stat "descriptions"
  */
-static cptr desc_stat_pos[] =
+static const char * desc_stat_pos[] =
 {
 	"strong",
 	"smart",
@@ -192,7 +192,7 @@ static cptr desc_stat_pos[] =
 /*
  * Array of stat "descriptions"
  */
-static cptr desc_stat_neg[] =
+static const char * desc_stat_neg[] =
 {
 	"weak",
 	"stupid",
@@ -1836,7 +1836,7 @@ bool enchant_spell(int num_hit, int num_dam, int num_ac)
 
 	char o_name[120];
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Assume enchant weapon */
@@ -1906,7 +1906,7 @@ bool brand_missile(int ammo_type, int brand_type)
 {
 	int item, choice;
 	object_type *o_ptr;
-	cptr q, s;
+	const char * q, *s;
 	bool status;
 
 	/* Restrict choices
@@ -2219,7 +2219,7 @@ bool ident_spell(void)
 
 	char o_name[120];
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Only un-id'ed items */
@@ -2321,7 +2321,7 @@ bool identify_fully(void)
 
 	char o_name[120];
 
-	cptr q, s;
+	const char * q, *s;
 
 	/* Only un-*id*'ed items */
 	item_tester_hook = item_tester_unknown_star;
@@ -2477,7 +2477,7 @@ bool recharge(int power)
 	bool fail = FALSE;
 	byte fail_type = 1;
 
-	cptr q, s;
+	const char * q, *s;
 	char o_name[120];
 
 
@@ -2767,8 +2767,8 @@ bool tap_magical_energy(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
-	cptr item_name = "";
+	const char * q, *s;
+	const char * item_name = "";
 
 
 	/* Only accept legal items */

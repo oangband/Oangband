@@ -531,7 +531,7 @@ static void wiz_display_item(object_type *o_ptr)
 typedef struct tval_desc
 {
 	int tval;
-	cptr desc;
+	const char * desc;
 	bool can_be_artifact;
 
 } tval_desc;
@@ -642,7 +642,7 @@ static int wiz_create_itemtype(bool artifact)
 	int col, row;
 	int tval;
 
-	cptr tval_desc;
+	const char * tval_desc;
 	char ch;
 
 	int choice[60];
@@ -808,7 +808,7 @@ static int wiz_create_itemtype(bool artifact)
  */
 static void wiz_tweak_item(object_type *o_ptr)
 {
-	cptr p;
+	const char * p;
 	char tmp_val[80];
 
 
@@ -954,7 +954,7 @@ static void wiz_statistics(object_type *o_ptr)
 	object_type *i_ptr;
 	object_type object_type_body;
 
-	cptr q = "Rolls: %ld, Matches: %ld, Better: %ld, Worse: %ld, Other: %ld";
+	const char * q = "Rolls: %ld, Matches: %ld, Better: %ld, Worse: %ld, Other: %ld";
 
 
 	/* Mega-Hack -- allow multiple artifacts XXX XXX XXX */
@@ -964,7 +964,7 @@ static void wiz_statistics(object_type *o_ptr)
 	/* Interact */
 	while (TRUE)
 	{
-		cptr pmt = "Roll for [n]ormal, [g]ood, or [e]xcellent treasure? ";
+		const char * pmt = "Roll for [n]ormal, [g]ood, or [e]xcellent treasure? ";
 
 		/* Display item */
 		wiz_display_item(o_ptr);
@@ -1150,7 +1150,7 @@ static void do_cmd_wiz_play(void)
 
 	char ch;
 
-	cptr q, s;
+	const char * q, *s;
 
 	bool changed;
 

@@ -16,7 +16,7 @@
 /*
  * Hack -- Link a copyright message into the executable
  */
-cptr copyright[5] =
+const char * copyright[5] =
 {
 	"Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Keoneke",
 	"",
@@ -192,12 +192,12 @@ s16b macro__num;
 /*
  * Array of macro patterns [MACRO_MAX]
  */
-cptr *macro__pat;
+const char * *macro__pat;
 
 /*
  * Array of macro actions [MACRO_MAX]
  */
-cptr *macro__act;
+const char * *macro__act;
 
 
 /*
@@ -208,7 +208,7 @@ s16b quark__num = 1;
 /*
  * The array[QUARK_MAX] of pointers to the quarks
  */
-cptr *quark__str;
+const char * *quark__str;
 
 
 /*
@@ -518,7 +518,7 @@ char macro_buffer[1024];
 /*
  * Keymaps for each "mode" associated with each keypress.
  */
-cptr keymap_act[KEYMAP_MODES][256];
+const char * keymap_act[KEYMAP_MODES][256];
 
 
 
@@ -687,91 +687,91 @@ byte *g_info;
  * Hack -- The special Angband "System Suffix"
  * This variable is used to choose an appropriate "pref-xxx" file
  */
-cptr ANGBAND_SYS = "xxx";
+const char * ANGBAND_SYS = "xxx";
 
 /*
  * Hack -- The special Angband "Graphics Suffix"
  * This variable is used to choose an appropriate "graf-xxx" file
  */
-cptr ANGBAND_GRAF = "old";
+const char * ANGBAND_GRAF = "old";
 
 /*
  * Path name: The main "lib" directory
  * This variable is not actually used anywhere in the code
  */
-cptr ANGBAND_DIR;
+const char * ANGBAND_DIR;
 
 /*
  * High score files (binary)
  * These files may be portable between platforms
  */
-cptr ANGBAND_DIR_APEX;
+const char * ANGBAND_DIR_APEX;
 
 /*
  * Bone files for player ghosts (ascii)
  * These files are portable between platforms
  */
-cptr ANGBAND_DIR_BONE;
+const char * ANGBAND_DIR_BONE;
 
 /*
  * Binary image files for the "*_info" arrays (binary)
  * These files are not portable between platforms
  */
-cptr ANGBAND_DIR_DATA;
+const char * ANGBAND_DIR_DATA;
 
 /*
  * Textual template files for the "*_info" arrays (ascii)
  * These files are portable between platforms
  */
-cptr ANGBAND_DIR_EDIT;
+const char * ANGBAND_DIR_EDIT;
 
 /*
  * Script files
  * These files are portable between platforms.
  */
-cptr ANGBAND_DIR_SCRIPT;
+const char * ANGBAND_DIR_SCRIPT;
 
 /*
  * Various extra files (ascii)
  * These files may be portable between platforms
  */
-cptr ANGBAND_DIR_FILE;
+const char * ANGBAND_DIR_FILE;
 
 /*
  * Help files (normal) for the online help (ascii)
  * These files are portable between platforms
  */
-cptr ANGBAND_DIR_HELP;
+const char * ANGBAND_DIR_HELP;
 
 /*
  * Miscellanious text files, also contains any spoilers.
  * These files are portable between platforms
  */
-cptr ANGBAND_DIR_INFO;
+const char * ANGBAND_DIR_INFO;
 
 /*
  * Savefiles for current characters (binary)
  * These files are portable between platforms
  */
-cptr ANGBAND_DIR_SAVE;
+const char * ANGBAND_DIR_SAVE;
 
 /*
  * Default user "preference" files (ascii)
  * These files are rarely portable between platforms
  */
-cptr ANGBAND_DIR_PREF;
+const char * ANGBAND_DIR_PREF;
 
 /*
  * User "preference" files (ascii)
  * These files are rarely portable between platforms
  */
-cptr ANGBAND_DIR_USER;
+const char * ANGBAND_DIR_USER;
 
 /*
  * Various extra files (binary)
  * These files are rarely portable between platforms
  */
-cptr ANGBAND_DIR_XTRA;
+const char * ANGBAND_DIR_XTRA;
 
 
 /*

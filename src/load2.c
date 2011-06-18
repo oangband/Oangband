@@ -117,7 +117,7 @@ static bool o_older_than(byte x, byte y, byte z)
  *
  * Avoid the top two lines, to avoid interference with "msg_print()".
  */
-static void note(cptr msg)
+static void note(const char * msg)
 {
 	static int y = 2;
 

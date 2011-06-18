@@ -97,7 +97,7 @@ static int check_hit(int power, int level, int terrain_bonus, int m_idx)
 /*
  * Hack -- possible "insult" messages
  */
-static cptr desc_insult[] =
+static const char * desc_insult[] =
 {
 	"insults you!",
 	"insults your mother!",
@@ -114,7 +114,7 @@ static cptr desc_insult[] =
 /*
  * Hack -- possible "insult" messages
  */
-static cptr desc_sneer[] =
+static const char * desc_sneer[] =
 {
 	"offers you a pony for an outrageous sum.",
 	"waits to tell the Black Riders where you've gone.",
@@ -373,7 +373,7 @@ bool make_attack_normal(monster_type *m_ptr, int y, int x)
 		int power = 0;
 		int damage = 0;
 
-		cptr act = NULL;
+		const char * act = NULL;
 
 		/* Extract the attack infomation */
 		int effect = r_ptr->blow[ap_cnt].effect;
@@ -1905,8 +1905,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack)
 		{
 			/* Attack type and descriptions. */
 			int typ;
-			cptr desc;
-			cptr add_of;
+			const char * desc;
+			const char * add_of;
 
 
 			/* Get damage and effect of first melee blow. */

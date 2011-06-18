@@ -216,7 +216,7 @@ struct term
 
 	errr (*wipe_hook)(int x, int y, int n);
 
-	errr (*text_hook)(int x, int y, int n, byte a, cptr s);
+	errr (*text_hook)(int x, int y, int n, byte a, const char * s);
 
 	void (*resize_hook)(void);
 
@@ -289,16 +289,16 @@ extern void Term_queue_char(int x, int y, byte a, char c);
 extern void Term_queue_line(int x, int y, int n, byte *a, char *c);
 #endif /* USE_TRANSPARENCY */
 
-extern void Term_queue_chars(int x, int y, int n, byte a, cptr s);
+extern void Term_queue_chars(int x, int y, int n, byte a, const char * s);
 
 extern errr Term_fresh(void);
 extern errr Term_set_cursor(int v);
 extern errr Term_gotoxy(int x, int y);
 extern errr Term_draw(int x, int y, byte a, char c);
 extern errr Term_addch(byte a, char c);
-extern errr Term_addstr(int n, byte a, cptr s);
+extern errr Term_addstr(int n, byte a, const char * s);
 extern errr Term_putch(int x, int y, byte a, char c);
-extern errr Term_putstr(int x, int y, int n, byte a, cptr s);
+extern errr Term_putstr(int x, int y, int n, byte a, const char * s);
 extern errr Term_erase(int x, int y, int n);
 extern errr Term_clear(void);
 extern errr Term_redraw(void);

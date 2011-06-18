@@ -105,7 +105,7 @@ s16b modify_stat_value(int value, int amount)
 /*
  * Print character info at given row, column in a 13 char field
  */
-static void prt_field(cptr info, int row, int col)
+static void prt_field(const char * info, int row, int col)
 {
 	/* Dump 13 spaces to clear */
 	c_put_str(TERM_WHITE, "             ", row, col);
@@ -155,7 +155,7 @@ static void prt_stat(int stat)
  */
 static void prt_title(void)
 {
-	cptr p = "";
+	const char * p = "";
 
 	/* Wizard */
 	if (p_ptr->wizard)

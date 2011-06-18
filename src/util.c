@@ -180,9 +180,9 @@ void user_name(char *buf, int id)
  * Replace "~user/" by the home directory of the user named "user"
  * Replace "~/" by the home directory of the current user
  */
-errr path_parse(char *buf, int max, cptr file)
+errr path_parse(char *buf, int max, const char * file)
 {
-	cptr u, s;
+	const char * u, *s;
 	struct passwd	*pw;
 	char user[128];
 
@@ -248,7 +248,7 @@ errr path_parse(char *buf, int max, cptr file)
  * This requires no special processing on simple machines,
  * except for verifying the size of the filename.
  */
-errr path_parse(char *buf, int max, cptr file)
+errr path_parse(char *buf, int max, const char * file)
 {
 	/* Accept the filename */
 	strnfmt(buf, max, "%s", file);
@@ -268,7 +268,7 @@ errr path_parse(char *buf, int max, cptr file)
  */
 errr path_temp(char *buf, int max)
 {
-	cptr s;
+	const char * s;
 
 	/* Temp file */
 	s = tmpnam(NULL);
@@ -297,7 +297,7 @@ errr path_temp(char *buf, int max)
  * Note that this function yields a path which must be "parsed"
  * using the "parse" function above.
  */
-errr path_build(char *buf, int max, cptr path, cptr file)
+errr path_build(char *buf, int max, const char * path, const char * file)
 {
 	/* Special file */
 	if (file[0] == '~')
@@ -335,7 +335,7 @@ errr path_build(char *buf, int max, cptr path, cptr file)
 /*
  * Hack -- replacement for "fopen()"
  */
-FILE *my_fopen(cptr file, cptr mode)
+FILE *my_fopen(const char * file, const char * mode)
 {
 	char buf[1024];
 	FILE *fff;
@@ -478,7 +478,7 @@ errr my_fgets(FILE *fff, char *buf, size_t n)
  *
  * Perhaps this function should handle internal weirdness.
  */
-errr my_fputs(FILE *fff, cptr buf, size_t n)
+errr my_fputs(FILE *fff, const char * buf, size_t n)
 {
 	/* Dump, ignore errors */
 	(void)fprintf(fff, "%s\n", buf);
@@ -499,7 +499,7 @@ errr my_fputs(FILE *fff, cptr buf, size_t n)
 /*
  * Hack -- attempt to delete a file
  */
-errr fd_kill(cptr file)
+errr fd_kill(const char * file)
 {
 	char buf[1024];
 
@@ -514,7 +514,7 @@ errr fd_kill(cptr file)
 /*
  * Hack -- attempt to move a file
  */
-errr fd_move(cptr file, cptr what)
+errr fd_move(const char * file, const char * what)
 {
 	char buf[1024];
 	char aux[1024];
@@ -534,7 +534,7 @@ errr fd_move(cptr file, cptr what)
 /*
  * Hack -- attempt to copy a file
  */
-errr fd_copy(cptr file, cptr what)
+errr fd_copy(const char * file, const char * what)
 {
 	char buf[1024];
 	char aux[1024];
@@ -560,7 +560,7 @@ errr fd_copy(cptr file, cptr what)
  *
  * Note that we assume that the file should be "binary"
  */
-int fd_make(cptr file, int mode)
+int fd_make(const char * file, int mode)
 {
 	char buf[1024];
 	int fd;
@@ -597,7 +597,7 @@ int fd_make(cptr file, int mode)
  *
  * Note that we assume that the file should be "binary"
  */
-int fd_open(cptr file, int flags)
+int fd_open(const char * file, int flags)
 {
 	char buf[1024];
 
@@ -722,7 +722,7 @@ errr fd_read(int fd, char *buf, size_t n)
 /*
  * Hack -- Attempt to write data to a file descriptor
  */
-errr fd_write(int fd, cptr buf, size_t n)
+errr fd_write(int fd, const char * buf, size_t n)
 {
 	/* Verify the fd */
 	if (fd < 0) return (-1);
@@ -774,7 +774,7 @@ errr fd_close(int fd)
 # endif /* MACINTOSH */
 
 
-errr check_modification_date(int fd, cptr template_file)
+errr check_modification_date(int fd, const char * template_file)
 {
 	char buf[1024];
 
@@ -837,7 +837,7 @@ static int dehex(char c)
  *
  * To be safe, "buf" should be at least as large as "str".
  */
-void text_to_ascii(char *buf, cptr str)
+void text_to_ascii(char *buf, const char * str)
 {
 	char *s = buf;
 
@@ -941,7 +941,7 @@ void text_to_ascii(char *buf, cptr str)
  *
  * To be safe, "buf" should be at least four times as large as "str".
  */
-void ascii_to_text(char *buf, cptr str)
+void ascii_to_text(char *buf, const char * str)
 {
 	char *s = buf;
 
@@ -1033,7 +1033,7 @@ static bool macro__use[256];
 /*
  * Find the macro (if any) which exactly matches the given pattern
  */
-int macro_find_exact(cptr pat)
+int macro_find_exact(const char * pat)
 {
 	int i;
 
@@ -1061,7 +1061,7 @@ int macro_find_exact(cptr pat)
 /*
  * Find the first macro (if any) which contains the given pattern
  */
-static int macro_find_check(cptr pat)
+static int macro_find_check(const char * pat)
 {
 	int i;
 
@@ -1089,7 +1089,7 @@ static int macro_find_check(cptr pat)
 /*
  * Find the first macro (if any) which contains the given pattern and more
  */
-static int macro_find_maybe(cptr pat)
+static int macro_find_maybe(const char * pat)
 {
 	int i;
 
@@ -1120,7 +1120,7 @@ static int macro_find_maybe(cptr pat)
 /*
  * Find the longest macro (if any) which starts with the given pattern
  */
-static int macro_find_ready(cptr pat)
+static int macro_find_ready(const char * pat)
 {
 	int i, t, n = -1, s = -1;
 
@@ -1213,10 +1213,10 @@ errr macro_add(char *pat, char *act)
 errr macro_init(void)
 {
 	/* Macro patterns */
-	C_MAKE(macro__pat, MACRO_MAX, cptr);
+	C_MAKE(macro__pat, MACRO_MAX, const char *);
 
 	/* Macro actions */
-	C_MAKE(macro__act, MACRO_MAX, cptr);
+	C_MAKE(macro__act, MACRO_MAX, const char *);
 
 	/* Success */
 	return (0);
@@ -1281,7 +1281,7 @@ static char inkey_aux(void)
 
 	char ch;
 
-	cptr pat, act;
+	const char * pat, *act;
 
 	char buf[1024];
 
@@ -1418,7 +1418,7 @@ static char inkey_aux(void)
  * trigger any macros, and cannot be bypassed by the Borg.  It is used
  * in Angband to handle "keymaps".
  */
-static cptr inkey_next = NULL;
+static const char * inkey_next = NULL;
 
 
 #ifdef ALLOW_BORG
@@ -1727,7 +1727,7 @@ char inkey(void)
 /*
  * Flush the screen, make a noise
  */
-void bell(cptr reason)
+void bell(const char * reason)
 {
 	/* Mega-Hack -- Flush the output */
 	Term_fresh();
@@ -1777,7 +1777,7 @@ void sound(int val)
 /*
  * Add a new "quark" to the set of quarks.
  */
-s16b quark_add(cptr str)
+s16b quark_add(const char * str)
 {
 	int i;
 
@@ -1805,9 +1805,9 @@ s16b quark_add(cptr str)
 /*
  * This function looks up a quark
  */
-cptr quark_str(s16b i)
+const char * quark_str(s16b i)
 {
-	cptr q;
+	const char * q;
 
 	/* Verify */
 	if ((i < 0) || (i >= quark__num)) i = 0;
@@ -1826,7 +1826,7 @@ cptr quark_str(s16b i)
 errr quark_init(void)
 {
 	/* Quark variables */
-	C_MAKE(quark__str, QUARK_MAX, cptr);
+	C_MAKE(quark__str, QUARK_MAX, const char *);
 
 	/* Success */
 	return (0);
@@ -1890,11 +1890,11 @@ s16b message_num(void)
 /*
  * Recall the "text" of a saved message
  */
-cptr message_str(s16b age)
+const char * message_str(s16b age)
 {
 	s16b x;
 	s16b o;
-	cptr s;
+	const char * s;
 
 	/* Forgotten messages have no text */
 	if ((age < 0) || (age >= message_num())) return ("");
@@ -1953,13 +1953,13 @@ byte message_color(s16b age)
  * We attempt to minimize the use of "string compare" operations in this
  * function, because they are expensive when used in mass quantities.
  */
-void message_add(cptr str, u16b type)
+void message_add(const char * str, u16b type)
 {
 	int n, k, i, x, o;
 
-	cptr s;
-	cptr t;
-	cptr u;
+	const char * s;
+	const char * t;
+	const char * u;
 	char *v;
 
 
@@ -1990,7 +1990,7 @@ void message_add(cptr str, u16b type)
 	{
 		u16b q;
 
-		cptr old;
+		const char * old;
 
 		/* Back up, wrap if needed */
 		if (i-- == 0) i = MESSAGE_MAX - 1;
@@ -2265,7 +2265,7 @@ static void msg_flush(int x)
  * Hack -- Note that "msg_print(NULL)" will clear the top line even if no
  * messages are pending.
  */
-static void msg_print_aux(u16b type, cptr msg)
+static void msg_print_aux(u16b type, const char * msg)
 {
 	static int p = 0;
 	int n;
@@ -2377,7 +2377,7 @@ static void msg_print_aux(u16b type, cptr msg)
 /*
  * Print a message in the default color (white)
  */
-void msg_print(cptr msg)
+void msg_print(const char * msg)
 {
 	msg_print_aux(MSG_GENERIC, msg);
 }
@@ -2386,7 +2386,7 @@ void msg_print(cptr msg)
 /*
  * Display a formatted message, using "vstrnfmt()" and "msg_print()".
  */
-void msg_format(cptr fmt, ...)
+void msg_format(const char * fmt, ...)
 {
 	va_list vp;
 
@@ -2411,7 +2411,7 @@ void msg_format(cptr fmt, ...)
  *
  * The "extra" parameter is currently unused.
  */
-void message(u16b message_type, s16b extra, cptr message)
+void message(u16b message_type, s16b extra, const char * message)
 {
 	sound(message_type);
 
@@ -2423,7 +2423,7 @@ void message(u16b message_type, s16b extra, cptr message)
  *
  * The "extra" parameter is currently unused.
  */
-void message_format(u16b message_type, s16b extra, cptr fmt, ...)
+void message_format(u16b message_type, s16b extra, const char * fmt, ...)
 {
 	va_list vp;
 
@@ -2491,7 +2491,7 @@ void screen_load(void)
  * At the given location, using the given attribute, if allowed,
  * add the given string.  Do not clear the line.
  */
-void c_put_str(byte attr, cptr str, int row, int col)
+void c_put_str(byte attr, const char * str, int row, int col)
 {
 	/* Position cursor, Dump the attr/text */
 	Term_putstr(col, row, -1, attr, str);
@@ -2501,7 +2501,7 @@ void c_put_str(byte attr, cptr str, int row, int col)
 /*
  * As above, but in "white"
  */
-void put_str(cptr str, int row, int col)
+void put_str(const char * str, int row, int col)
 {
 	/* Spawn */
 	Term_putstr(col, row, -1, TERM_WHITE, str);
@@ -2511,7 +2511,7 @@ void put_str(cptr str, int row, int col)
 /*
  * As above, but centered horizontally
  */
-void put_str_center(cptr str, int row)
+void put_str_center(const char * str, int row)
 {
 	int len = strlen(str);
 	int col = (Term->wid - len) / 2;
@@ -2524,7 +2524,7 @@ void put_str_center(cptr str, int row)
  * Display a string on the screen using an attribute, and clear
  * to the end of the line.
  */
-void c_prt(byte attr, cptr str, int row, int col)
+void c_prt(byte attr, const char * str, int row, int col)
 {
 	/* Clear line, position cursor */
 	Term_erase(col, row, 255);
@@ -2537,7 +2537,7 @@ void c_prt(byte attr, cptr str, int row, int col)
 /*
  * As above, but in "white"
  */
-void prt(cptr str, int row, int col)
+void prt(const char * str, int row, int col)
 {
 	/* Spawn */
 	c_prt(TERM_WHITE, str, row, col);
@@ -2547,7 +2547,7 @@ void prt(cptr str, int row, int col)
 /*
  * As above, but in "white"
  */
-void prt_center(cptr str, int row)
+void prt_center(const char * str, int row)
 {
 	int len = strlen(str);
 	int col = (Term->wid - len) / 2;
@@ -2574,13 +2574,13 @@ void prt_center(cptr str, int row)
  * This function will correctly handle any width up to the maximum legal
  * value of 256, though it works best for a standard 80 character width.
  */
-void c_roff(byte a, cptr str, byte l_margin, byte r_margin)
+void c_roff(byte a, const char * str, byte l_margin, byte r_margin)
 {
 	int x, y;
 
 	int w, h;
 
-	cptr s;
+	const char * s;
 
 
 	/* Obtain the size */
@@ -2686,7 +2686,7 @@ void c_roff(byte a, cptr str, byte l_margin, byte r_margin)
 /*
  * As above, but in "white"
  */
-void roff(cptr str, byte l_margin, byte r_margin)
+void roff(const char * str, byte l_margin, byte r_margin)
 {
 	/* Spawn */
 	c_roff(TERM_WHITE, str, l_margin, r_margin);
@@ -2833,7 +2833,7 @@ bool askfor_aux(char *buf, int len)
  *
  * We clear the input, and return FALSE, on "ESCAPE".
  */
-bool get_string(cptr prompt, char *buf, int len)
+bool get_string(const char * prompt, char *buf, int len)
 {
 	bool res;
 
@@ -2860,7 +2860,7 @@ bool get_string(cptr prompt, char *buf, int len)
  *
  * Allow "p_ptr->command_arg" to specify a quantity
  */
-s16b get_quantity(cptr prompt, int max)
+s16b get_quantity(const char * prompt, int max)
 {
 	int amt = 1;
 
@@ -2937,7 +2937,7 @@ s16b get_quantity(cptr prompt, int max)
  *
  * Note that "[y/n]" is appended to the prompt.
  */
-bool get_check(cptr prompt)
+bool get_check(const char * prompt)
 {
 	int i;
 
@@ -2980,7 +2980,7 @@ bool get_check(cptr prompt)
  *
  * Returns TRUE unless the character is "Escape"
  */
-bool get_com(cptr prompt, char *command)
+bool get_com(const char * prompt, char *command)
 {
 	/* Paranoia XXX XXX XXX */
 	msg_print(NULL);
@@ -3052,7 +3052,7 @@ void request_command(bool shopping)
 
 	int mode;
 
-	cptr act;
+	const char * act;
 
 
 	/* Roguelike */
@@ -3285,7 +3285,7 @@ void request_command(bool shopping)
 	/* Hack -- Scan equipment */
 	for (i = INVEN_WIELD; i < INVEN_TOTAL; i++)
 	{
-		cptr s;
+		const char * s;
 
 		object_type *o_ptr = &inventory[i];
 
@@ -3388,7 +3388,7 @@ bool is_a_vowel(int ch)
  * XXX Could be made more efficient, especially in the
  * case where "insert" is smaller than "target".
  */
-static bool insert_str(char *buf, cptr target, cptr insert)
+static bool insert_str(char *buf, const char * target, const char * insert)
 {
 	int i, len;
 	int b_len, t_len, i_len;

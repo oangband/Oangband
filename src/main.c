@@ -31,7 +31,7 @@
  *
  * Close down, then fall back into "quit()".
  */
-static void quit_hook(cptr s)
+static void quit_hook(const char * s)
 {
 	int j;
 
@@ -71,7 +71,7 @@ static void init_stuff(void)
 {
 	char path[1024];
 
-	cptr tail;
+	const char * tail;
 
 	/* Get the environment variable */
 	tail = getenv("ANGBAND_PATH");
@@ -100,9 +100,9 @@ static void init_stuff(void)
  * The "<path>" can be any legal path for the given system, and should
  * not end in any special path separator (i.e. "/tmp" or "~/.ang-info").
  */
-static void change_path(cptr info)
+static void change_path(const char * info)
 {
-	cptr s;
+	const char * s;
 
 	/* Find equal sign */
 	s = strchr(info, '=');
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
 
 	int show_score = 0;
 
-	cptr mstr = NULL;
+	const char * mstr = NULL;
 
 	bool args = TRUE;
 

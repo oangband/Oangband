@@ -431,7 +431,7 @@ int get_spell_level_boost(void)
  * The "prompt" should be "cast", "recite", "study", or "browse".
  * The "known" should be TRUE for cast/pray, FALSE for study
  */
-static int get_spell(int *sn, cptr prompt, int tval, int sval)
+static int get_spell(int *sn, const char * prompt, int tval, int sval)
 {
 	int i;
 
@@ -450,9 +450,9 @@ static int get_spell(int *sn, cptr prompt, int tval, int sval)
 
 	char out_val[160];
 
-	cptr p = "";
+	const char * p = "";
 
-	cptr h = "";
+	const char * h = "";
 
 
 #ifdef ALLOW_REPEAT /* TNB */
@@ -657,8 +657,8 @@ void do_cmd_browse(void)
 
 	magic_type *s_ptr;
 
-	cptr q = "";
-	cptr s = "";
+	const char * q = "";
+	const char * s = "";
 
 	/* Forbid illiterates to read spellbooks. */
 	if (!mp_ptr->spell_book)
@@ -789,12 +789,12 @@ void do_cmd_cast_or_pray(void)
 
 	magic_type *s_ptr;
 
-	cptr p = "";
-	cptr r = "";
-	cptr t = "";
+	const char * p = "";
+	const char * r = "";
+	const char * t = "";
 
-	cptr q = "";
-	cptr s = "";
+	const char * q = "";
+	const char * s = "";
 
 
 	/* Require spell ability. */
@@ -1372,7 +1372,7 @@ void do_cmd_cast_or_pray(void)
 			}
 			case 60:	/* Rogue Spell: Day of Misrule */
 			{
-				cptr p = (p_ptr->psex == SEX_FEMALE ? "Daughters" : "Sons");
+				const char * p = (p_ptr->psex == SEX_FEMALE ? "Daughters" : "Sons");
 				msg_format("%s of Night rejoice!  It's the Day of Misrule!", p);
 				(void)set_fast(randint(30) + 30);
 				(void)set_shero(p_ptr->shero + randint(30) + 30);

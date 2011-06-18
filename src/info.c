@@ -26,7 +26,7 @@
  *
  * Index is tval.
  */
-cptr obj_class_info[101] =
+const char * obj_class_info[101] =
 {
 	"",	"",	"",	"",	"",
 	"",	"",	"Chests may have some really good treasures hidden inside, but can be perilous to open...",	"",	"",
@@ -69,7 +69,7 @@ cptr obj_class_info[101] =
  *                Staffs = 3, Wands = 4, Rods = 5.
  * X-coordinate:  object's sval (can currently accept an sval of up to 49)
  */
-cptr obj_special_info[6][50] =
+const char * obj_special_info[6][50] =
 {
 	/* Dragon Scale Mails. */
 	{
@@ -324,7 +324,7 @@ cptr obj_special_info[6][50] =
  * Prints "User's tips" for various spells.  User's tips only appear after
  * a learnt spell is browsed. -LM-
  */
-cptr spell_tips[287] =
+const char * spell_tips[287] =
 {
 	"Fires a bolt of mana.",	/* 0 - Magic Missile */
 	"Detects nearby monsters that are not invisible.",
@@ -618,7 +618,7 @@ cptr spell_tips[287] =
 /*
  * Prints information about specialty abilties
  */
-cptr specialty_tips[TOTAL_SPECIALTIES]=
+const char * specialty_tips[TOTAL_SPECIALTIES]=
 {
 	"Increases the effects of body armor.",
 	"Improves shield AC, chance of shield deflection, and damage from shield bashes.",
@@ -723,7 +723,7 @@ cptr specialty_tips[TOTAL_SPECIALTIES]=
  * only way this information can appear is through *identifying*, or by
  * eventual learning through use. -LM-
  */
-static cptr extra_data(object_type *o_ptr)
+static const char * extra_data(object_type *o_ptr)
 {
 	byte tval_to_index;
 
@@ -771,16 +771,16 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
 	object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
 	char *t;
-	cptr s;
-	cptr u;
-	cptr v;
-	cptr w;
-	cptr x;
+	const char * s;
+	const char * u;
+	const char * v;
+	const char * w;
+	const char * x;
 
 	/* Assume no flavor string, no ego info, and no base info. */
-	cptr modstr = "";
-	cptr egoinfo = "";
-	cptr baseinfo = "";
+	const char * modstr = "";
+	const char * egoinfo = "";
+	const char * baseinfo = "";
 
 
 
@@ -1138,7 +1138,7 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
 				if (o_ptr->ident & (IDENT_MENTAL) || k_ptr->known_effect)
 				{
 					/* Grab the numerical info. */
-					cptr moddata = extra_data(o_ptr);
+					const char * moddata = extra_data(o_ptr);
 
 					/* If there is any numerical data,  */
 					if (strlen(moddata) > 0)
@@ -1161,7 +1161,7 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
 		/* Extra info for ego items. */
 		if ((o_ptr->name2) && (object_known_p(o_ptr)))
 		{
-			cptr divider = "                                   ---";
+			const char * divider = "                                   ---";
 
 			/* Insert a return, a divider, and another return. */
 			*t++ = '\n';
@@ -1186,7 +1186,7 @@ void object_info(char buf[2048], object_type *o_ptr, bool in_store)
  * Describe the "Activation" (if any) for an object or artifact.
  * Return a string, or NULL for "no activation"
  */
-cptr item_activation(object_type *o_ptr)
+const char * item_activation(object_type *o_ptr)
 {
 	u32b f1, f2, f3;
 
@@ -2617,7 +2617,7 @@ void self_knowledge(void)
 
 	object_type *o_ptr;
 
-	cptr info[128];
+	const char * info[128];
 
 
 	/* Acquire item flags from equipment */
@@ -3386,12 +3386,12 @@ void print_spells(int tval, int sval, int y, int x)
 
 	byte attr_book, attr_name, attr_extra;
 
-	cptr comment;
+	const char * comment;
 	char info[80];
 	char out_val[160];
 
 	object_kind *k_ptr = &k_info[lookup_kind(tval, sval)];
-	cptr basenm = (k_name + k_ptr->name);
+	const char * basenm = (k_name + k_ptr->name);
 
 
 	/* Currently must be a legal spellbook of the correct realm. */
@@ -3509,7 +3509,7 @@ void print_spells(int tval, int sval, int y, int x)
 /*
  * For a string describing the player's intrinsic racial flags.
  */
-static cptr view_abilities_aux(char *desc)
+static const char * view_abilities_aux(char *desc)
 {
   //	u32b f1 = rp_ptr->flags1;
 	u32b f2 = rp_ptr->flags2;

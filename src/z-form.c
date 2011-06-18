@@ -100,7 +100,7 @@
  *   Append the character "c".
  *   Do not use the "+" or "0" flags.
  *
- * Format("%s", cptr s)
+ * Format("%s", const char * s)
  *   Append the string "s".
  *   Do not use the "+" or "0" flags.
  *   Note that a "NULL" value of "s" is converted to the empty string.
@@ -152,12 +152,12 @@
 /*
  * The "type" of the "user defined print routine" pointer
  */
-typedef unsigned int (*vstrnfmt_aux_func)(char *buf, unsigned int max, cptr fmt, void * arg);
+typedef unsigned int (*vstrnfmt_aux_func)(char *buf, unsigned int max, const char * fmt, void * arg);
 
 /*
  * The "default" user defined print routine.  Ignore the "fmt" string.
  */
-static unsigned int vstrnfmt_aux_dflt(char *buf, unsigned int max, cptr fmt, void * arg)
+static unsigned int vstrnfmt_aux_dflt(char *buf, unsigned int max, const char * fmt, void * arg)
 {
 	unsigned int len;
 	char tmp[32];
@@ -232,9 +232,9 @@ static vstrnfmt_aux_func vstrnfmt_aux = vstrnfmt_aux_dflt;
  * the given buffer to a length of zero, and return a "length" of zero.
  * The contents of "buf", except for "buf[0]", may then be undefined.
  */
-unsigned int vstrnfmt(char *buf, unsigned int max, cptr fmt, va_list vp)
+unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 {
-	cptr s;
+	const char * s;
 
 	/* The argument is "long" */
 	bool do_long;
@@ -563,10 +563,10 @@ unsigned int vstrnfmt(char *buf, unsigned int max, cptr fmt, va_list vp)
 			/* String */
 			case 's':
 			{
-				cptr arg;
+				const char * arg;
 
 				/* Access next argument */
-				arg = va_arg(vp, cptr);
+				arg = va_arg(vp, const char *);
 
 				/* Hack -- convert NULL to EMPTY */
 				if (!arg) arg = "";
@@ -649,7 +649,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, cptr fmt, va_list vp)
  * Do a vstrnfmt (see above) into a (growable) static buffer.
  * This buffer is usable for very short term formatting of results.
  */
-char *vformat(cptr fmt, va_list vp)
+char *vformat(const char * fmt, va_list vp)
 {
 	static char *format_buf = NULL;
 	static unsigned long format_len = 0;
@@ -690,7 +690,7 @@ char *vformat(cptr fmt, va_list vp)
 /*
  * Do a vstrnfmt (see above) into a buffer of a given size.
  */
-unsigned int strnfmt(char *buf, unsigned int max, cptr fmt, ...)
+unsigned int strnfmt(char *buf, unsigned int max, const char * fmt, ...)
 {
 	unsigned int len;
 
@@ -714,7 +714,7 @@ unsigned int strnfmt(char *buf, unsigned int max, cptr fmt, ...)
  * Do a vstrnfmt (see above) into a buffer of unknown size.
  * Since the buffer size is unknown, the user better verify the args.
  */
-unsigned int strfmt(char *buf, cptr fmt, ...)
+unsigned int strfmt(char *buf, const char * fmt, ...)
 {
 	unsigned int len;
 
@@ -742,7 +742,7 @@ unsigned int strfmt(char *buf, cptr fmt, ...)
  * Note that the buffer is (technically) writable, but only up to
  * the length of the string contained inside it.
  */
-char *format(cptr fmt, ...)
+char *format(const char * fmt, ...)
 {
 	char *res;
 	va_list vp;
@@ -766,7 +766,7 @@ char *format(cptr fmt, ...)
 /*
  * Vararg interface to plog()
  */
-void plog_fmt(cptr fmt, ...)
+void plog_fmt(const char * fmt, ...)
 {
 	char *res;
 	va_list vp;
@@ -789,7 +789,7 @@ void plog_fmt(cptr fmt, ...)
 /*
  * Vararg interface to quit()
  */
-void quit_fmt(cptr fmt, ...)
+void quit_fmt(const char * fmt, ...)
 {
 	char *res;
 	va_list vp;

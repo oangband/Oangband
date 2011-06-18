@@ -16,9 +16,9 @@
 /*
  * Pronoun arrays, by gender.
  */
-static cptr wd_he[3] =
+static const char * wd_he[3] =
 { "it", "he", "she" };
-static cptr wd_his[3] =
+static const char * wd_his[3] =
 { "its", "his", "her" };
 
 /*
@@ -179,8 +179,8 @@ static void roff_aux(int r_idx)
 
 	int m, n, r;
 
-	cptr p, q;
-	cptr name;
+	const char * p, *q;
+	const char * name;
 
 	int msex = 0;
 
@@ -198,7 +198,7 @@ static void roff_aux(int r_idx)
 	int spower;
 
 	int vn = 0;
-	cptr vp[64];
+	const char * vp[64];
 
 	monster_lore save_mem;
 
@@ -1507,7 +1507,7 @@ static void roff_aux(int r_idx)
 	    (l_ptr->ignore == MAX_UCHAR) ||
 	    ((r_ptr->sleep == 0) && (l_ptr->tkills >= 10)))
 	{
-		cptr act;
+		const char * act;
 
 		if (r_ptr->sleep > 150)
 		{

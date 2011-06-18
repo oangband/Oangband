@@ -165,9 +165,9 @@ void do_cmd_wield(void)
 
 	u32b f1, f2, f3;
 
-	cptr act;
+	const char * act;
 
-	cptr q, s;
+	const char * q, *s;
 
 	bool throwing;
 
@@ -485,7 +485,7 @@ void do_cmd_takeoff(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 	if (SCHANGE)
 	{
@@ -544,7 +544,7 @@ void do_cmd_drop(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Get an item */
@@ -614,7 +614,7 @@ void do_cmd_destroy(void)
 
 	char out_val[160];
 
-	cptr q, s;
+	const char * q, *s;
 
 	/* Get an item */
 	q = "Destroy which item? ";
@@ -750,7 +750,7 @@ void do_cmd_observe(object_type *o_ptr, bool in_store)
 	char info_text[2048];
 	char *object_kind_info;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Initialize object description. */
@@ -938,7 +938,7 @@ void do_cmd_uninscribe(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Get an item */
@@ -992,7 +992,7 @@ void do_cmd_inscribe(void)
 
 	char tmp[81];
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Get an item */
@@ -1075,7 +1075,7 @@ static void do_cmd_refill_lamp(void)
 	object_type *o_ptr;
 	object_type *j_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Restrict the choices */
@@ -1177,7 +1177,7 @@ static void do_cmd_refill_torch(void)
 	object_type *o_ptr;
 	object_type *j_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Restrict the choices */
@@ -1420,7 +1420,7 @@ void do_cmd_locate(void)
  * The table of "symbol info" -- each entry is a string of the form
  * "X:desc" where "X" is the trigger, and "desc" is the "info".
  */
-static cptr ident_info[] =
+static const char * ident_info[] =
 {
 	" :A dark grid",
 	"!:A potion (or oil)",
@@ -1930,7 +1930,7 @@ void do_cmd_query_symbol(void)
 
 
 /* Hack -- possible victim outcry. -LM- */
-static cptr desc_victim_outcry[] =
+static const char * desc_victim_outcry[] =
 {
 	"'My money, where's my money?'",
 	"'Thief! Thief! Thief! Baggins! We hates it forever!'",
@@ -1966,7 +1966,7 @@ static cptr desc_victim_outcry[] =
  */
 void py_steal(int y, int x)
 {
-	cptr act = NULL;
+	const char * act = NULL;
 
 	monster_type *m_ptr = &m_list[cave_m_idx[y][x]];
 	monster_race *r_ptr = &r_info[m_ptr->r_idx];

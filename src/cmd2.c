@@ -1695,7 +1695,7 @@ static bool do_cmd_disarm_aux(int y, int x)
 {
 	int i, j, power;
 
-	cptr name;
+	const char * name;
 
 	bool more = FALSE;
 
@@ -2651,7 +2651,7 @@ void do_cmd_rest(void)
 	/* Prompt for time if needed */
 	if (p_ptr->command_arg <= 0)
 	{
-		cptr p = "Rest (0-9999, '*' for HP/SP, '&' as needed): ";
+		const char * p = "Rest (0-9999, '*' for HP/SP, '&' as needed): ";
 
 		char out_val[80];
 

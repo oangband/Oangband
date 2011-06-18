@@ -858,7 +858,7 @@ static int adjust_dam(long *die_average, object_type *o_ptr, monster_type *m_ptr
  */
 static int get_druid_damage(int plev, char m_name[], int power, int deadliness)
 {
-	cptr description;
+	const char * description;
 	int dd = 0, ds = 0;
 	int chance, n, n_chances, i;
 	int damage;
@@ -1661,7 +1661,7 @@ bool do_cmd_fire(int mode)
 	int path_n = 0;
 	u16b path_g[256];
 
-	cptr q, s;
+	const char * q, *s;
 
 	int msec = op_ptr->delay_factor * op_ptr->delay_factor;
 
@@ -1913,7 +1913,7 @@ bool do_cmd_fire(int mode)
 				int cur_range, base_range, chance2;
 
 				/* Assume a default death */
-				cptr note_dies = " dies.";
+				const char * note_dies = " dies.";
 
 				/* Find Range */
 				cur_range = distance(py, px, y, x);
@@ -2195,7 +2195,7 @@ bool do_cmd_throw(int mode)
 	int path_n = 0;
 	u16b path_g[256];
 
-	cptr q, s;
+	const char * q, *s;
 
 	int msec = op_ptr->delay_factor * op_ptr->delay_factor;
 
@@ -2365,7 +2365,7 @@ bool do_cmd_throw(int mode)
 			int cur_range, base_range, chance2;
 
 			/* Assume a default death */
-			cptr note_dies = " dies.";
+			const char * note_dies = " dies.";
 
 			/* Find Range */
 			cur_range = distance(py, px, y, x);

@@ -75,7 +75,7 @@ static int tv_to_type[100];
 typedef struct tval_desc
 {
 	int	   tval;
-	cptr	   desc;
+	const char *	   desc;
 } tval_desc;
 
 static char head[4] =
@@ -184,7 +184,7 @@ static int do_cmd_squelch_aux(void)
 	int i, j, temp, num, max_num;
 	int col, row;
 	int typeval;
-	cptr tval_desc;
+	const char * tval_desc;
 	char ch, sq;
 
 	int choice[60];
@@ -677,7 +677,7 @@ int squelch_itemp(object_type *o_ptr, byte feeling, int fullid)
 	/* Items inscribed with '!k' or '!*' are note squelchable. */
 	if (o_ptr->note)
 	{
-	        cptr s = strchr(quark_str(o_ptr->note), '!');
+	        const char * s = strchr(quark_str(o_ptr->note), '!');
 		while (s)
 		{
 		        if ((s[1] == 'k') || (s[1] == '*')) result = SQUELCH_FAILED;

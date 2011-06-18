@@ -4689,8 +4689,8 @@ s16b inven_takeoff(int item, int amt)
 	object_type *i_ptr;
 	object_type object_type_body;
 
-	cptr act;
-	cptr act2 = "";
+	const char * act;
+	const char * act2 = "";
 
 	char o_name[120];
 
@@ -5031,7 +5031,7 @@ void reorder_pack(void)
  */
 static bool get_tag_num(int i, int *tag_num)
 {
-	cptr s;
+	const char * s;
 
 	object_type *o_ptr = &inventory[i];
 

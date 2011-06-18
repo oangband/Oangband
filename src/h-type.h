@@ -5,10 +5,6 @@
 #define INCLUDED_H_TYPE_H
 
 
-/* A simple pointer (to unmodifiable strings) XXX REMOVE XXX */
-typedef const char *cptr;
-
-
 /*** Define the basic game types ***/
 
 /*

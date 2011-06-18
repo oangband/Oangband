@@ -287,7 +287,7 @@ struct artifact_type
 struct grouper
 {
 	byte tval;
-	cptr name;
+	const char * name;
 };
 
 
@@ -782,9 +782,9 @@ struct player_magic
  */
 struct player_sex
 {
-	cptr title;			/* Type of sex */
+	const char * title;			/* Type of sex */
 
-	cptr winner;		/* Name of winner */
+	const char * winner;		/* Name of winner */
 };
 
 
@@ -963,7 +963,7 @@ struct player_other
 struct druid_blows
 {
 
-	cptr description;		/* Name of the blow. */
+	const char * description;		/* Name of the blow. */
 
 	s16b dd;			/* Number of damage dice. */
 	s16b ds;			/* Number of dice sides. */

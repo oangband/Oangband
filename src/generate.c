@@ -303,7 +303,7 @@ static u32b breath_flag_mask;
  * Table of monster descriptions.  Used to make descriptions for kinds
  * of pits and rooms of chambers that have no special names.
  */
-cptr d_char_req_desc[] =
+const char * d_char_req_desc[] =
 {
 	"B:bird",
 	"C:canine",
@@ -4220,7 +4220,7 @@ static void general_monster_restrictions(void)
 /*
  * Hack -- fill in "vault" rooms and themed levels
  */
-static bool build_vault(int y0, int x0, int ymax, int xmax, cptr data,
+static bool build_vault(int y0, int x0, int ymax, int xmax, const char * data,
 	bool light, bool icky, byte vault_type)
 {
 	int x, y, i;
@@ -4229,7 +4229,7 @@ static bool build_vault(int y0, int x0, int ymax, int xmax, cptr data,
 
 	bool placed = FALSE;
 
-	cptr t;
+	const char * t;
 	char racial_symbol[30] = "";
 
 
@@ -7054,7 +7054,7 @@ void generate_cave(void)
 	for (num = 0; TRUE; num++)
 	{
 		bool okay = TRUE;
-		cptr why = NULL;
+		const char * why = NULL;
 
 		/* Reset monsters and objects */
 		o_max = 1;

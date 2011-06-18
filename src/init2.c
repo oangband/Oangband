@@ -201,7 +201,7 @@ void init_file_paths(char *path)
 	/* Allow "fat binary" usage with NeXT */
 	if (TRUE)
 	{
-		cptr next = NULL;
+		const char * next = NULL;
 
 # if defined(m68k)
 		next = "m68k";
@@ -249,7 +249,7 @@ s16b error_line;
 /*
  * Standard error message text
  */
-static cptr err_str[8] =
+static const char * err_str[8] =
 {
 	NULL,
 	"parse error",
@@ -431,7 +431,7 @@ static errr init_f_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -683,7 +683,7 @@ static errr init_k_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -913,7 +913,7 @@ static errr init_h_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -1141,7 +1141,7 @@ static errr init_b_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -1358,7 +1358,7 @@ static errr init_g_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -1683,7 +1683,7 @@ static errr init_a_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -1935,7 +1935,7 @@ static errr init_s_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -2187,7 +2187,7 @@ static errr init_e_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -2439,7 +2439,7 @@ static errr init_r_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -2690,7 +2690,7 @@ static errr init_v_info(void)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -2936,7 +2936,7 @@ static errr init_rp_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -3183,7 +3183,7 @@ static errr init_cp_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -3407,7 +3407,7 @@ static errr init_ch_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -3620,7 +3620,7 @@ static errr init_mp_info(void)
 	/* Errors */
 	if (err)
 	{
-	      cptr oops;
+	      const char * oops;
 
 	      /* Error string */
 	      oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -3769,7 +3769,7 @@ errr init_t_info(byte chosen_level)
 	/* Errors */
 	if (err)
 	{
-		cptr oops;
+		const char * oops;
 
 		/* Error string */
 		oops = (((err > 0) && (err < 8)) ? err_str[err] : "unknown");
@@ -4633,7 +4633,7 @@ static errr init_alloc(void)
 /*
  * Hack -- take notes on line 23
  */
-static void note(cptr str)
+static void note(const char * str)
 {
 	Term_erase(0, 23, 255);
 	Term_putstr(20, 23, -1, TERM_WHITE, str);
@@ -4647,7 +4647,7 @@ static void note(cptr str)
  * may or may not be initialized, but the "plog()" and "quit()"
  * functions are "supposed" to work under any conditions.
  */
-static void init_angband_aux(cptr why)
+static void init_angband_aux(const char * why)
 {
 	/* Why */
 	plog(why);

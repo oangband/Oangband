@@ -40,7 +40,7 @@ struct birther
 struct birth_menu
 {
 	bool ghost;
-	cptr name;
+	const char * name;
 };
 
 /*
@@ -659,7 +659,7 @@ static void clear_question(void)
  * Generic "get choice from menu" function
  */
 static int get_player_choice(birth_menu *choices, int num, int col, int wid,
-                             cptr helpfile, void (*hook)(birth_menu))
+                             const char * helpfile, void (*hook)(birth_menu))
 {
 	int top = 0, cur = 0;
 	int i, dir;

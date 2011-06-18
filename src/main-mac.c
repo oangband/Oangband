@@ -609,7 +609,7 @@ static void activate(WindowPtr w)
 /*
  * Display a warning message
  */
-static void mac_warning(cptr warning)
+static void mac_warning(const char * warning)
 {
 	Str255 text;
 	int len, i;
@@ -1960,7 +1960,7 @@ static void init_windows(void)
 	{
 		int n;
 
-		cptr s;
+		const char * s;
 
 		/* Obtain */
 		td = &data[i];
@@ -4021,7 +4021,7 @@ static void *hook_ralloc(size_t size)
 /*
  * Hook to tell the user something important
  */
-static void hook_plog(cptr str)
+static void hook_plog(const char * str)
 {
 	/* Warning message */
 	mac_warning(str);
@@ -4030,7 +4030,7 @@ static void hook_plog(cptr str)
 /*
  * Hook to tell the user something, and then quit
  */
-static void hook_quit(cptr str)
+static void hook_quit(const char * str)
 {
 	/* Warning if needed */
 	if (str) mac_warning(str);

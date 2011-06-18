@@ -1254,7 +1254,7 @@ player_sex sex_info[MAX_SEXES] =
  * for index assignments, and cmd5.c for the effects asociated with each
  * index) -LM-
  */
-cptr spell_names[287] =
+const char * spell_names[287] =
 {
 	/* Magic for Beginners (sval 0) */
 	"Magic Missile",						/* index 0 */
@@ -1770,7 +1770,7 @@ int chest_traps[100] =
 /*
  * Hack -- the "basic" color names (see "TERM_xxx")
  */
-cptr color_names[16] =
+const char * color_names[16] =
 {
 	"Dark",
 	"White",
@@ -1867,7 +1867,7 @@ grouper group_item[] =
 /*
  * Abbreviations of healthy stats
  */
-cptr stat_names[A_MAX] =
+const char * stat_names[A_MAX] =
 {
 	"STR: ", "INT: ", "WIS: ", "DEX: ", "CON: ", "CHR: "
 };
@@ -1875,7 +1875,7 @@ cptr stat_names[A_MAX] =
 /*
  * Abbreviations of damaged stats
  */
-cptr stat_names_reduced[A_MAX] =
+const char * stat_names_reduced[A_MAX] =
 {
 	"Str: ", "Int: ", "Wis: ", "Dex: ", "Con: ", "Chr: "
 };
@@ -1889,7 +1889,7 @@ cptr stat_names_reduced[A_MAX] =
  * main window, including File dump (help), File dump (artifacts, uniques),
  * Character screen, Small scale map, Previous Messages, Store screen, etc.
  */
-cptr window_flag_desc[32] =
+const char * window_flag_desc[32] =
 {
 	"Display inven/equip",
 	"Display equip/inven",
@@ -1929,7 +1929,7 @@ cptr window_flag_desc[32] =
 /*
  * Options -- textual names (where defined)
  */
-cptr option_text[OPT_MAX] =
+const char * option_text[OPT_MAX] =
 {
 	"rogue_like_commands",		/* OPT_rogue_like_commands */	   /*0*/
 	"quick_messages",			/* OPT_quick_messages */
@@ -2081,7 +2081,7 @@ cptr option_text[OPT_MAX] =
 /*
  * Options -- descriptions (where defined)
  */
-cptr option_desc[OPT_MAX] =
+const char * option_desc[OPT_MAX] =
 {
 	"Rogue-like commands",				/* OPT_rogue_like_commands */ /*0*/
 	"Activate quick messages",					/* OPT_quick_messages */
@@ -2559,7 +2559,7 @@ druid_blows d_blow[NUM_D_BLOWS] =
 	{ "stormwind chop",	10,22 }
 };
 
-cptr feel_text[FEEL_MAX] =
+const char * feel_text[FEEL_MAX] =
 {
 	NULL,		 /* FEEL_NONE */
 	"broken",	 /* FEEL_BROKEN */
@@ -2920,7 +2920,7 @@ byte spell_range_RF7[32] =
  * The order here must match both the definition numbers in defines.h and
  * the order of specialty_tips in info.c
  */
-cptr specialty_names[TOTAL_SPECIALTIES]=
+const char * specialty_names[TOTAL_SPECIALTIES]=
 {
 	"Armor Mastery",			/* Defense */
 	"Shield Mastery",

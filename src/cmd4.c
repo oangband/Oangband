@@ -179,7 +179,7 @@ void do_cmd_change_name(void)
 
 	int mode = 0;
 
-	cptr p;
+	const char * p;
 
 	/* Prompt */
 	p = "['c' to change name, 'f' to file, 'h' to change mode, or ESC]";
@@ -310,7 +310,7 @@ void do_cmd_messages(void)
 		/* Dump messages */
 		for (j = 0; (j < hgt-4) && (i + j < n); j++)
 		{
-			cptr msg = message_str(i+j);
+			const char * msg = message_str(i+j);
 			byte attr = message_color(i+j);
 
 			/* Hack -- fake monochrome */
@@ -325,7 +325,7 @@ void do_cmd_messages(void)
 			/* Hilite "shower" */
 			if (shower[0])
 			{
-				cptr str = msg;
+				const char * str = msg;
 
 				/* Display matches */
 				while ((str = strstr(str, shower)) != NULL)
@@ -407,7 +407,7 @@ void do_cmd_messages(void)
 			/* Scan messages */
 			for (z = i + 1; z < n; z++)
 			{
-				cptr msg = message_str(z);
+				const char * msg = message_str(z);
 
 				/* Search for it */
 				if (strstr(msg, finder))
@@ -476,7 +476,7 @@ void do_cmd_messages(void)
 /*
  * Autosave options -- textual names
  */
-static cptr autosave_text[1] =
+static const char * autosave_text[1] =
 {
 	"autosave"
 };
@@ -484,7 +484,7 @@ static cptr autosave_text[1] =
 /*
  * Autosave options -- descriptions
  */
-static cptr autosave_desc[1] =
+static const char * autosave_desc[1] =
 {
 	"Timed autosave"
 };
@@ -508,7 +508,7 @@ s16b toggle_frequency(s16b current)
 /*
  * Interact with autosave options.  From Zangband.
  */
-static void do_cmd_options_autosave(cptr info)
+static void do_cmd_options_autosave(const char * info)
 {
 	char ch;
 
@@ -678,7 +678,7 @@ static bool do_cmd_pref_file_hack(int row)
 /*
  * Interact with some options
  */
-static void do_cmd_options_aux(int page, cptr info)
+static void do_cmd_options_aux(int page, const char * info)
 {
 	char ch;
 
@@ -836,7 +836,7 @@ static void do_cmd_options_win(void)
 		{
 			byte a = TERM_WHITE;
 
-			cptr s = angband_term_name[j];
+			const char * s = angband_term_name[j];
 
 			/* Use color */
 			if (j == x) a = TERM_L_BLUE;
@@ -850,7 +850,7 @@ static void do_cmd_options_win(void)
 		{
 			byte a = TERM_WHITE;
 
-			cptr str = window_flag_desc[i];
+			const char * str = window_flag_desc[i];
 
 			/* Use color */
 			if (i == y) a = TERM_L_BLUE;
@@ -961,7 +961,7 @@ static void do_cmd_options_win(void)
  * Write all current options to the given preference file in the
  * lib/user directory. Modified from KAmband 1.8.
  */
-static errr option_dump(cptr fname)
+static errr option_dump(const char * fname)
 {
 	int i, j;
 
@@ -1301,7 +1301,7 @@ void do_cmd_options(void)
 /*
  * Hack -- append all current macros to the given file
  */
-static errr macro_dump(cptr fname)
+static errr macro_dump(const char * fname)
 {
 	int i;
 
@@ -1453,7 +1453,7 @@ static void do_cmd_macro_aux_keymap(char *buf)
 /*
  * Hack -- append all keymaps to the given file
  */
-static errr keymap_dump(cptr fname)
+static errr keymap_dump(const char * fname)
 {
 	int i;
 
@@ -1500,7 +1500,7 @@ static errr keymap_dump(cptr fname)
 	/* Dump them */
 	for (i = 0; i < 256; i++)
 	{
-		cptr act;
+		const char * act;
 
 		/* Loop up the keymap */
 		act = keymap_act[mode][i];
@@ -1809,7 +1809,7 @@ void do_cmd_macros(void)
 		/* Query a keymap */
 		else if (i == '7')
 		{
-			cptr act;
+			const char * act;
 
 			/* Prompt */
 			prt("Command: Query a keymap", 16, 0);
@@ -2529,7 +2529,7 @@ void do_cmd_colors(void)
 				int gv = angband_color_table[i][2];
 				int bv = angband_color_table[i][3];
 
-				cptr name = "unknown";
+				const char * name = "unknown";
 
 				/* Skip non-entries */
 				if (!kv && !rv && !gv && !bv) continue;
@@ -2566,7 +2566,7 @@ void do_cmd_colors(void)
 			/* Hack -- query until done */
 			while (1)
 			{
-				cptr name;
+				const char * name;
 
 				/* Clear */
 				clear_from(10);
@@ -2681,7 +2681,7 @@ void do_cmd_version(void)
 /*
  * Array of feeling strings
  */
-static cptr do_cmd_feeling_text[11] =
+static const char * do_cmd_feeling_text[11] =
 {
 	"Looks like any other level.",
 	"You feel there is something special about this level.",
@@ -2725,7 +2725,7 @@ void do_cmd_feeling(void)
 /*
  * Array of feeling strings
  */
-static cptr do_cmd_challenge_text[14] =
+static const char * do_cmd_challenge_text[14] =
 {
 	"challenges you from beyond the grave!",
 	"thunders 'Prove worthy of your traditions - or die ashamed!'.",
@@ -3505,8 +3505,8 @@ typedef struct monster_group_info monster_group_info;
  */
 struct monster_group_info
 {
-	cptr symbol;			/* Monster race symbol */
-	cptr text;			/* Monster race text */
+	const char * symbol;			/* Monster race symbol */
+	const char * text;			/* Monster race text */
 };
 
 
@@ -3616,7 +3616,7 @@ void monster_desc_race(char *desc, size_t max, int r_idx)
 {
 	monster_race *r_ptr = &r_info[r_idx];
 
-	cptr name = (r_name + r_ptr->name);
+	const char * name = (r_name + r_ptr->name);
 
 	/* Write the name */
 	my_strcpy(desc, name, max);
@@ -3632,7 +3632,7 @@ static int collect_monsters(int grp_cur, monster_list_entry *mon_idx, int mode)
 	int i, mon_count = 0;
 
 	/* Get a list of x_char in this group */
-	cptr group_char = monster_group_array[grp_cur].symbol;
+	const char * group_char = monster_group_array[grp_cur].symbol;
 
 	/* XXX Hack -- Check if this is the "Uniques" group */
 	bool grp_unique = (monster_group_array[grp_cur].symbol == (char *) -1L);

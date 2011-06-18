@@ -28,10 +28,6 @@
  * This code should work with most versions of "curses" or "ncurses",
  * and the "main-ncu.c" file (and USE_NCU define) are no longer used.
  *
- * See also "USE_CAP" and "main-cap.c" for code that bypasses "curses"
- * and uses the "termcap" information directly, or even bypasses the
- * "termcap" information and sends direct vt100 escape sequences.
- *
  * This file provides up to 4 term windows.
  *
  * This file will attempt to redefine the screen colors to conform to
@@ -72,34 +68,9 @@
 
 
 /*
- * Hack -- try to guess which systems use what commands
- * Hack -- allow one of the "USE_Txxxxx" flags to be pre-set.
- * Mega-Hack -- try to guess when "POSIX" is available.
- * If the user defines two of these, we will probably crash.
+ * Use POSIX terminal I/O
  */
-#if !defined(USE_TPOSIX)
-# if !defined(USE_TERMIO) && !defined(USE_TCHARS)
-#  if defined(_POSIX_VERSION)
-#   define USE_TPOSIX
-#  else
-#   if defined(USG) || defined(linux) || defined(SOLARIS)
-#    define USE_TERMIO
-#   else
-#    define USE_TCHARS
-#   endif
-#  endif
-# endif
-#endif
-
-/*
- * Hack -- Amiga uses "fake curses" and cannot do any of this stuff
- */
-#if defined(AMIGA)
-# undef USE_TPOSIX
-# undef USE_TERMIO
-# undef USE_TCHARS
-#endif
-
+#define USE_TPOSIX
 
 
 
@@ -107,38 +78,16 @@
  * POSIX stuff
  */
 #ifdef USE_TPOSIX
-# include <sys/ioctl.h>
 # include <termios.h>
 #endif
 
 /*
- * One version needs this file
+ * If you have errors relating to curs_set(), comment out the following line
  */
-#ifdef USE_TERMIO
-# include <sys/ioctl.h>
-# include <termio.h>
-#endif
-
-/*
- * The other needs this file
- */
-#ifdef USE_TCHARS
-# include <sys/ioctl.h>
-# include <sys/resource.h>
-# include <sys/param.h>
-# include <sys/file.h>
-# include <sys/types.h>
-#endif
+#define USE_CURS_SET
 
 
-/*
- * XXX XXX Hack -- POSIX uses "O_NONBLOCK" instead of "O_NDELAY"
- *
- * They should both work due to the "(i != 1)" test below.
- */
-#ifndef O_NDELAY
-# define O_NDELAY O_NONBLOCK
-#endif
+
 
 
 /*
@@ -165,28 +114,6 @@
 static struct termios  norm_termios;
 
 static struct termios  game_termios;
-
-#endif
-
-#ifdef USE_TERMIO
-
-static struct termio  norm_termio;
-
-static struct termio  game_termio;
-
-#endif
-
-#ifdef USE_TCHARS
-
-static struct ltchars norm_special_chars;
-static struct sgttyb  norm_ttyb;
-static struct tchars  norm_tchars;
-static int            norm_local_chars;
-
-static struct ltchars game_special_chars;
-static struct sgttyb  game_ttyb;
-static struct tchars  game_tchars;
-static int            game_local_chars;
 
 #endif
 
@@ -268,23 +195,6 @@ static void keymap_norm(void)
 
 #endif
 
-#ifdef USE_TERMIO
-
-	/* restore the saved values of the special chars */
-	(void)ioctl(0, TCSETA, (char *)&norm_termio);
-
-#endif
-
-#ifdef USE_TCHARS
-
-	/* restore the saved values of the special chars */
-	(void)ioctl(0, TIOCSLTC, (char *)&norm_special_chars);
-	(void)ioctl(0, TIOCSETP, (char *)&norm_ttyb);
-	(void)ioctl(0, TIOCSETC, (char *)&norm_tchars);
-	(void)ioctl(0, TIOCLSET, (char *)&norm_local_chars);
-
-#endif
-
 }
 
 
@@ -301,23 +211,6 @@ static void keymap_game(void)
 
 #endif
 
-#ifdef USE_TERMIO
-
-	/* restore the saved values of the special chars */
-	(void)ioctl(0, TCSETA, (char *)&game_termio);
-
-#endif
-
-#ifdef USE_TCHARS
-
-	/* restore the saved values of the special chars */
-	(void)ioctl(0, TIOCSLTC, (char *)&game_special_chars);
-	(void)ioctl(0, TIOCSETP, (char *)&game_ttyb);
-	(void)ioctl(0, TIOCSETC, (char *)&game_tchars);
-	(void)ioctl(0, TIOCLSET, (char *)&game_local_chars);
-
-#endif
-
 }
 
 
@@ -331,23 +224,6 @@ static void keymap_norm_prepare(void)
 
 	/* Get the normal keymap */
 	tcgetattr(0, &norm_termios);
-
-#endif
-
-#ifdef USE_TERMIO
-
-	/* Get the normal keymap */
-	(void)ioctl(0, TCGETA, (char *)&norm_termio);
-
-#endif
-
-#ifdef USE_TCHARS
-
-	/* Get the normal keymap */
-	(void)ioctl(0, TIOCGETP, (char *)&norm_ttyb);
-	(void)ioctl(0, TIOCGLTC, (char *)&norm_special_chars);
-	(void)ioctl(0, TIOCGETC, (char *)&norm_tchars);
-	(void)ioctl(0, TIOCLGET, (char *)&norm_local_chars);
 
 #endif
 
@@ -383,76 +259,6 @@ static void keymap_game_prepare(void)
 	/* Normally, block until a character is read */
 	game_termios.c_cc[VMIN] = 1;
 	game_termios.c_cc[VTIME] = 0;
-
-#endif
-
-#ifdef USE_TERMIO
-
-	/* Acquire the current mapping */
-	(void)ioctl(0, TCGETA, (char *)&game_termio);
-
-	/* Force "Ctrl-C" to interupt */
-	game_termio.c_cc[VINTR] = (char)3;
-
-	/* Force "Ctrl-Z" to suspend */
-	game_termio.c_cc[VSUSP] = (char)26;
-
-	/* Hack -- Leave "VSTART/VSTOP" alone */
-
-	/* Disable the standard control characters */
-	game_termio.c_cc[VQUIT] = (char)-1;
-	game_termio.c_cc[VERASE] = (char)-1;
-	game_termio.c_cc[VKILL] = (char)-1;
-	game_termio.c_cc[VEOF] = (char)-1;
-	game_termio.c_cc[VEOL] = (char)-1;
-
-#if 0
-	/* Disable the non-posix control characters */
-	game_termio.c_cc[VEOL2] = (char)-1;
-	game_termio.c_cc[VSWTCH] = (char)-1;
-	game_termio.c_cc[VDSUSP] = (char)-1;
-	game_termio.c_cc[VREPRINT] = (char)-1;
-	game_termio.c_cc[VDISCARD] = (char)-1;
-	game_termio.c_cc[VWERASE] = (char)-1;
-	game_termio.c_cc[VLNEXT] = (char)-1;
-	game_termio.c_cc[VSTATUS] = (char)-1;
-#endif
-
-	/* Normally, block until a character is read */
-	game_termio.c_cc[VMIN] = 1;
-	game_termio.c_cc[VTIME] = 0;
-
-#endif
-
-#ifdef USE_TCHARS
-
-	/* Get the default game characters */
-	(void)ioctl(0, TIOCGETP, (char *)&game_ttyb);
-	(void)ioctl(0, TIOCGLTC, (char *)&game_special_chars);
-	(void)ioctl(0, TIOCGETC, (char *)&game_tchars);
-	(void)ioctl(0, TIOCLGET, (char *)&game_local_chars);
-
-	/* Force suspend (^Z) */
-	game_special_chars.t_suspc = (char)26;
-
-	/* Cancel some things */
-	game_special_chars.t_dsuspc = (char)-1;
-	game_special_chars.t_rprntc = (char)-1;
-	game_special_chars.t_flushc = (char)-1;
-	game_special_chars.t_werasc = (char)-1;
-	game_special_chars.t_lnextc = (char)-1;
-
-	/* Force interupt (^C) */
-	game_tchars.t_intrc = (char)3;
-
-	/* Force start/stop (^Q, ^S) */
-	game_tchars.t_startc = (char)17;
-	game_tchars.t_stopc = (char)19;
-
-	/* Cancel some things */
-	game_tchars.t_quitc = (char)-1;
-	game_tchars.t_eofc = (char)-1;
-	game_tchars.t_brkc = (char)-1;
 
 #endif
 
@@ -671,7 +477,7 @@ static errr Term_xtra_gcu_event(int v)
 		if (k < 0) return (1);
 
 		/* Tell stdin not to block */
-		if (fcntl(0, F_SETFL, k | O_NDELAY) < 0) return (1);
+		if (fcntl(0, F_SETFL, k | O_NONBLOCK) < 0) return (1);
 
 		/* Read one byte, if possible */
 		i = read(0, buf, 1);
@@ -982,13 +788,8 @@ errr init_gcu(int argc, char *argv[])
 	keymap_norm_prepare();
 
 
-#if defined(USG)
-	/* Initialize for USG Unix */
+	/* Initialize */
 	if (initscr() == NULL) return (-1);
-#else
-	/* Initialize for others systems */
-	if (initscr() == (WINDOW*)ERR) return (-1);
-#endif
 
 
 	/* Hack -- Require large screen, or Quit with message */

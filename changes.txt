@@ -18,6 +18,14 @@ User interface
 confusion and fear), to encourage their use.
 - Inscribe drops from uniques.
 - Added monster list window.
+- Removed Acorn port.
+- Removed VM/ESA port.
+- Removed Amiga port.
+- Removed Linux SVGALib port.
+- Removed OS/2 EMX port.
+- Removed termcap port.
+- Removed check_load & check_time code.
+- Removed X11 Athena widgets port.
 
 Coding changes
 ==============
@@ -28,3 +36,8 @@ Coding changes
 - Slight clean ups in birth.c.
 - Slight clean ups in main-x11.c.
 - Started cleaning up the h-xxx.h files.
+- Cleaned up terminal handling, use POSIX instead of old methods.
+- Cleaned up z-virt, z-form and z-util a bit. Core and panic functions
+removed.
+- Trimming down a number of compile-time options.
+- Cleaned up setuid code a bit, started on z-file.

@@ -4903,7 +4903,6 @@ int FAR PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 	/* Temporary hooks */
 	plog_aux = hack_plog;
 	quit_aux = hack_quit;
-	core_aux = hack_quit;
 
 	/* Prepare the filepaths */
 	init_stuff();
@@ -4943,7 +4942,6 @@ int FAR PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 	/* Activate hooks */
 	plog_aux = hook_plog;
 	quit_aux = hook_quit;
-	core_aux = hook_quit;
 
 	/* Set the system suffix */
 	ANGBAND_SYS = "win";

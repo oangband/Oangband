@@ -175,9 +175,7 @@ extern char *mp_c;
 extern byte *mp_ta;
 extern char *mp_tc;
 #endif /* USE_TRANSPARENCY */
-extern int player_uid;
 extern int player_euid;
-extern int player_egid;
 extern char savefile[1024];
 extern s16b macro__num;
 extern cptr *macro__pat;
@@ -494,15 +492,9 @@ extern void do_cmd_unchange(void);
 extern void play_game(bool new_game);
 
 /* files.c */
-extern void safe_setuid_drop(void);
-extern void safe_setuid_grab(void);
 extern s16b tokenize(char *buf, s16b num, char **tokens);
 extern errr process_pref_file_command(char *buf);
 extern errr process_pref_file(cptr name);
-extern errr check_time(void);
-extern errr check_time_init(void);
-extern errr check_load(void);
-extern errr check_load_init(void);
 extern void display_player(int mode);
 extern errr file_character(cptr name, bool full);
 extern bool show_file(cptr name, cptr what, int line, int mode);
@@ -872,7 +864,7 @@ extern errr check_modification_date(int fd, cptr template_file);
 extern void text_to_ascii(char *buf, cptr str);
 extern void ascii_to_text(char *buf, cptr str);
 extern sint macro_find_exact(cptr pat);
-extern errr macro_add(cptr pat, cptr act);
+extern errr macro_add(char *pat, char *act);
 extern errr macro_init(void);
 extern void flush(void);
 extern char inkey(void);
@@ -1005,16 +997,6 @@ extern void do_squelch_item(int item, object_type *);
 /*
  * Hack -- conditional (or "bizarre") externs
  */
-
-#ifndef HAS_MEMSET
-/* util.c */
-extern char *memset(char*, int, huge);
-#endif
-
-#ifndef HAS_STRICMP
-/* util.c */
-extern int stricmp(cptr a, cptr b);
-#endif
 
 #ifdef SET_UID
 # ifndef HAVE_USLEEP

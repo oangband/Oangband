@@ -1681,26 +1681,9 @@ bool save_player(void)
 	char safe[1024];
 
 
-#ifdef SET_UID
-# ifdef SECURE
-
-	/* Get "games" permissions */
-	beGames();
-
-# endif
-
-#endif
-
-
 	/* New savefile */
 	strcpy(safe, savefile);
 	strcat(safe, ".new");
-
-#ifdef VM
-	/* Hack -- support "flat directory" usage on VM/ESA */
-	strcpy(safe, savefile);
-	strcat(safe, "n");
-#endif /* VM */
 
 	/* Remove it */
 	fd_kill(safe);
@@ -1713,12 +1696,6 @@ bool save_player(void)
 		/* Old savefile */
 		strcpy(temp, savefile);
 		strcat(temp, ".old");
-
-#ifdef VM
-		/* Hack -- support "flat directory" usage on VM/ESA */
-		strcpy(temp, savefile);
-		strcat(temp, "o");
-#endif /* VM */
 
 		/* Remove it */
 		fd_kill(temp);
@@ -1750,17 +1727,6 @@ bool save_player(void)
 		result = TRUE;
 	}
 
-
-#ifdef SET_UID
-
-# ifdef SECURE
-
-	/* Drop "games" permissions */
-	bePlayer();
-
-# endif
-
-#endif
 
 	/* Write to the savefile list */
 	save_savefile_names();
@@ -1883,7 +1849,7 @@ bool load_player(bool silent)
 
 #endif
 
-#if !defined(MACINTOSH) && !defined(WINDOWS) && !defined(VM)
+#if !defined(MACINTOSH) && !defined(WINDOWS)
 
 	/* XXX XXX XXX Fix this */
 

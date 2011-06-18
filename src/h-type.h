@@ -68,12 +68,6 @@ typedef int errr;
 #define huge huge_hack
 
 /*
- * Hack -- prevent problems with AMIGA
- */
-#undef byte
-#define byte byte_hack
-
-/*
  * Hack -- prevent problems with C++
  */
 #undef bool
@@ -120,13 +114,6 @@ typedef unsigned long u32b;
 
 typedef char *char_ptr;
 typedef byte *byte_ptr;
-
-
-
-/*** Pointers to Functions with simple return types and any args ***/
-
-typedef errr	(*func_errr)();
-typedef bool	(*func_bool)();
 
 #endif /* INCLUDED_H_TYPE_H */
 

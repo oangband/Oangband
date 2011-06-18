@@ -17,7 +17,7 @@
  */
 
 
-#if !defined(MACINTOSH) && !defined(WINDOWS) && !defined(ACORN)
+#if !defined(MACINTOSH) && !defined(WINDOWS)
 
 #ifdef USE_SCRIPT
 
@@ -49,15 +49,6 @@ static void quit_hook(cptr s)
 
 
 /*
- * Set the stack size (for the Amiga)
- */
-#ifdef AMIGA
-# include <dos.h>
-__near long __stack = 32768L;
-#endif
-
-
-/*
  * Set the stack size and overlay buffer (see main-286.c")
  */
 #ifdef USE_286
@@ -81,9 +72,6 @@ extern unsigned _ovrbuffer = 0x1500;
  * since the "init_file_paths()" function will simply append the
  * relevant "sub-directory names" to the given path.
  *
- * Note that the "path" must be "Angband:" for the Amiga, and it
- * is ignored for "VM/ESA", so I just combined the two.
- *
  * Make sure that the path doesn't overflow the buffer.  We have
  * to leave enough space for the path separator, directory, and
  * filenames.
@@ -91,13 +79,6 @@ extern unsigned _ovrbuffer = 0x1500;
 static void init_stuff(void)
 {
 	char path[1024];
-
-#if defined(AMIGA) || defined(VM)
-
-	/* Hack -- prepare "path" */
-	strcpy(path, "Angband:");
-
-#else /* AMIGA / VM */
 
 	cptr tail;
 
@@ -112,8 +93,6 @@ static void init_stuff(void)
 
 	/* Hack -- Add a path separator (only if needed) */
 	if (!suffix(path, PATH_SEP)) strcat(path, PATH_SEP);
-
-#endif /* AMIGA / VM */
 
 	/* Initialize */
 	init_file_paths(path);
@@ -281,11 +260,6 @@ int main(int argc, char *argv[])
 	/* Default permissions on files */
 	(void)umask(022);
 
-# ifdef SECURE
-	/* Authenticate */
-	Authenticate();
-# endif
-
 #endif
 
 
@@ -302,8 +276,6 @@ int main(int argc, char *argv[])
 	/* Mega-Hack -- Factor group id */
 	player_uid += (getgid() * 1000);
 #endif
-
-# ifdef SAFE_SETUID
 
 #  ifdef _POSIX_SAVED_IDS
 
@@ -330,24 +302,10 @@ int main(int argc, char *argv[])
 
 #  endif
 
-# endif
-
-#endif
+#endif /* SET_UID */
 
 
 #ifdef SET_UID
-
-	/* Initialize the "time" checker */
-	if (check_time_init() || check_time())
-	{
-		quit("The gates to Angband are closed (bad time).");
-	}
-
-	/* Initialize the "load" checker */
-	if (check_load_init() || check_load())
-	{
-		quit("The gates to Angband are closed (bad load).");
-	}
 
 #ifdef PRIVATE_USER_PATH
 
@@ -485,14 +443,6 @@ int main(int argc, char *argv[])
 				puts("  -u<who>  Use your <who> savefile");
 				puts("  -d<def>  Define a 'lib' dir sub-path");
 
-#ifdef USE_XAW
-				puts("  -mxaw    To use XAW");
-				puts("  --       Sub options");
-				puts("  -- -d    Set display name");
-				puts("  -- -s    Turn off smoothscaling graphics");
-				puts("  -- -n#   Number of terms to use");
-#endif /* USE_XAW */
-
 #ifdef USE_X11
 				puts("  -mx11    To use X11");
 				puts("  --       Sub options");
@@ -507,10 +457,6 @@ int main(int argc, char *argv[])
 				puts("  -- -x    No extra sub-windows");
 #endif /* USE_GCU */
 
-#ifdef USE_CAP
-				puts("  -mcap    To use CAP (\"Termcap\" calls)");
-#endif /* USE_CAP */
-
 #ifdef USE_DOS
 				puts("  -mdos    To use DOS (Graphics)");
 #endif /* USE_DOS */
@@ -522,18 +468,6 @@ int main(int argc, char *argv[])
 #ifdef USE_SLA
 				puts("  -msla    To use SLA (SLANG)");
 #endif /* USE_SLA */
-
-#ifdef USE_LSL
-				puts("  -mlsl    To use LSL (Linux-SVGALIB)");
-#endif /* USE_LSL */
-
-#ifdef USE_AMI
-				puts("  -mami    To use AMI (Amiga)");
-#endif /* USE_AMI */
-
-#ifdef USE_VME
-				puts("  -mvme    To use VME (VAX/ESA)");
-#endif /* USE_VME */
 
 				/* Actually abort the process */
 				quit(NULL);
@@ -556,24 +490,8 @@ int main(int argc, char *argv[])
 	quit_aux = quit_hook;
 
 
-	/* Drop privs (so X11 will work correctly), unless we are running */
-	/* the Linux-SVGALib version. */
-#ifndef USE_LSL
+	/* Drop privs (so X11 will work correctly) */
  	safe_setuid_drop();
-#endif
-
-#ifdef USE_XAW
-	/* Attempt to use the "main-xaw.c" support */
-	if (!done && (!mstr || (streq(mstr, "xaw"))))
-	{
-		extern errr init_xaw(int, char**);
-		if (0 == init_xaw(argc, argv))
-		{
-			ANGBAND_SYS = "xaw";
-			done = TRUE;
-		}
-	}
-#endif
 
 #ifdef USE_X11
 	/* Attempt to use the "main-x11.c" support */
@@ -600,20 +518,6 @@ int main(int argc, char *argv[])
 		}
 	}
 #endif
-
-#ifdef USE_CAP
-	/* Attempt to use the "main-cap.c" support */
-	if (!done && (!mstr || (streq(mstr, "cap"))))
-	{
-		extern errr init_cap(int, char**);
-		if (0 == init_cap(argc, argv))
-		{
-			ANGBAND_SYS = "cap";
-			done = TRUE;
-		}
-	}
-#endif
-
 
 #ifdef USE_DOS
 	/* Attempt to use the "main-dos.c" support */
@@ -642,20 +546,6 @@ int main(int argc, char *argv[])
 #endif
 
 
-#ifdef USE_EMX
-	/* Attempt to use the "main-emx.c" support */
-	if (!done && (!mstr || (streq(mstr, "emx"))))
-	{
-		extern errr init_emx(void);
-		if (0 == init_emx())
-		{
-			ANGBAND_SYS = "emx";
-			done = TRUE;
-		}
-	}
-#endif
-
-
 #ifdef USE_SLA
 	/* Attempt to use the "main-sla.c" support */
 	if (!done && (!mstr || (streq(mstr, "sla"))))
@@ -669,54 +559,8 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-
-#ifdef USE_LSL
-	/* Attempt to use the "main-lsl.c" support */
-	if (!done && (!mstr || (streq(mstr, "lsl"))))
-	{
-		extern errr init_lsl(void);
-		if (0 == init_lsl())
-		{
-			ANGBAND_SYS = "lsl";
-			done = TRUE;
-		}
-	}
-#endif
-
-
-#ifdef USE_AMI
-	/* Attempt to use the "main-ami.c" support */
-	if (!done && (!mstr || (streq(mstr, "ami"))))
-	{
-		extern errr init_ami(void);
-		if (0 == init_ami())
-		{
-			ANGBAND_SYS = "ami";
-			done = TRUE;
-		}
-	}
-#endif
-
-
-#ifdef USE_VME
-	/* Attempt to use the "main-vme.c" support */
-	if (!done && (!mstr || (streq(mstr, "vme"))))
-	{
-		extern errr init_vme(void);
-		if (0 == init_vme())
-		{
-			ANGBAND_SYS = "vme";
-			done = TRUE;
-		}
-	}
-#endif
-
-
 	/* Grab privs (dropped above for X11) */
-#ifndef USE_LSL
  	safe_setuid_grab();
-#endif
-
 
 	/* Make sure we have a display! */
 	if (!done) quit("Unable to prepare any 'display module'!");
@@ -743,7 +587,7 @@ int main(int argc, char *argv[])
 	return (0);
 }
 
-#endif
+#endif /* MACINTOSH / WINDOWS */
 
 
 

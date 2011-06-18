@@ -4019,37 +4019,6 @@ static vptr hook_ralloc(huge size)
 }
 
 /*
- * Hook to handle "out of memory" errors
- */
-static vptr hook_rpanic(huge size)
-{
-
-#pragma unused (size)
-
-	vptr mem = NULL;
-
-	/* Free the lifeboat */
-	if (lifeboat)
-	{
-		/* Free the lifeboat */
-		DisposePtr(lifeboat);
-
-		/* Forget the lifeboat */
-		lifeboat = NULL;
-
-		/* Mega-Hack -- Warning */
-		mac_warning("Running out of Memory!\rAbort this process now!");
-
-		/* Mega-Hack -- Never leave this function */
-		while (TRUE) CheckEvents(TRUE);
-	}
-
-	/* Mega-Hack -- Crash */
-	return (NULL);
-}
-
-
-/*
  * Hook to tell the user something important
  */
 static void hook_plog(cptr str)
@@ -4072,28 +4041,6 @@ static void hook_quit(cptr str)
 	/* All done */
 	ExitToShell();
 }
-
-/*
- * Hook to tell the user something, and then crash
- */
-static void hook_core(cptr str)
-{
-	/* XXX Use the debugger */
-	/* DebugStr(str); */
-
-	/* Warning */
-	if (str) mac_warning(str);
-
-	/* Warn, then save player */
-	mac_warning("Fatal error.\rI will now attempt to save and quit.");
-
-	/* Attempt to save */
-	if (!save_player()) mac_warning("Warning -- save failed!");
-
-	/* Quit */
-	quit(NULL);
-}
-
 
 
 /*** Main program ***/
@@ -4357,12 +4304,10 @@ int main(void)
 	/* Hook in some "z-virt.c" hooks */
 	rnfree_aux = hook_rnfree;
 	ralloc_aux = hook_ralloc;
-	rpanic_aux = hook_rpanic;
 
 	/* Hooks in some "z-util.c" hooks */
 	plog_aux = hook_plog;
 	quit_aux = hook_quit;
-	core_aux = hook_core;
 
 
 

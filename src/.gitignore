@@ -4,3 +4,7 @@ autoconf.h
 autoconf.h.in
 oangband
 Makefile.in
+stamp-h
+stamp-h1
+ifnames.out
+

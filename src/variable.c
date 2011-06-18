@@ -175,9 +175,7 @@ char *mp_tc = NULL;
 /*
  * Player info
  */
-int player_uid;
 int player_euid;
-int player_egid;
 
 
 /*

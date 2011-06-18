@@ -30,17 +30,12 @@
  * OPTION: See the Makefile(s), where several options may be declared.
  *
  * Some popular options include "USE_GCU" (allow use with Unix "curses"),
- * "USE_X11" (allow basic use with Unix X11), "USE_XAW" (allow use with
- * Unix X11 plus the Athena Widget set), and "USE_CAP" (allow use with
- * the "termcap" library, or with hard-coded vt100 terminals).
+ * "USE_X11" (allow basic use with Unix X11).
  *
  * The old "USE_NCU" option has been replaced with "USE_GCU".
  *
  * Several other such options are available for non-unix machines,
- * such as "MACINTOSH", "WINDOWS", "USE_IBM", "USE_EMX".
- *
- * You may also need to specify the "system", using defines such as
- * "SOLARIS" (for Solaris), etc, see "h-config.h" for more info.
+ * such as "MACINTOSH", "WINDOWS", "USE_IBM".
  */
 
 
@@ -56,16 +51,6 @@
  */
 /* #define USE_TPOSIX */
 
-/*
- * OPTION: Use the "termio" methods in "main-gcu.c"
- */
-/* #define USE_TERMIO */
-
-/*
- * OPTION: Use the icky BSD "tchars" methods in "main-gcu.c"
- */
-/* #define USE_TCHARS */
-
 
 /*
  * OPTION: Use "blocking getch() calls" in "main-gcu.c".
@@ -73,18 +58,8 @@
  * Currently used whenever available, if you get a warning about
  * "nodelay()" undefined, then make sure to undefine this.
  */
-#if defined(SYS_V) || defined(AMIGA)
+#if defined(SYS_V)
 # define USE_GETCH
-#endif
-
-
-/*
- * OPTION: Use the "curs_set()" call in "main-gcu.c".
- * Hack -- This option will not work on most BSD machines
- * But it *will* work on Linux, which is not System V. -uav
- */
-#if defined (SYS_V) || defined(linux)
-# define USE_CURS_SET
 #endif
 
 
@@ -93,48 +68,6 @@
  */
 /* #define USE_NCURSES */
 
-
-/*
- * OPTION: for multi-user machines running the game setuid to some other
- * user (like 'games') this SAFE_SETUID option allows the program to drop
- * its privileges when saving files that allow for user specified pathnames.
- * This lets the game be installed system wide without major security
- * concerns.  There should not be any side effects on any machines.
- *
- * This will handle "gids" correctly once the permissions are set right.
- */
-#define SAFE_SETUID
-
-
-/*
- * This flag enables the "POSIX" methods for "SAFE_SETUID".
- */
-#ifdef _POSIX_SAVED_IDS
-# define SAFE_SETUID_POSIX
-#endif
-
-
-/*
- * Prevent problems on (non-Solaris) Suns using "SAFE_SETUID".
- * The SAFE_SETUID code is weird, use it at your own risk...
- */
-#if defined(SUNOS) && !defined(SOLARIS)
-# undef SAFE_SETUID_POSIX
-#endif
-
-
-
-
-/*
- * OPTION: for the AFS distributed file system, define this to ensure that
- * the program is secure with respect to the setuid code.  This option has
- * not been tested (to the best of my knowledge).  This option may require
- * some weird tricks with "player_uid" and such involving "defines".
- * Note that this option used the AFS library routines Authenticate(),
- * bePlayer(), beGames() to enforce the proper priviledges.
- * You may need to turn "SAFE_SETUID" off to use this option.
- */
-/* #define SECURE */
 
 
 
@@ -348,17 +281,6 @@
 
 
 /*
- * OPTION: Hack -- EMX stuff
- */
-#ifdef USE_EMX
-
-/* Do not handle signals */
-# undef HANDLE_SIGNALS
-
-#endif
-
-
-/*
  * OPTION: Set the "default" path to the angband "lib" directory.
  *
  * See "main.c" for usage, and note that this value is only used on
@@ -447,21 +369,9 @@
  * player's name, it will then save the savefile elsewhere.  Note that
  * this also gives a method of "bypassing" the "VERIFY_TIMESTAMP" code.
  */
-#if defined(MACINTOSH) || defined(AMIGA)
+#if defined(MACINTOSH)
 # define SAVEFILE_MUTABLE
 #endif
-
-/*
- * OPTION: Check the "time" against "lib/file/hours.txt"
- */
-/* #define CHECK_TIME */
-
-/*
- * OPTION: Check the "load" against "lib/file/load.txt"
- * This may require the 'rpcsvs' library
- */
-/* #define CHECK_LOAD */
-
 
 /*
  * OPTION: Capitalize the "user_name" (for "default" player name)

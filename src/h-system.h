@@ -21,53 +21,40 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#if defined(NeXT)
-# include <libc.h>
-#else
-# include <stdlib.h>
-#endif /* NeXT */
+#include <stdlib.h>
 /* stddef.h */
 #include <string.h>
 #include <time.h>
 
+/** POSIX headers **/
+
+#if defined(SET_UID) || defined(MACH_O_CARBON)
+# include <pwd.h>
+# include <sys/stat.h>
+# include <unistd.h>
+#endif /* SET_UID */
+
+
 
 /** Other headers **/
-
-
-
-
 
 #ifdef SET_UID
 
 # include <sys/types.h>
 
-# if defined(Pyramid) || defined(NeXT) || defined(SUNOS) || \
-     defined(NCR3K) || defined(SUNOS) || defined(ibm032) || \
-     defined(__osf__) || defined(ISC) || defined(SGI) || \
-     defined(linux)
-#  include <sys/time.h>
-# endif
-
-# if !defined(SGI) && !defined(ULTRIX)
-#  include <sys/timeb.h>
-# endif
-
 #endif /* SET_UID */
-
-
-
 
 
 #if defined(MACINTOSH) && defined(__MWERKS__)
 # include <unix.h>
 #endif
 
-#if defined(WINDOWS) || defined(MSDOS) || defined(USE_EMX)
+#if defined(WINDOWS) || defined(MSDOS)
 # include <io.h>
 #endif
 
-#if !defined(MACINTOSH) && !defined(AMIGA) && \
-    !defined(RISCOS) && !defined(VM) && !defined(__MWERKS__)
+#if !defined(MACINTOSH) && \
+    !defined(RISCOS) && !defined(__MWERKS__)
 # if defined(__TURBOC__) || defined(__WATCOMC__)
 #  include <mem.h>
 # else
@@ -75,41 +62,13 @@
 # endif
 #endif
 
-
 #if !defined(NeXT) && !defined(RISCOS)
 # include <fcntl.h>
 #endif
 
-
-#ifdef SET_UID
-
-# ifndef USG
-#  include <sys/param.h>
-#  include <sys/file.h>
-# endif
-
-# ifdef linux
-#  include <sys/file.h>
-# endif
-
-# include <pwd.h>
-
-# include <unistd.h>
-
-# include <sys/stat.h>
-
-# if defined(SOLARIS)
-#  include <netdb.h>
-# endif
-
-#endif /* SET_UID */
-
 #if defined(__DJGPP__) || defined(__MWERKS__)
 #include <unistd.h>
 #endif /* __DJGPP__ || __MWERKS__ */
-
-
-
 
 #endif /* INCLUDE_H_SYSTEM_H */
 

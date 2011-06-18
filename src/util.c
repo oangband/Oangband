@@ -70,51 +70,6 @@ void create_user_dirs(void)
 
 
 
-#ifndef HAS_MEMSET
-
-/*
- * For those systems that don't have "memset()"
- *
- * Set the value of each of 'n' bytes starting at 's' to 'c', return 's'
- * If 'n' is negative, you will erase a whole lot of memory.
- */
-char *memset(char *s, int c, huge n)
-{
-	char *t;
-	for (t = s; len--; ) *t++ = c;
-	return (s);
-}
-
-#endif
-
-
-
-#ifndef HAS_STRICMP
-
-/*
- * For those systems that don't have "stricmp()"
- *
- * Compare the two strings "a" and "b" ala "strcmp()" ignoring case.
- */
-int stricmp(cptr a, cptr b)
-{
-	cptr s1, s2;
-	char z1, z2;
-
-	/* Scan the strings */
-	for (s1 = a, s2 = b; TRUE; s1++, s2++)
-	{
-		z1 = toupper((unsigned char) *s1);
-		z2 = toupper((unsigned char) *s2);
-		if (z1 < z2) return (-1);
-		if (z1 > z2) return (1);
-		if (!z1) return (0);
-	}
-}
-
-#endif
-
-
 #ifdef SET_UID
 
 # ifndef HAVE_USLEEP
@@ -129,7 +84,7 @@ int usleep(huge usecs)
 	struct timeval      Timer;
 
 	/* Paranoia -- No excessive sleeping */
-	if (usecs > 4000000L) core("Illegal usleep() call");
+	if (usecs > 4000000L) quit("Illegal usleep() call");
 
 	/* Wait for it */
 	Timer.tv_sec = (usecs / 1000000L);
@@ -214,17 +169,6 @@ void user_name(char *buf, int id)
  *
  * We should probably parse a leading "~~/" as referring to "ANGBAND_DIR". (?)
  */
-
-
-#ifdef ACORN
-
-
-/*
- * Most of the "file" routines for "ACORN" should be in "main-acn.c"
- */
-
-
-#else /* ACORN */
 
 
 #ifdef SET_UID
@@ -430,9 +374,6 @@ errr my_fclose(FILE *fff)
 }
 
 
-#endif /* ACORN */
-
-
 #ifdef HAVE_MKSTEMP
 
 FILE *my_fopen_temp(char *buf, size_t max)
@@ -545,20 +486,6 @@ errr my_fputs(FILE *fff, cptr buf, huge n)
 	/* Success */
 	return (0);
 }
-
-
-#ifdef ACORN
-
-
-/*
- * Most of the "file" routines for "ACORN" should be in "main-acn.c"
- *
- * Many of them can be rewritten now that only "fd_open()" and "fd_make()"
- * and "my_fopen()" should ever create files.
- */
-
-
-#else /* ACORN */
 
 
 /*
@@ -898,9 +825,6 @@ errr check_modification_date(int fd, cptr template_file)
 }
 
 #endif /* CHECK_MODIFICATION_TIME */
-
-#endif /* ACORN */
-
 
 
 /*
@@ -1260,7 +1184,7 @@ static sint macro_find_ready(cptr pat)
  * with some kind of "powerful keymap" ability, but this might make it hard
  * to change the "roguelike" option from inside the game.  XXX XXX XXX
  */
-errr macro_add(cptr pat, cptr act)
+errr macro_add(char *pat, char *act)
 {
 	int n;
 

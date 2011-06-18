@@ -108,28 +108,6 @@ void init_file_paths(char *path)
 	tail = path + strlen(path);
 
 
-#ifdef VM
-
-
-	/*** Use "flat" paths with VM/ESA ***/
-
-	/* Use "blank" path names */
-	ANGBAND_DIR_APEX = string_make("");
-	ANGBAND_DIR_BONE = string_make("");
-	ANGBAND_DIR_DATA = string_make("");
-	ANGBAND_DIR_EDIT = string_make("");
-	ANGBAND_DIR_FILE = string_make("");
-	ANGBAND_DIR_HELP = string_make("");
-	ANGBAND_DIR_INFO = string_make("");
-	ANGBAND_DIR_SAVE = string_make("");
-	ANGBAND_DIR_PREF = string_make("");
-	ANGBAND_DIR_USER = string_make("");
-	ANGBAND_DIR_XTRA = string_make("");
-
-
-#else /* VM */
-
-
 	/*** Build the sub-directory names ***/
 
 	/* Build a path name */
@@ -217,9 +195,6 @@ void init_file_paths(char *path)
 	ANGBAND_DIR_SAVE = string_make(path);
 
 #endif /* USE_PRIVATE_PATHS */
-
-#endif /* VM */
-
 
 #ifdef NeXT
 

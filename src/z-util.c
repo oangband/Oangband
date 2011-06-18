@@ -15,7 +15,7 @@
 /*
  * Convenient storage of the program name
  */
-cptr argv0 = NULL;
+char *argv0 = NULL;
 
 /*
  * Case insensitive comparison between two strings
@@ -35,8 +35,8 @@ int my_stricmp(const char *s1, const char *s2)
 			return (0);
 		}
 
-		ch1 = toupper(*s1);
-		ch2 = toupper(*s2);
+		ch1 = toupper((unsigned char) *s1);
+		ch2 = toupper((unsigned char) *s2);
 
 		/* If the characters don't match */
 		if (ch1 != ch2)
@@ -71,6 +71,43 @@ int my_strnicmp(cptr a, cptr b, int n)
 	}
 
 	return 0;
+}
+
+/*
+ * An ANSI version of strstr() with case insensitivity.
+ *
+ * In the public domain; found at:
+ *    http://c.snippets.org/code/stristr.c
+ */
+char *my_stristr(const char *string, const char *pattern)
+{
+        const char *pptr, *sptr;
+        char *start;
+
+	for (start = (char *)string; *start != 0; start++)
+	{
+		/* find start of pattern in string */
+		for ( ; ((*start != 0) &&
+			 (toupper((unsigned char)*start) != toupper((unsigned char)*pattern))); start++)
+			;
+		if (*start == 0)
+			return NULL;
+
+		pptr = (const char *)pattern;
+		sptr = (const char *)start;
+
+		while (toupper((unsigned char)*sptr) == toupper((unsigned char)*pptr))
+		{
+			sptr++;
+			pptr++;
+
+			/* if end of pattern then pattern was found */
+			if (*pptr == 0)
+				return (start);
+		}
+	}
+
+	return NULL;
 }
 
 
@@ -134,7 +171,7 @@ size_t my_strcat(char *buf, const char *src, size_t bufsize)
 
 
 /*
- * Determine if string "t" is equal to string "t"
+ * Determine if string "a" is equal to string "b"
  */
 bool streq(cptr a, cptr b)
 {
@@ -147,8 +184,8 @@ bool streq(cptr a, cptr b)
  */
 bool suffix(cptr s, cptr t)
 {
-	int tlen = strlen(t);
-	int slen = strlen(s);
+	size_t tlen = strlen(t);
+	size_t slen = strlen(s);
 
 	/* Check for incompatible lengths */
 	if (tlen > slen) return (FALSE);
@@ -191,7 +228,7 @@ void plog(cptr str)
 	if (plog_aux) (*plog_aux)(str);
 
 	/* Just do a labeled fprintf to stderr */
-	else (void)(fprintf(stderr, "%s: %s\n", argv0 ? argv0 : "???", str));
+	else (void)(fprintf(stderr, "%s: %s\n", argv0 ? argv0 : "?", str));
 }
 
 
@@ -202,8 +239,7 @@ void plog(cptr str)
 void (*quit_aux)(cptr) = NULL;
 
 /*
- * Exit (ala "exit()").  If 'str' is NULL, do "exit(0)".
- * If 'str' begins with "+" or "-", do "exit(atoi(str))".
+ * Exit (ala "exit()").  If 'str' is NULL, do "exit(EXIT_SUCCESS)".
  * Otherwise, plog() 'str' and exit with an error code of -1.
  * But always use 'quit_aux', if set, before anything else.
  */
@@ -213,10 +249,7 @@ void quit(cptr str)
 	if (quit_aux) (*quit_aux)(str);
 
 	/* Success */
-	if (!str) (void)(exit(0));
-
-	/* Extract a "special error code" */
-	if ((str[0] == '-') || (str[0] == '+')) (void)(exit(atoi(str)));
+	if (!str) (void)(exit(EXIT_SUCCESS));
 
 	/* Send the string to plog() */
 	plog(str);
@@ -225,34 +258,34 @@ void quit(cptr str)
 	(void)(exit(EXIT_FAILURE));
 }
 
-
-
-/*
- * Redefinable "core" action
- */
-void (*core_aux)(cptr) = NULL;
-
-/*
- * Dump a core file, after printing a warning message
- * As with "quit()", try to use the "core_aux()" hook first.
- */
-void core(cptr str)
+/* Arithmetic mean of the first 'size' entries of the array 'nums' */
+int mean(int *nums, int size)
 {
-	char *crash = NULL;
+	int i, total = 0;
 
-	/* Use the aux function */
-	if (core_aux) (*core_aux)(str);
+	for(i = 0; i < size; i++) total += nums[i];
 
-	/* Dump the warning string */
-	if (str) plog(str);
-
-	/* Attempt to Crash */
-	(*crash) = (*crash);
-
-	/* Be sure we exited */
-	quit("core() failed");
+	return total / size;
 }
 
+/* Variance of the first 'size' entries of the array 'nums'  */
+int variance(int *nums, int size)
+{
+       int i, avg, total = 0;
 
+       avg = mean(nums, size);
 
+	for(i = 0; i < size; i++)
+	{
+		int delta = nums[i] - avg;
+		total += delta * delta;
+	}
 
+	return total / size;
+}
+
+void sort(void *base, size_t nmemb, size_t smemb,
+	  int (*comp)(const void *, const void *))
+{
+	qsort(base, nmemb, smemb, comp);
+}

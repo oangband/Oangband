@@ -49,15 +49,6 @@ static void quit_hook(cptr s)
 
 
 /*
- * Set the stack size and overlay buffer (see main-286.c")
- */
-#ifdef USE_286
-# include <dos.h>
-extern unsigned _stklen = 32768U;
-extern unsigned _ovrbuffer = 0x1500;
-#endif
-
-/*
  * Initialize and verify the file paths, and the score file.
  *
  * Use the ANGBAND_PATH environment var if possible, else use
@@ -245,15 +236,6 @@ int main(int argc, char *argv[])
 
 	/* Save the "program name" XXX XXX XXX */
 	argv0 = argv[0];
-
-#ifdef USE_286
-	/* Attempt to use XMS (or EMS) memory for swap space */
-	if (_OvrInitExt(0L, 0L))
-	{
-		_OvrInitEms(0, 0, 64);
-	}
-#endif
-
 
 #ifdef SET_UID
 
@@ -457,14 +439,6 @@ int main(int argc, char *argv[])
 				puts("  -- -x    No extra sub-windows");
 #endif /* USE_GCU */
 
-#ifdef USE_DOS
-				puts("  -mdos    To use DOS (Graphics)");
-#endif /* USE_DOS */
-
-#ifdef USE_IBM
-				puts("  -mibm    To use IBM (BIOS text mode)");
-#endif /* USE_IBM */
-
 #ifdef USE_SLA
 				puts("  -msla    To use SLA (SLANG)");
 #endif /* USE_SLA */
@@ -518,33 +492,6 @@ int main(int argc, char *argv[])
 		}
 	}
 #endif
-
-#ifdef USE_DOS
-	/* Attempt to use the "main-dos.c" support */
-	if (!done && (!mstr || (streq(mstr, "dos"))))
-	{
-		extern errr init_dos(void);
-		if (0 == init_dos())
-		{
-			ANGBAND_SYS = "dos";
-			done = TRUE;
-		}
-	}
-#endif
-
-#ifdef USE_IBM
-	/* Attempt to use the "main-ibm.c" support */
-	if (!done && (!mstr || (streq(mstr, "ibm"))))
-	{
-		extern errr init_ibm(void);
-		if (0 == init_ibm())
-		{
-			ANGBAND_SYS = "ibm";
-			done = TRUE;
-		}
-	}
-#endif
-
 
 #ifdef USE_SLA
 	/* Attempt to use the "main-sla.c" support */

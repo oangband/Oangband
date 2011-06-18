@@ -35,7 +35,7 @@
  * The old "USE_NCU" option has been replaced with "USE_GCU".
  *
  * Several other such options are available for non-unix machines,
- * such as "MACINTOSH", "WINDOWS", "USE_IBM".
+ * such as "MACINTOSH", "WINDOWS".
  */
 
 
@@ -418,7 +418,7 @@
 /*
  * Hack -- Special "ancient machine" versions
  */
-#if defined(USE_286) || defined(ANGBAND_LITE_MAC)
+#if defined(ANGBAND_LITE_MAC)
 # ifndef ANGBAND_LITE
 #  define ANGBAND_LITE
 # endif

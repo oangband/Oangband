@@ -29,8 +29,7 @@ oangband_SOURCES = \
   z-virt.h z-file.h main.h 
 
 EXTRA_oangband_SOURCES = \
-  main-ros.c main-dos.c \
-  main-ibm.c main-mac.c main-sla.c \
+  main-mac.c main-sla.c \
   main-xxx.c main-crb.c \
   Makefile.bcc Makefile.cyg \
   Makefile.dos Makefile.gtk Makefile.ibm \

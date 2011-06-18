@@ -151,7 +151,8 @@ fi
 AM_CONDITIONAL(CYGWIN, test "$CYGWIN" = "yes")
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h termios.h unistd.h)
+AC_HEADER_STDBOOL
+AC_CHECK_HEADERS(fcntl.h stdint.h termios.h unistd.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

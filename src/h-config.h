@@ -13,8 +13,6 @@
  * should not be defined by the user.
  */
 
-#include <limits.h>
-
 /*
  * OPTION: Compile on a Macintosh machine
  */
@@ -27,13 +25,6 @@
  */
 #ifndef WINDOWS
 /* #define WINDOWS */
-#endif
-
-/*
- * OPTION: Compile on an MSDOS machine
- */
-#ifndef MSDOS
-/* #define MSDOS */
 #endif
 
 /*
@@ -51,13 +42,6 @@
 #endif
 
 /*
- * OPTION: Compile on a SunOS machine
- */
-#ifndef SUNOS
-/* #define SUNOS */
-#endif
-
-/*
  * OPTION: Compile on an ultrix/4.2BSD/Dynix/etc. version of UNIX,
  * Do not define this if you are on any kind of SunOS.
  */
@@ -68,29 +52,11 @@
 
 
 /*
- * Extract the "SUNOS" flag from the compiler
- */
-#if defined(sun)
-# ifndef SUNOS
-#   define SUNOS
-# endif
-#endif
-
-/*
  * Extract the "ULTRIX" flag from the compiler
  */
 #if defined(ultrix) || defined(Pyramid)
 # ifndef ULTRIX
 #  define ULTRIX
-# endif
-#endif
-
-/*
- * Extract the "MSDOS" flag from the compiler
- */
-#ifdef __MSDOS__
-# ifndef MSDOS
-#  define MSDOS
 # endif
 #endif
 
@@ -106,15 +72,6 @@
 #endif
 
 /*
- * Remove the MSDOS flag when using WINDOWS
- */
-#ifdef WINDOWS
-# ifdef MSDOS
-#  undef MSDOS
-# endif
-#endif
-
-/*
  * Remove the WINDOWS flag when using MACINTOSH
  */
 #ifdef MACINTOSH
@@ -123,26 +80,6 @@
 # endif
 #endif
 
-
-
-/*
- * OPTION: Define "L64" if a "long" is 64-bits.  See "h-types.h".
- * The only such platform that angband is ported to is currently
- * DEC Alpha AXP running OSF/1 (OpenVMS uses 32-bit longs).
- *
- * Try to use __WORDSIZE to test for 64-bit platforms.
- * I don't know how portable this is.
- * -CJN-
- */
-#ifdef __WORDSIZE
-# if __WORDSIZE == 64
-#  define L64
-# endif
-#endif
-
-#if defined(__alpha) && defined(__osf__) && !defined(L64)
-# define L64
-#endif
 
 
 /*
@@ -156,7 +93,7 @@
  * Basically, SET_UID should *only* be set for "Unix" machines,
  * or for the "Atari" platform which is Unix-like, apparently
  */
-#if !defined(MACINTOSH) && !defined(WINDOWS) && !defined(MSDOS)
+#if !defined(MACINTOSH) && !defined(WINDOWS)
 # define SET_UID
 #endif
 
@@ -174,21 +111,18 @@
  */
 #undef PATH_SEP
 #define PATH_SEP "/"
+#define PATH_SEPC '/'
+
 #ifdef MACINTOSH
 # undef PATH_SEP
 # define PATH_SEP ":"
 #endif
-#if defined(WINDOWS) || defined(WINNT)
+
+#ifdef WINDOWS
 # undef PATH_SEP
+# undef PATH_SEPC
 # define PATH_SEP "\\"
-#endif
-#if defined(MSDOS)
-# undef PATH_SEP
-# define PATH_SEP "\\"
-#endif
-#ifdef __GO32__
-# undef PATH_SEP
-# define PATH_SEP "/"
+# define PATH_SEPC '\\'
 #endif
 
 
@@ -219,6 +153,6 @@
 
 
 
-#endif
+#endif /* INCLUDED_H_CONFIG_H */
 
 

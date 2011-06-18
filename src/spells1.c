@@ -229,7 +229,7 @@ static void thrust_away(int who, int t_y, int t_x, int grids_away)
 	int c_y, c_x;
 
 	/* Assume a default death */
-	cptr note_dies = " dies.";
+	const char * note_dies = " dies.";
 
 	/*** Find a suitable endpoint for testing. ***/
 
@@ -968,7 +968,7 @@ int resist_damage(int dam, byte resist, byte rand_factor)
  * when he dies, since the "You die." message is shown before setting
  * the player to "dead".
  */
-void take_hit(int dam, cptr kb_str)
+void take_hit(int dam, const char * kb_str)
 {
 	int old_chp = p_ptr->chp;
 
@@ -1425,7 +1425,7 @@ static int minus_ac(int dam)
  * Hurt the player with Acid.  Resistances now reduce inventory
  * destruction.   Acid can reduce CHR, as in Zangband. -LM-
  */
-void acid_dam(int dam, cptr kb_str)
+void acid_dam(int dam, const char * kb_str)
 {
 	int inv = 0;
 
@@ -1465,7 +1465,7 @@ void acid_dam(int dam, cptr kb_str)
  * destruction.   Electricity can reduce DEX, as in Zangband.  Electricity can
  * stun the player. -LM-
  */
-void elec_dam(int dam, cptr kb_str)
+void elec_dam(int dam, const char * kb_str)
 {
 	int inv = 0;
 
@@ -1508,7 +1508,7 @@ void elec_dam(int dam, cptr kb_str)
  * Hurt the player with Fire.  Resistances now reduce inventory
  * destruction.   Fire can reduce STR. -LM-
  */
-void fire_dam(int dam, cptr kb_str)
+void fire_dam(int dam, const char * kb_str)
 {
 	int inv = 0;
 
@@ -1544,7 +1544,7 @@ void fire_dam(int dam, cptr kb_str)
  * Hurt the player with Cold.  Resistances now reduce inventory
  * destruction.   Cold can reduce CON. -LM-
  */
-void cold_dam(int dam, cptr kb_str)
+void cold_dam(int dam, const char * kb_str)
 {
 	int inv = 0;
 
@@ -1579,7 +1579,7 @@ void cold_dam(int dam, cptr kb_str)
 /*
  * Hurt the player with Poison.
  */
-void pois_dam(int dam, cptr kb_str)
+void pois_dam(int dam, const char * kb_str)
 {
 	/* No damage. */
 	if (dam <= 0) return;
@@ -2619,7 +2619,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
 		bool plural = FALSE;
 		bool do_kill = FALSE;
 
-		cptr note_kill = NULL;
+		const char * note_kill = NULL;
 
 		/* Acquire object */
 		o_ptr = &o_list[this_o_idx];
@@ -2895,7 +2895,7 @@ static bool project_m(int who, int y, int x, int dam, int typ, int flg)
 
 	monster_type *m2_ptr;
 
-	cptr name;
+	const char * name;
 
 	/* Adjustment to damage caused by terrain, if applicable. */
 	int terrain_adjustment = 0;
@@ -2929,10 +2929,10 @@ static bool project_m(int who, int y, int x, int dam, int typ, int flg)
 	char m_name[80];
 
 	/* Assume no note */
-	cptr note = NULL;
+	const char * note = NULL;
 
 	/* Assume a default death */
-	cptr note_dies = " dies.";
+	const char * note_dies = " dies.";
 
 	/* No monster here */
 	if (!(cave_m_idx[y][x] > 0)) return (FALSE);
@@ -4763,7 +4763,7 @@ static bool project_p(int who, int d, int y, int x, int dam, int typ)
 	char killer[80];
 
 	/* Hack -- messages */
-	cptr act = NULL;
+	const char * act = NULL;
 
 	/* No player here */
 	if (!(cave_m_idx[y][x] < 0)) return (FALSE);
@@ -6074,7 +6074,7 @@ static bool project_t(int who, int y, int x, int dam, int typ, int flg)
 	monster_race *r_ptr = NULL;
 	monster_lore *l_ptr = NULL;
 
-	cptr name = NULL;
+	const char * name = NULL;
 	char m_name[80];
 
 	int k, d;
@@ -6088,7 +6088,7 @@ static bool project_t(int who, int y, int x, int dam, int typ, int flg)
 	int do_dist = 0;
 
 	/* Assume no note */
-	cptr note = NULL;
+	const char * note = NULL;
 
 	/* Only process marked grids. */
 	if (!cave_info[y][x] & (CAVE_TEMP)) return (FALSE);

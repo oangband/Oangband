@@ -676,7 +676,7 @@ static void activate(WindowPtr w)
 /*
  * Display a confirm dialog
  */
-static bool mac_confirm(cptr message, cptr description)
+static bool mac_confirm(const char * message, const char * description)
 {
 	bool return_value = false;
 	OSErr err;
@@ -746,7 +746,7 @@ static bool mac_confirm(cptr message, cptr description)
 /*
  * Display a warning message
  */
-static void mac_warning(cptr warning)
+static void mac_warning(const char * warning)
 {
 	/* ignore the button pressed */
 	mac_confirm( warning, "" );
@@ -3053,7 +3053,7 @@ static void term_data_link(int i)
 	td->t->pict_hook = Term_pict_mac;
 
 	/* Link the local structure */
-	td->t->data = (vptr)(td);
+	td->t->data = (void *)(td);
 
 	/* Activate it */
 	Term_activate(td->t);
@@ -3335,7 +3335,7 @@ static void init_windows(void)
 	{
 		int n;
 
-		cptr s;
+		const char * s;
 
 		/* Obtain */
 		td = &data[i];
@@ -5369,9 +5369,9 @@ static bool CheckEvents(bool wait)
 
 	term_data *td = NULL;
 
-	huge curTicks;
+	unsigned long curTicks;
 
-	static huge lastTicks = 0L;
+	static unsigned long lastTicks = 0L;
 
 
 	/* Access the clock */
@@ -5834,13 +5834,13 @@ static bool CheckEvents(bool wait)
 /*
  * Mega-Hack -- emergency lifeboat
  */
-static vptr lifeboat = NULL;
+static void * lifeboat = NULL;
 
 
 /*
  * Hook to "release" memory
  */
-static vptr hook_rnfree(vptr v, huge size)
+static void *hook_rnfree(void *v, size_t size)
 {
 
 #pragma unused (size)
@@ -5864,7 +5864,7 @@ static vptr hook_rnfree(vptr v, huge size)
 /*
  * Hook to "allocate" memory
  */
-static vptr hook_ralloc(huge size)
+static void *hook_ralloc(size_t size)
 {
 
 #ifdef USE_MALLOC
@@ -5884,7 +5884,7 @@ static vptr hook_ralloc(huge size)
 /*
  * Hook to tell the user something important
  */
-static void hook_plog(cptr str)
+static void hook_plog(const char * str)
 {
 	/* Warning message */
 	mac_warning(str);
@@ -5893,7 +5893,7 @@ static void hook_plog(cptr str)
 /*
  * Hook to tell the user something, and then quit
  */
-static void hook_quit(cptr str)
+static void hook_quit(const char * str)
 {
 	/* Warning if needed */
 	if (str) mac_warning(str);

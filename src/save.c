@@ -667,7 +667,7 @@ static void wr_s32b(s32b v)
 	wr_u32b((u32b)v);
 }
 
-static void wr_string(cptr str)
+static void wr_string(const char * str)
 {
 	while (*str)
 	{
@@ -1798,8 +1798,8 @@ bool load_player(bool silent)
 {
 	errr err = 0;
 
-	cptr i = NULL;
-	cptr j = NULL;
+	const char * i = NULL;
+	const char * j = NULL;
 
 
 #ifdef SAVEFILE_USE_UID
@@ -1810,7 +1810,7 @@ bool load_player(bool silent)
 	struct stat	statbuf;
 #endif
 
-	cptr what = "generic";
+	const char * what = "generic";
 
 
 	/* Paranoia */
@@ -1965,15 +1965,15 @@ bool load_player(bool silent)
 		/* Parse "ancient" savefiles */
 		if (sf_major < 2)
 		{
-			/* Attempt to load */
-			err = rd_savefile_old();
+			/* Do not attempt to load */
+			err = -1;
 		}
 
 		/* Parse "old" savefiles */
 		else if ((sf_major == 2) && (sf_minor < 7))
 		{
-			/* Attempt to load */
-			err = rd_savefile_old();
+			/* Do not attempt to load */
+			err = -1;
 		}
 
 		/* Parse "new" savefiles */

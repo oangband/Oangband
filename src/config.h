@@ -35,7 +35,7 @@
  * The old "USE_NCU" option has been replaced with "USE_GCU".
  *
  * Several other such options are available for non-unix machines,
- * such as "MACINTOSH", "WINDOWS", "USE_IBM".
+ * such as "MACINTOSH", "WINDOWS".
  */
 
 
@@ -148,13 +148,6 @@
  * It should be usually be defined anyway to allow easy "updating".
  */
 #define ALLOW_TEMPLATES
-
-/*
- * OPTION: Allow loading of pre-2.7.0 savefiles.  Note that it takes
- * about 15K of code in "save-old.c" to parse the old savefile format.
- */
-#define ALLOW_OLD_SAVEFILES
-
 
 /*
  * OPTION: Delay the loading of the "f_text" array until it is actually
@@ -425,7 +418,7 @@
 /*
  * Hack -- Special "ancient machine" versions
  */
-#if defined(USE_286) || defined(ANGBAND_LITE_MAC)
+#if defined(ANGBAND_LITE_MAC)
 # ifndef ANGBAND_LITE
 #  define ANGBAND_LITE
 # endif
@@ -446,7 +439,6 @@
 # undef ALLOW_VISUALS
 # undef ALLOW_MACROS
 # undef MONSTER_FLOW
-# undef ALLOW_OLD_SAVEFILES
 # undef ALLOW_BORG
 # undef ALLOW_DEBUG
 # undef ALLOW_SPOILERS

@@ -105,7 +105,7 @@ s16b modify_stat_value(int value, int amount)
 /*
  * Print character info at given row, column in a 13 char field
  */
-static void prt_field(cptr info, int row, int col)
+static void prt_field(const char * info, int row, int col)
 {
 	/* Dump 13 spaces to clear */
 	c_put_str(TERM_WHITE, "             ", row, col);
@@ -155,7 +155,7 @@ static void prt_stat(int stat)
  */
 static void prt_title(void)
 {
-	cptr p = "";
+	const char * p = "";
 
 	/* Wizard */
 	if (p_ptr->wizard)
@@ -2078,7 +2078,7 @@ static int weight_limit(void)
  * a large, heavy weapon - training that many classes simply do not have the
  * time or inclination for.  -LM-
  */
-sint add_special_melee_skill (byte pclass, s16b weight, object_type *o_ptr)
+int add_special_melee_skill (byte pclass, s16b weight, object_type *o_ptr)
 {
 	int add_skill = 0;
 	int max_weight = 0;
@@ -2153,7 +2153,7 @@ sint add_special_melee_skill (byte pclass, s16b weight, object_type *o_ptr)
  * Calculate all class and race-based bonuses and
  * penalties to missile Skill
  */
-sint add_special_missile_skill (byte pclass, s16b weight, object_type *o_ptr)
+int add_special_missile_skill (byte pclass, s16b weight, object_type *o_ptr)
 {
 	int add_skill = 0;
 

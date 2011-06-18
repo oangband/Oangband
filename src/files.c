@@ -244,7 +244,7 @@ errr process_pref_file_command(char *buf)
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
 			monster_race *r_ptr;
-			i = (huge)strtol(zz[0], NULL, 0);
+			i = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			if (i >= MAX_R_IDX) return (1);
@@ -262,7 +262,7 @@ errr process_pref_file_command(char *buf)
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
 			object_kind *k_ptr;
-			i = (huge)strtol(zz[0], NULL, 0);
+			i = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			if (i >= MAX_K_IDX) return (1);
@@ -280,7 +280,7 @@ errr process_pref_file_command(char *buf)
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
 			feature_type *f_ptr;
-			i = (huge)strtol(zz[0], NULL, 0);
+			i = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			if (i >= MAX_F_IDX) return (1);
@@ -313,7 +313,7 @@ errr process_pref_file_command(char *buf)
 	{
 		if (tokenize(buf+2, 3, zz) == 3)
 		{
-			j = (huge)strtol(zz[0], NULL, 0);
+			j = strtol(zz[0], NULL, 0);
 			n1 = strtol(zz[1], NULL, 0);
 			n2 = strtol(zz[2], NULL, 0);
 			for (i = 1; i < MAX_K_IDX; i++)
@@ -500,9 +500,9 @@ errr process_pref_file_command(char *buf)
  * Output:
  *   result
  */
-static cptr process_pref_file_expr(char **sp, char *fp)
+static const char * process_pref_file_expr(char **sp, char *fp)
 {
-	cptr v;
+	const char * v;
 
 	char *b;
 	char *s;
@@ -694,7 +694,7 @@ static cptr process_pref_file_expr(char **sp, char *fp)
 }
 
 
-static errr process_pref_file_aux(cptr name)
+static errr process_pref_file_aux(const char * name)
 {
 	FILE *fp;
 
@@ -741,7 +741,7 @@ static errr process_pref_file_aux(cptr name)
 		if ((buf[0] == '?') && (buf[1] == ':'))
 		{
 			char f;
-			cptr v;
+			const char * v;
 			char *s;
 
 			/* Start */
@@ -805,7 +805,7 @@ static errr process_pref_file_aux(cptr name)
  * We also accept the special "?" and "%" directives, which
  * allow conditional evaluation and filename inclusion.
  */
-errr process_pref_file(cptr name)
+errr process_pref_file(const char * name)
 {
 	char buf[1024];
 
@@ -838,7 +838,7 @@ errr process_pref_file(cptr name)
  * Print long number with header at given row, column
  * Use the color for the number, not the header
  */
-static void prt_lnum(cptr header, s32b num, int row, int col, byte color)
+static void prt_lnum(const char * header, s32b num, int row, int col, byte color)
 {
 	int len = strlen(header);
 	char out_val[32];
@@ -850,7 +850,7 @@ static void prt_lnum(cptr header, s32b num, int row, int col, byte color)
 /*
  * Print number with header at given row, column
  */
-static void prt_num(cptr header, int num, int row, int col, byte color)
+static void prt_num(const char * header, int num, int row, int col, byte color)
 {
 	int len = strlen(header);
 	char out_val[32];
@@ -863,7 +863,7 @@ static void prt_num(cptr header, int num, int row, int col, byte color)
 /*
  * Print decimal number with header at given row, column
  */
-static void prt_deci(cptr header, int num, int deci, int row, int col, byte color)
+static void prt_deci(const char * header, int num, int deci, int row, int col, byte color)
 {
 	int len = strlen(header);
 	char out_val[32];
@@ -1119,7 +1119,7 @@ static byte likert_color = TERM_WHITE;
 /*
  * Returns a "rating" of x depending on y
  */
-static cptr likert(int x, int y)
+static const char * likert(int x, int y)
 {
 	/* Paranoia */
 	if (y <= 0) y = 1;
@@ -1210,7 +1210,7 @@ static void display_player_various(void)
 	int tmp;
 	int xthn, xthb, xfos, xsrh;
 	int xdis, xdev, xsav, xstl;
-	cptr desc;
+	const char * desc;
 
 	object_type *o_ptr;
 
@@ -1588,7 +1588,7 @@ static u32b display_player_flag_head[4] =
 /*
  * Hack -- see below
  */
-static cptr display_player_flag_names[4][8] =
+static const char * display_player_flag_names[4][8] =
 {
 	{
 		" Acid:",	/* TR2_RES_ACID */
@@ -1648,7 +1648,7 @@ static void display_player_flag_info(void)
 	int set;
 	u32b head;
 	u32b flag;
-	cptr name;
+	const char * name;
 
 	u32b f[4];
 
@@ -2139,7 +2139,7 @@ void display_player(int mode)
  * XXX XXX XXX Allow the "full" flag to dump additional info,
  * and trigger its usage from various places in the code.
  */
-errr file_character(cptr name, bool full)
+errr file_character(const char * name, bool full)
 {
 	int i, x, y;
 
@@ -2147,10 +2147,10 @@ errr file_character(cptr name, bool full)
 	char c;
 
 #if 0
-	cptr other = "(";
+	const char * other = "(";
 #endif
 
-	cptr paren = ")";
+	const char * paren = ")";
 
 	int fd = -1;
 
@@ -2371,7 +2371,7 @@ errr file_character(cptr name, bool full)
  */
 static void string_lower(char *buf)
 {
-	cptr buf_ptr;
+	const char * buf_ptr;
 
 	/* No string */
 	if (!buf) return;
@@ -2395,7 +2395,7 @@ static void string_lower(char *buf)
  *
  * XXX XXX XXX Allow the user to "save" the current file.
  */
-bool show_file(cptr name, cptr what, int line, int mode)
+bool show_file(const char * name, const char * what, int line, int mode)
 {
 	int i, k;
 	int wid, hgt;
@@ -2419,7 +2419,7 @@ bool show_file(cptr name, cptr what, int line, int mode)
 	FILE *fff = NULL;
 
 	/* Find this string (if any) */
-	cptr find = NULL;
+	const char * find = NULL;
 
 	/* Hold a string to find */
 	char finder[81];
@@ -2616,7 +2616,7 @@ bool show_file(cptr name, cptr what, int line, int mode)
 			/* Hilite "shower" */
 			if (shower[0])
 			{
-				cptr str = lc_buf;
+				const char * str = lc_buf;
 
 				/* Display matches */
 				while ((str = strstr(str, shower)) != NULL)
@@ -2975,7 +2975,7 @@ void process_player_name(bool sf)
 #endif
 
 
-#if defined(WINDOWS) || defined(MSDOS)
+#if defined(WINDOWS)
 
 		/* Hack -- max length */
 		if (k > 8) k = 8;
@@ -3388,7 +3388,7 @@ static void make_bones(void)
 /*
  * Centers a string within a 31 character string
  */
-void center_string(char *buf, cptr str)
+void center_string(char *buf, const char * str)
 {
 	int i, j;
 
@@ -3413,7 +3413,7 @@ static time_t death_time = (time_t)0;
  */
 static void print_tomb(void)
 {
-	cptr p;
+	const char * p;
 
 	char tmp[160];
 
@@ -3653,7 +3653,7 @@ static void death_examine(void)
 
 	char o_name[80];
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Start out in "display" mode */
@@ -3695,7 +3695,7 @@ static void death_examine(void)
 static int highscore_seek(int i)
 {
 	/* Seek for the requested record */
-	return (fd_seek(highscore_fd, (huge)(i) * sizeof(high_score)));
+	return (fd_seek(highscore_fd, (unsigned long)(i) * sizeof(high_score)));
 }
 
 
@@ -3869,7 +3869,7 @@ void display_scores_aux(int from, int to, int note, high_score *score)
 		{
 			int pr, pc, clev, mlev, cdun, mdun;
 
-			cptr user, gold, when, aged;
+			const char * user, *gold, *when, *aged;
 
 			/* Hack -- indicate death in yellow */
 			attr = (j == note) ? TERM_YELLOW : TERM_WHITE;
@@ -4337,7 +4337,7 @@ static void close_game_aux(void)
 {
   int ch;
 
-  cptr p;
+  const char * p;
 
   /* Flush all input keys */
   flush();

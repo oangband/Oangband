@@ -16,7 +16,7 @@
 /** ANSI C headers **/
 #include <ctype.h>
 #include <errno.h>
-/* limits.h */
+#include <limits.h>
 /* assert.h */
 
 #include <stdarg.h>
@@ -49,7 +49,7 @@
 # include <unix.h>
 #endif
 
-#if defined(WINDOWS) || defined(MSDOS)
+#if defined(WINDOWS)
 # include <io.h>
 #endif
 

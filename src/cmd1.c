@@ -114,7 +114,7 @@ void search(void)
  */
 static bool auto_pickup_check(object_type *o_ptr, bool check_pack)
 {
-	cptr s;
+	const char * s;
 
 	/* Check inscription */
 	if (o_ptr->note)
@@ -764,7 +764,7 @@ byte py_pickup(int pickup)
 	/* Display a list if requested. */
 	if (pickup == 3)
 	{
-		cptr q, s;
+		const char * q, *s;
 
 		int item;
 
@@ -857,7 +857,7 @@ void hit_trap(int y, int x)
 
 	int nastyness, selection;
 
-	cptr name = "a trap";
+	const char * name = "a trap";
 
 	/* Use the "simple" RNG to insure that traps are consistant. */
 	Rand_quick = TRUE;
@@ -1626,7 +1626,7 @@ void hit_trap(int y, int x)
 			/* hold the missile type and name. */
 			int sval = 0;
 			int tval = 0;
-			cptr missile_name = "";
+			const char * missile_name = "";
 
 
 			/* Determine the missile type and base damage. */

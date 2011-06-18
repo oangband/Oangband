@@ -57,7 +57,7 @@ extern s16b error_line;
 /*
  * Monster Blow Methods
  */
-static cptr r_info_blow_method[] =
+static const char * r_info_blow_method[] =
 {
 	"",
 	"HIT",
@@ -91,7 +91,7 @@ static cptr r_info_blow_method[] =
 /*
  * Monster Blow Effects
  */
-static cptr r_info_blow_effect[] =
+static const char * r_info_blow_effect[] =
 {
 	"",
 	"HURT",
@@ -129,7 +129,7 @@ static cptr r_info_blow_effect[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags1[] =
+static const char * r_info_flags1[] =
 {
 	"UNIQUE",
 	"QUESTOR",
@@ -168,7 +168,7 @@ static cptr r_info_flags1[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags2[] =
+static const char * r_info_flags2[] =
 {
 	"STUPID",
 	"SMART",
@@ -207,7 +207,7 @@ static cptr r_info_flags2[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags3[] =
+static const char * r_info_flags3[] =
 {
 	"ORC",
 	"TROLL",
@@ -246,7 +246,7 @@ static cptr r_info_flags3[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags4[] =
+static const char * r_info_flags4[] =
 {
 	"SHRIEK",
 	"LASH",
@@ -285,7 +285,7 @@ static cptr r_info_flags4[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags5[] =
+static const char * r_info_flags5[] =
 {
 	"BALL_ACID",
 	"BALL_ELEC",
@@ -324,7 +324,7 @@ static cptr r_info_flags5[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags6[] =
+static const char * r_info_flags6[] =
 {
 	"HASTE",
 	"ADD_MANA",
@@ -363,7 +363,7 @@ static cptr r_info_flags6[] =
 /*
  * Monster race flags
  */
-static cptr r_info_flags7[] =
+static const char * r_info_flags7[] =
 {
 	"S_KIN",
 	"XXX1",
@@ -402,7 +402,7 @@ static cptr r_info_flags7[] =
 /*
  * Special Player Flags
  */
-static cptr player_flags_sp[] =
+static const char * player_flags_sp[] =
 {
 	"ARMOR_MAST","SHIELD_MAST","ARMOR_PROFICIENCY","EVASION","MAGIC_RESIST","PHASEWALK","UNLIGHT","XXX",
 	"XXX","XXX","XXX","XXX","XXX","XXX","XXX","XXX",
@@ -442,7 +442,7 @@ static cptr player_flags_sp[] =
 /*
  * Object flags
  */
-static cptr k_info_flags1[] =
+static const char * k_info_flags1[] =
 {
 	"STR",
 	"INT",
@@ -481,7 +481,7 @@ static cptr k_info_flags1[] =
 /*
  * Object flags
  */
-static cptr k_info_flags2[] =
+static const char * k_info_flags2[] =
 {
 	"SUST_STR",
 	"SUST_INT",
@@ -520,7 +520,7 @@ static cptr k_info_flags2[] =
 /*
  * Object flags
  */
-static cptr k_info_flags3[] =
+static const char * k_info_flags3[] =
 {
 	"SLOW_DIGEST",
 	"FEATHER",
@@ -1151,7 +1151,7 @@ errr init_f_info_txt(FILE *fp, char *buf)
 /*
  * Grab one flag in an object_kind from a textual string
  */
-static errr grab_one_kind_flag(object_kind *k_ptr, cptr what)
+static errr grab_one_kind_flag(object_kind *k_ptr, const char * what)
 {
 	int i;
 
@@ -1500,7 +1500,7 @@ errr init_k_info_txt(FILE *fp, char *buf)
 /*
  * Grab one flag in an artifact_type from a textual string
  */
-static errr grab_one_artifact_flag(artifact_type *a_ptr, cptr what)
+static errr grab_one_artifact_flag(artifact_type *a_ptr, const char * what)
 {
 	int i;
 
@@ -1793,7 +1793,7 @@ errr init_a_info_txt(FILE *fp, char *buf)
 /*
  * Grab one flag for a set item from a textual string
  */
-static errr grab_one_set_element_flag(set_element *selement_ptr, cptr what)
+static errr grab_one_set_element_flag(set_element *selement_ptr, const char * what)
 {
 	int i;
 
@@ -2073,7 +2073,7 @@ errr init_s_info_txt(FILE *fp, char *buf)
 /*
  * Grab one flag in a ego-item_type from a textual string
  */
-static bool grab_one_ego_item_flag(ego_item_type *e_ptr, cptr what)
+static bool grab_one_ego_item_flag(ego_item_type *e_ptr, const char * what)
 {
 	int i;
 
@@ -2400,7 +2400,7 @@ errr init_e_info_txt(FILE *fp, char *buf)
 /*
  * Grab one (basic) flag in a monster_race from a textual string
  */
-static errr grab_one_basic_flag(monster_race *r_ptr, cptr what)
+static errr grab_one_basic_flag(monster_race *r_ptr, const char * what)
 {
 	int i;
 
@@ -2445,7 +2445,7 @@ static errr grab_one_basic_flag(monster_race *r_ptr, cptr what)
 /*
  * Grab one (spell) flag in a monster_race from a textual string
  */
-static errr grab_one_spell_flag(monster_race *r_ptr, cptr what)
+static errr grab_one_spell_flag(monster_race *r_ptr, const char * what)
 {
 	int i;
 
@@ -2864,7 +2864,7 @@ errr init_r_info_txt(FILE *fp, char *buf)
 /*
  * Grab one flag in a player_race from a textual string
  */
-static errr grab_one_racial_flag(player_race *rp_ptr, cptr what)
+static errr grab_one_racial_flag(player_race *rp_ptr, const char * what)
 {
 	int i;
 
@@ -2910,7 +2910,7 @@ static errr grab_one_racial_flag(player_race *rp_ptr, cptr what)
 /*
  * Grab one special flag in a player_race from a textual string
  */
-static errr grab_one_special_racial_flag(player_race *rp_ptr, cptr what)
+static errr grab_one_special_racial_flag(player_race *rp_ptr, const char * what)
 {
 	int i;
 
@@ -3319,7 +3319,7 @@ errr init_rp_info_txt(FILE *fp, char *buf)
 /*
  * Grab one special flag in a player_class from a textual string
  */
-static errr grab_one_special_class_flag(player_class *cp_ptr, cptr what)
+static errr grab_one_special_class_flag(player_class *cp_ptr, const char * what)
 {
 	int i;
 
@@ -3343,7 +3343,7 @@ static errr grab_one_special_class_flag(player_class *cp_ptr, cptr what)
 /*
  * Grab one special flag in a player_class from a textual string
  */
-static errr grab_one_specialty(player_class *cp_ptr, cptr what, int cur_specialty)
+static errr grab_one_specialty(player_class *cp_ptr, const char * what, int cur_specialty)
 {
 	int i;
 

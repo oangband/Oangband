@@ -48,14 +48,13 @@
 #ifdef USE_GCU
 
 /*
- * Hack -- play games with "bool"
- */
-#undef bool
-
-/*
  * Include the proper "header" file
  */
 #ifdef USE_NCURSES
+# ifdef HAVE_STDBOOL_H
+#  define NCURSES_ENABLE_STDBOOL_H 0
+# endif
+
 # include <ncurses.h>
 #else
 # include <curses.h>
@@ -636,7 +635,7 @@ static errr Term_wipe_gcu(int x, int y, int n)
 /*
  * Place some text on the screen using an attribute
  */
-static errr Term_text_gcu(int x, int y, int n, byte a, cptr s)
+static errr Term_text_gcu(int x, int y, int n, byte a, const char * s)
 {
 	term_data *td = (term_data *)(Term->data);
 

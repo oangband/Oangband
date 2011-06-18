@@ -47,19 +47,6 @@
 #endif
 
 
-/*
- * The constants "TRUE" and "FALSE"
- */
-
-#undef TRUE
-#define TRUE	1
-
-#undef FALSE
-#define FALSE	0
-
-
-
-
 /**** Simple "Macros" ****/
 
 /*

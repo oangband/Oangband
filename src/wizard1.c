@@ -27,7 +27,7 @@ static FILE *fff = NULL;
 /*
  * Extract a textual representation of an attribute
  */
-static cptr attr_to_text(byte a)
+static const char * attr_to_text(byte a)
 {
 	switch (a)
 	{
@@ -158,7 +158,7 @@ static void kind_info(char *buf, char *dam, char *wgt, int *lev, s32b *val, int 
 /*
  * Create a spoiler file for items
  */
-static void spoil_obj_desc(cptr fname)
+static void spoil_obj_desc(const char * fname)
 {
 	int i, k, s, t, n = 0;
 
@@ -523,7 +523,7 @@ typedef struct
 	 *
 	 * This will be a list such as ["STR", "DEX", "Stealth", NULL] etc.
 	 */
-	cptr pval_affects[N_ELEMENTS(stat_flags_desc) - 1 +
+	const char * pval_affects[N_ELEMENTS(stat_flags_desc) - 1 +
 			  N_ELEMENTS(pval_flags1_desc) + 1];
 
 } pval_info_type;
@@ -546,31 +546,31 @@ typedef struct
 	pval_info_type pval_info;
 
 	/* A list of an object's slaying preferences */
-	cptr slays[N_ELEMENTS(slay_flags_desc) + 1];
+	const char * slays[N_ELEMENTS(slay_flags_desc) + 1];
 
 	/* A list of an object's missile weapon qualities. */
-	cptr launcher[N_ELEMENTS(launcher_flags_desc) + 1];
+	const char * launcher[N_ELEMENTS(launcher_flags_desc) + 1];
 
 	/* A list if an object's elemental brands */
-	cptr brands[N_ELEMENTS(brand_flags_desc) + 1];
+	const char * brands[N_ELEMENTS(brand_flags_desc) + 1];
 
 	/* A list of immunities granted by an object */
-	cptr immunities[N_ELEMENTS(immune_flags_desc) + 1];
+	const char * immunities[N_ELEMENTS(immune_flags_desc) + 1];
 
 	/* A list of resistances granted by an object */
-	cptr resistances[N_ELEMENTS(resist_flags_desc) + 1];
+	const char * resistances[N_ELEMENTS(resist_flags_desc) + 1];
 
 	/* A list of stats sustained by an object */
-	cptr sustains[N_ELEMENTS(sustain_flags_desc)  - 1 + 1];
+	const char * sustains[N_ELEMENTS(sustain_flags_desc)  - 1 + 1];
 
 	/* A list of various magical qualities an object may have */
-	cptr misc_magic[N_ELEMENTS(misc_flags3_desc)
+	const char * misc_magic[N_ELEMENTS(misc_flags3_desc)
 			+ 1	  /* Permanent Light */
 			+ 1	  /* type of curse */
 			+ 1];	  /* sentinel NULL */
 
 	/* A string describing an artifact's activation */
-	cptr activation;
+	const char * activation;
 
 	/* "Level 20, Rarity 30, 3.0 lbs, 20000 Gold" */
 	char misc_desc[80];
@@ -598,7 +598,7 @@ static void spoiler_blanklines(int n)
 /*
  * Write a line to the spoiler file and then "underline" it with hypens
  */
-static void spoiler_underline(cptr str)
+static void spoiler_underline(const char * str)
 {
 	fprintf(fff, "%s\n", str);
 	spoiler_out_n_chars(strlen(str), '-');
@@ -618,8 +618,8 @@ static void spoiler_underline(cptr str)
  * The possibly updated description pointer is returned.
  */
 
-static cptr *spoiler_flag_aux(const u32b art_flags, const flag_desc *flag_x_ptr,
-			      cptr *desc_x_ptr, const int n_elmnts)
+static const char * *spoiler_flag_aux(const u32b art_flags, const flag_desc *flag_x_ptr,
+			      const char * *desc_x_ptr, const int n_elmnts)
 {
 	int i;
 
@@ -655,7 +655,7 @@ static void analyze_pval (object_type *o_ptr, pval_info_type *pval_x_ptr)
 
 	u32b f1, f2, f3;
 
-	cptr *affects_list;
+	const char * *affects_list;
 
 	/* If pval == 0, there is nothing to do. */
 	if (!o_ptr->pval)
@@ -697,7 +697,7 @@ static void analyze_pval (object_type *o_ptr, pval_info_type *pval_x_ptr)
 }
 
 /* Note the slaying specialties of a weapon */
-static void analyze_slay (object_type *o_ptr, cptr *slay_list)
+static void analyze_slay (object_type *o_ptr, const char * *slay_list)
 {
 	u32b f1, f2, f3;
 
@@ -711,7 +711,7 @@ static void analyze_slay (object_type *o_ptr, cptr *slay_list)
 }
 
 /* Note the launcher attributes of a weapon */
-static void analyze_launcher (object_type *o_ptr, cptr *launcher_list)
+static void analyze_launcher (object_type *o_ptr, const char * *launcher_list)
 {
 	u32b f1, f2, f3;
 
@@ -725,7 +725,7 @@ static void analyze_launcher (object_type *o_ptr, cptr *launcher_list)
 }
 
 /* Note an object's elemental brands */
-static void analyze_brand (object_type *o_ptr, cptr *brand_list)
+static void analyze_brand (object_type *o_ptr, const char * *brand_list)
 {
 	u32b f1, f2, f3;
 
@@ -741,7 +741,7 @@ static void analyze_brand (object_type *o_ptr, cptr *brand_list)
 
 /* Note the resistances granted by an object */
 
-static void analyze_resist (object_type *o_ptr, cptr *resist_list)
+static void analyze_resist (object_type *o_ptr, const char * *resist_list)
 {
 	u32b f1, f2, f3;
 
@@ -756,7 +756,7 @@ static void analyze_resist (object_type *o_ptr, cptr *resist_list)
 
 /* Note the immunities granted by an object */
 
-static void analyze_immune (object_type *o_ptr, cptr *immune_list)
+static void analyze_immune (object_type *o_ptr, const char * *immune_list)
 {
 	u32b f1, f2, f3;
 
@@ -772,7 +772,7 @@ static void analyze_immune (object_type *o_ptr, cptr *immune_list)
 
 /* Note which stats an object sustains */
 
-static void analyze_sustains (object_type *o_ptr, cptr *sustain_list)
+static void analyze_sustains (object_type *o_ptr, const char * *sustain_list)
 {
 	const u32b all_sustains = (TR2_SUST_STR | TR2_SUST_INT | TR2_SUST_WIS |
 				   TR2_SUST_DEX | TR2_SUST_CON | TR2_SUST_CHR);
@@ -805,7 +805,7 @@ static void analyze_sustains (object_type *o_ptr, cptr *sustain_list)
  * free action, permanent light, etc.
  */
 
-static void analyze_misc_magic (object_type *o_ptr, cptr *misc_list)
+static void analyze_misc_magic (object_type *o_ptr, const char * *misc_list)
 {
 	u32b f1, f2, f3;
 
@@ -960,7 +960,7 @@ static void print_header(void)
 #define LIST_SEP ';'
 
 
-static void spoiler_outlist(cptr header, cptr *list, char separator)
+static void spoiler_outlist(const char * header, const char * *list, char separator)
 {
 	int line_len, buf_len;
 	char line[MAX_LINE_LEN+1], buf[80];
@@ -1145,7 +1145,7 @@ static bool make_fake_artifact(object_type *o_ptr, int name1)
 /*
  * Show what object kinds appear on the current level
  */
-static void spoil_obj_gen(cptr fname)
+static void spoil_obj_gen(const char * fname)
 {
 	int i;
 
@@ -1249,7 +1249,7 @@ static void spoil_obj_gen(cptr fname)
 		{
 			object_kind *k_ptr = &k_info[i];
 			char *t;
-			cptr str = (k_name + k_ptr->name);
+			const char * str = (k_name + k_ptr->name);
 
 			if (str == "") continue;
 
@@ -1297,7 +1297,7 @@ static void spoil_obj_gen(cptr fname)
 /*
  * Show what monster races appear on the current level
  */
-static void spoil_mon_gen(cptr fname)
+static void spoil_mon_gen(const char * fname)
 {
 	int i, num;
 
@@ -1405,7 +1405,7 @@ static void spoil_mon_gen(cptr fname)
 	{
 		monster_race *r_ptr = &r_info[i];
 
-		cptr name = (r_name + r_ptr->name);
+		const char * name = (r_name + r_ptr->name);
 
 		if (monster[i])
 		{
@@ -1441,7 +1441,7 @@ static void spoil_mon_gen(cptr fname)
 /*
  * Create a spoiler file for artifacts
  */
-static void spoil_artifact(cptr fname)
+static void spoil_artifact(const char * fname)
 {
 	int i, j;
 
@@ -1526,7 +1526,7 @@ static void spoil_artifact(cptr fname)
 /*
  * Create a spoiler file for monsters
  */
-static void spoil_mon_desc(cptr fname)
+static void spoil_mon_desc(const char * fname)
 {
 	int i, n = 0;
 
@@ -1595,7 +1595,7 @@ static void spoil_mon_desc(cptr fname)
 	{
 		monster_race *r_ptr = &r_info[who[i]];
 
-		cptr name = (r_name + r_ptr->name);
+		const char * name = (r_name + r_ptr->name);
 
 		/* Get the "name" */
 		if (r_ptr->flags1 & (RF1_QUESTOR))
@@ -1682,18 +1682,18 @@ static void spoil_mon_desc(cptr fname)
 /*
  * Pronoun arrays
  */
-static cptr wd_che[3] =
+static const char * wd_che[3] =
 { "It", "He", "She" };
-static cptr wd_lhe[3] =
+static const char * wd_lhe[3] =
 { "it", "he", "she" };
 
 /*
  * Buffer text to the given file. (-SHAWN-)
  * This is basically c_roff() from util.c with a few changes.
  */
-static void spoil_out(cptr str)
+static void spoil_out(const char * str)
 {
-	cptr r;
+	const char * r;
 
 	/* Line buffer */
 	static char roff_buf[256];
@@ -1760,18 +1760,18 @@ static void spoil_out(cptr str)
 /*
  * Create a spoiler file for monsters (-SHAWN-)
  */
-static void spoil_mon_info(cptr fname)
+static void spoil_mon_info(const char * fname)
 {
 	char buf[1024];
 	int msex, vn, i, j, k, n;
 	bool breath, magic, sin;
-	cptr p, q;
-	cptr vp[64];
+	const char * p, *q;
+	const char * vp[64];
 	u32b flags1, flags2, flags3, flags4, flags5, flags6, flags7;
 
 	int spower;
 
-	cptr name;
+	const char * name;
 
 	/* Build the filename */
 	path_build(buf, 1024, ANGBAND_DIR_USER, fname);

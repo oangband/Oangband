@@ -2008,7 +2008,7 @@ void lose_exp(s32b amount)
  */
 static int get_coin_type(monster_race *r_ptr)
 {
-	cptr name = (r_name + r_ptr->name);
+	const char * name = (r_name + r_ptr->name);
 
 	/* Analyze "coin" monsters */
 	if (r_ptr->d_char == '$')
@@ -2385,7 +2385,7 @@ void monster_death(int m_idx)
  *
  * Hack -- we "delay" fear messages by passing around a "fear" flag.
  */
-bool mon_take_hit(int m_idx, int dam, bool *fear, cptr note)
+bool mon_take_hit(int m_idx, int dam, bool *fear, const char * note)
 {
 	monster_type *m_ptr = &m_list[m_idx];
 
@@ -2898,7 +2898,7 @@ void panel_center(void)
 /*
  * Monster health description
  */
-cptr look_mon_desc(int m_idx)
+const char * look_mon_desc(int m_idx)
 {
 	monster_type *m_ptr = &m_list[m_idx];
 	monster_race *r_ptr = &r_info[m_ptr->r_idx];
@@ -2952,7 +2952,7 @@ cptr look_mon_desc(int m_idx)
  * function hooks to interact with the data, which is given as
  * two pointers, and which may have any user-defined form.
  */
-void ang_sort_aux(vptr u, vptr v, int p, int q)
+void ang_sort_aux(void * u, void * v, int p, int q)
 {
 	int z, a, b;
 
@@ -3001,7 +3001,7 @@ void ang_sort_aux(vptr u, vptr v, int p, int q)
  * function hooks to interact with the data, which is given as
  * two pointers, and which may have any user-defined form.
  */
-void ang_sort(vptr u, vptr v, int n)
+void ang_sort(void * u, void * v, int n)
 {
 	/* Sort the array */
 	ang_sort_aux(u, v, 0, n-1);
@@ -3017,15 +3017,15 @@ void ang_sort(vptr u, vptr v, int n)
 /*
  * Extract a direction (or zero) from a character
  */
-sint target_dir(char ch)
+int target_dir(char ch)
 {
 	int d = 0;
 
 	int mode;
 
-	cptr act;
+	const char * act;
 
-	cptr s;
+	const char * s;
 
 
 	/* Already a direction? */
@@ -3221,7 +3221,7 @@ void target_set_location(int y, int x)
  * We use "u" and "v" to point to arrays of "x" and "y" positions,
  * and sort the arrays by double-distance to the player.
  */
-static bool ang_sort_comp_distance(vptr u, vptr v, int a, int b)
+static bool ang_sort_comp_distance(void * u, void * v, int a, int b)
 {
 	int py = p_ptr->py;
 	int px = p_ptr->px;
@@ -3256,7 +3256,7 @@ static bool ang_sort_comp_distance(vptr u, vptr v, int a, int b)
  * We use "u" and "v" to point to arrays of "x" and "y" positions,
  * and sort the arrays by distance to the player.
  */
-static void ang_sort_swap_distance(vptr u, vptr v, int a, int b)
+static void ang_sort_swap_distance(void * u, void * v, int a, int b)
 {
 	byte *x = (byte*)(u);
 	byte *y = (byte*)(v);
@@ -3481,11 +3481,11 @@ static void target_set_interactive_prepare(int mode)
  *
  * This function must handle blindness/hallucination.
  */
-static int target_set_interactive_aux(int y, int x, int mode, cptr info)
+static int target_set_interactive_aux(int y, int x, int mode, const char * info)
 {
 	s16b this_o_idx, next_o_idx = 0;
 
-	cptr s1, s2, s3;
+	const char * s1, *s2, *s3;
 
 	bool boring;
 
@@ -3527,7 +3527,7 @@ static int target_set_interactive_aux(int y, int x, int mode, cptr info)
 		/* Hack -- hallucination */
 		if (p_ptr->image)
 		{
-			cptr name = "something strange";
+			const char * name = "something strange";
 
 			/* Display a message */
 			sprintf(out_val, "%s%s%s%s [%s]", s1, s2, s3, name, info);
@@ -3808,7 +3808,7 @@ static int target_set_interactive_aux(int y, int x, int mode, cptr info)
 		/* Terrain feature if needed */
 		if (boring || (feat > FEAT_INVIS))
 		{
-			cptr name = f_name + f_info[feat].name;
+			const char * name = f_name + f_info[feat].name;
 
 			/* Hack -- handle unknown grids */
 			if (feat == FEAT_NONE) name = "unknown grid";
@@ -4549,7 +4549,7 @@ bool get_aim_dir(int *dp)
 
 	char ch;
 
-	cptr p;
+	const char * p;
 
 #ifdef ALLOW_REPEAT /* TNB */
 
@@ -4721,7 +4721,7 @@ bool get_rep_dir(int *dp)
 
 	char ch;
 
-	cptr p;
+	const char * p;
 
 #ifdef ALLOW_REPEAT /* TNB */
 

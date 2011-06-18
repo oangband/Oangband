@@ -19,7 +19,7 @@
 
 #define MAX_COMMENT_1	6
 
-static cptr comment_1[MAX_COMMENT_1] =
+static const char * comment_1[MAX_COMMENT_1] =
 {
 	"Okay.",
 	"Fine.",
@@ -31,7 +31,7 @@ static cptr comment_1[MAX_COMMENT_1] =
 
 #define MAX_COMMENT_2A	2
 
-static cptr comment_2a[MAX_COMMENT_2A] =
+static const char * comment_2a[MAX_COMMENT_2A] =
 {
 	"You try my patience.  %s is final.",
 	"My patience grows thin.  %s is final."
@@ -39,7 +39,7 @@ static cptr comment_2a[MAX_COMMENT_2A] =
 
 #define MAX_COMMENT_2B	12
 
-static cptr comment_2b[MAX_COMMENT_2B] =
+static const char * comment_2b[MAX_COMMENT_2B] =
 {
 	"I can take no less than %s gold pieces.",
 	"I will accept no less than %s gold pieces.",
@@ -57,7 +57,7 @@ static cptr comment_2b[MAX_COMMENT_2B] =
 
 #define MAX_COMMENT_3A	2
 
-static cptr comment_3a[MAX_COMMENT_3A] =
+static const char * comment_3a[MAX_COMMENT_3A] =
 {
 	"You try my patience.  %s is final.",
 	"My patience grows thin.  %s is final."
@@ -66,7 +66,7 @@ static cptr comment_3a[MAX_COMMENT_3A] =
 
 #define MAX_COMMENT_3B	12
 
-static cptr comment_3b[MAX_COMMENT_3B] =
+static const char * comment_3b[MAX_COMMENT_3B] =
 {
 	"Perhaps %s gold pieces?",
 	"How about %s gold pieces?",
@@ -84,7 +84,7 @@ static cptr comment_3b[MAX_COMMENT_3B] =
 
 #define MAX_COMMENT_4A	4
 
-static cptr comment_4a[MAX_COMMENT_4A] =
+static const char * comment_4a[MAX_COMMENT_4A] =
 {
 	"Enough!  You have abused me once too often!",
 	"Arghhh!  I have had enough abuse for one day!",
@@ -94,7 +94,7 @@ static cptr comment_4a[MAX_COMMENT_4A] =
 
 #define MAX_COMMENT_4B	4
 
-static cptr comment_4b[MAX_COMMENT_4B] =
+static const char * comment_4b[MAX_COMMENT_4B] =
 {
 	"Leave my store!",
 	"Get out of my sight!",
@@ -104,7 +104,7 @@ static cptr comment_4b[MAX_COMMENT_4B] =
 
 #define MAX_COMMENT_5	8
 
-static cptr comment_5[MAX_COMMENT_5] =
+static const char * comment_5[MAX_COMMENT_5] =
 {
 	"Try again.",
 	"Ridiculous!",
@@ -118,7 +118,7 @@ static cptr comment_5[MAX_COMMENT_5] =
 
 #define MAX_COMMENT_6	4
 
-static cptr comment_6[MAX_COMMENT_6] =
+static const char * comment_6[MAX_COMMENT_6] =
 {
 	"I must have heard you wrong.",
 	"I'm sorry, I missed that.",
@@ -224,7 +224,7 @@ static void say_comment_6(void)
 
 #define MAX_COMMENT_7A	4
 
-static cptr comment_7a[MAX_COMMENT_7A] =
+static const char * comment_7a[MAX_COMMENT_7A] =
 {
 	"Arrgghh!",
 	"You bastard!",
@@ -234,7 +234,7 @@ static cptr comment_7a[MAX_COMMENT_7A] =
 
 #define MAX_COMMENT_7B	4
 
-static cptr comment_7b[MAX_COMMENT_7B] =
+static const char * comment_7b[MAX_COMMENT_7B] =
 {
 	"Pamawitz!",
 	"You fiend!",
@@ -244,7 +244,7 @@ static cptr comment_7b[MAX_COMMENT_7B] =
 
 #define MAX_COMMENT_7C	4
 
-static cptr comment_7c[MAX_COMMENT_7C] =
+static const char * comment_7c[MAX_COMMENT_7C] =
 {
 	"Cool!",
 	"You've made my day!",
@@ -254,7 +254,7 @@ static cptr comment_7c[MAX_COMMENT_7C] =
 
 #define MAX_COMMENT_7D	4
 
-static cptr comment_7d[MAX_COMMENT_7D] =
+static const char * comment_7d[MAX_COMMENT_7D] =
 {
 	"Yipee!",
 	"I think I'll retire!",
@@ -1704,9 +1704,9 @@ static void display_store(void)
 	else
 	{
 
-		cptr store_name = (f_name + f_info[FEAT_SHOP_HEAD + store_num].name);
-		cptr owner_name = &(b_name[ot_ptr->owner_name]);
-		cptr race_name = rp_name + rp_info[ot_ptr->owner_race].name;
+		const char * store_name = (f_name + f_info[FEAT_SHOP_HEAD + store_num].name);
+		const char * owner_name = &(b_name[ot_ptr->owner_name]);
+		const char * race_name = rp_name + rp_info[ot_ptr->owner_race].name;
 
 		/* Put the owner name and race */
 		sprintf(buf, "%s (%s)", owner_name, race_name);
@@ -1744,7 +1744,7 @@ static void display_store(void)
  *
  * Return TRUE if an object was selected
  */
-static bool get_stock(int *com_val, cptr pmt)
+static bool get_stock(int *com_val, const char * pmt)
 {
 	int item;
 
@@ -1922,7 +1922,7 @@ static s32b last_inc = 0L;
 /*
  * Get a haggle
  */
-static int get_haggle(cptr pmt, s32b *poffer, s32b price, int final)
+static int get_haggle(const char * pmt, s32b *poffer, s32b price, int final)
 {
 	char buf[128];
 
@@ -1963,7 +1963,7 @@ static int get_haggle(cptr pmt, s32b *poffer, s32b price, int final)
 	/* Ask until done */
 	while (TRUE)
 	{
-		cptr p;
+		const char * p;
 
 		char out_val[81];
 
@@ -2041,7 +2041,7 @@ static int get_haggle(cptr pmt, s32b *poffer, s32b price, int final)
  *
  * Return TRUE if offer is NOT okay
  */
-static bool receive_offer(cptr pmt, s32b *poffer,
+static bool receive_offer(const char * pmt, s32b *poffer,
 			  s32b last_offer, int factor,
 			  s32b price, int final)
 {
@@ -2084,7 +2084,7 @@ static bool purchase_haggle(object_type *o_ptr, s32b *price)
 
 	bool cancel = FALSE;
 
-	cptr pmt = "Asking";
+	const char * pmt = "Asking";
 
 	char out_val[160];
 
@@ -2289,7 +2289,7 @@ static bool sell_haggle(object_type *o_ptr, s32b *price)
 
 	bool cancel = FALSE;
 
-	cptr pmt = "Offer";
+	const char * pmt = "Offer";
 
 	char out_val[160];
 
@@ -2791,7 +2791,7 @@ static void store_sell(void)
 	object_type *i_ptr;
 	object_type object_type_body;
 
-	cptr q, s;
+	const char * q, *s;
 
 	char o_name[120];
 

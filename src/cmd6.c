@@ -109,7 +109,7 @@ void do_cmd_eat_food(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Restrict choices to food */
@@ -420,7 +420,7 @@ void do_cmd_quaff_potion(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Restrict choices to potions */
@@ -1049,7 +1049,7 @@ void do_cmd_read_scroll(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Check some conditions */
@@ -1587,7 +1587,7 @@ void do_cmd_use_staff(void)
 	/* Hack -- let staffs of identify get aborted */
 	bool use_charge = TRUE;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Restrict choices to staffs */
@@ -2202,7 +2202,7 @@ void do_cmd_aim_wand(void)
 	bool critical = FALSE;
 	bool attuned = FALSE;
 
-	cptr q, s;
+	const char * q, *s;
 
 	TARGET_DECLARE
 
@@ -2782,7 +2782,7 @@ void do_cmd_zap_rod(void)
 	/* Hack -- let perception get aborted */
 	bool use_charge = TRUE;
 
-	cptr q, s;
+	const char * q, *s;
 
 
 	/* Restrict choices to rods */
@@ -3438,8 +3438,8 @@ void do_cmd_activate(void)
 
 	object_type *o_ptr;
 
-	cptr q, s;
-	cptr missile_name = "";
+	const char * q, *s;
+	const char * missile_name = "";
 
 	TARGET_DECLARE
 

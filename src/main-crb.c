@@ -834,7 +834,7 @@ static OSErr spec_to_path(const FSSpec *spec, char *buf, size_t size)
  * Set creator and filetype of a file specified by POSIX-style pathname.
  * Returns 0 on success, -1 in case of errors.
  */
-void fsetfileinfo(cptr pathname, OSType fcreator, OSType ftype)
+void fsetfileinfo(const char * pathname, OSType fcreator, OSType ftype)
 {
 	OSErr err;
 	FSSpec spec;
@@ -998,7 +998,7 @@ void convert_pathname(char* path)
  * Although there is no easy way to emulate fstat in the old interface,
  * we still can do stat-like things, because Mac OS is an OS.
  */
-static int get_modification_time(cptr path, u32b *mod_time)
+static int get_modification_time(const char * path, u32b *mod_time)
 {
 	CInfoPBRec pb;
 	Str255 pathname;
@@ -1033,7 +1033,7 @@ static int get_modification_time(cptr path, u32b *mod_time)
  * A (non-Mach-O) Mac OS version of check_modification_time, for those
  * compilers without good enough POSIX-compatibility libraries XXX XXX
  */
-errr check_modification_date(int fd, cptr template_file)
+errr check_modification_date(int fd, const char * template_file)
 {
 #pragma unused(fd)
 	u32b txt_stat, raw_stat;
@@ -1122,7 +1122,7 @@ static void activate(WindowPtr w)
 /*
  * Display a warning message
  */
-static void mac_warning(cptr warning)
+static void mac_warning(const char * warning)
 {
 	Str255 text;
 	int len, i;
@@ -3696,7 +3696,7 @@ static void init_windows(void)
 	{
 		int n;
 
-		cptr s;
+		const char * s;
 
 		/* Obtain */
 		td = &data[i];
@@ -6074,7 +6074,7 @@ static void *lifeboat = NULL;
 #ifdef NEW_ZVIRT_HOOKS /* [V] removed the unused 'size' argument. */
 static void *hook_rnfree(void *v)
 #else
-static void *hook_rnfree(void *v, huge size)
+static void *hook_rnfree(void *v, size_t size)
 #endif /* NEW_ZVIRT_HOOKS */
 {
 
@@ -6097,7 +6097,7 @@ static void *hook_rnfree(void *v, huge size)
 /*
  * Hook to "allocate" memory
  */
-static void *hook_ralloc(huge size)
+static void *hook_ralloc(size_t size)
 {
 
 #ifdef USE_MALLOC
@@ -6117,7 +6117,7 @@ static void *hook_ralloc(huge size)
 /*
  * Hook to tell the user something important
  */
-static void hook_plog(cptr str)
+static void hook_plog(const char * str)
 {
 	/* Warning message */
 	mac_warning(str);
@@ -6127,7 +6127,7 @@ static void hook_plog(cptr str)
 /*
  * Hook to tell the user something, and then quit
  */
-static void hook_quit(cptr str)
+static void hook_quit(const char * str)
 {
 	/* Warning if needed */
 	if (str) mac_warning(str);

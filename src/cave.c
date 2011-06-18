@@ -752,11 +752,7 @@ bool feat_supports_lighting(byte feat)
  * tiles should be handled differently.  One possibility would be to
  * extend feature_type with attr/char definitions for the different states.
  */
-#ifdef USE_TRANSPARENCY
 void map_info(int y, int x, byte *ap, char *cp, byte *tap, char *tcp)
-#else /* USE_TRANSPARENCY */
-void map_info(int y, int x, byte *ap, char *cp)
-#endif /* USE_TRANSPARENCY */
 {
 	byte a;
 	char c;
@@ -992,13 +988,9 @@ void map_info(int y, int x, byte *ap, char *cp)
 		}
 	}
 
-#ifdef USE_TRANSPARENCY
-
 	/* Save the terrain info for the transparency effects */
 	(*tap) = a;
 	(*tcp) = c;
-
-#endif /* USE_TRANSPARENCY */
 
 	/* Objects */
 	for (this_o_idx = cave_o_idx[y][x]; this_o_idx; this_o_idx = next_o_idx)
@@ -1331,24 +1323,14 @@ void lite_spot(int y, int x)
 		byte a;
 		char c;
 
-#ifdef USE_TRANSPARENCY
 		byte ta;
 		char tc;
 
 		/* Examine the grid */
 		map_info(y, x, &a, &c, &ta, &tc);
-#else /* USE_TRANSPARENCY */
-		/* Examine the grid */
-		map_info(y, x, &a, &c);
-#endif /* USE_TRANSPARENCY */
 
-#ifdef USE_TRANSPARENCY
 		/* Hack -- Queue it */
 		Term_queue_char(x - panel_col_prt, y - panel_row_prt, a, c, ta, tc);
-#else /* USE_TRANSPARENCY */
-		/* Hack -- Queue it */
-		Term_queue_char(x - panel_col_prt, y - panel_row_prt, a, c);
-#endif /* USE_TRANSPARENCY */
 	}
 }
 
@@ -1376,10 +1358,8 @@ void prt_map(void)
 	byte *pa;
 	char *pc;
 
-#ifdef USE_TRANSPARENCY
 	byte *pta;
 	char *ptc;
-#endif /* USE_TRANSPARENCY */
 
 
 	/* Get size */
@@ -1437,11 +1417,8 @@ void prt_map(void)
 	pa = mp_a;
 	pc = mp_c;
 
-#ifdef USE_TRANSPARENCY
 	pta = mp_ta;
 	ptc = mp_tc;
-#endif /* USE_TRANSPARENCY */
-
 
 	/* Dump the map */
 	for (y = ymin; y <= ymax; y++)
@@ -1452,20 +1429,10 @@ void prt_map(void)
 		/* Scan the columns of row "y" */
 		for (x = xmin; x <= xmax; x++)
 		{
-#ifdef USE_TRANSPARENCY
 			/* Determine what is there */
 			map_info(y, x, pa++, pc++, pta++, ptc++);
-
-#else /* USE_TRANSPARENCY */
-
-			/* Determine what is there */
-			map_info(y, x, pa++, pc++);
-
-#endif /* USE_TRANSPARENCY */
 		}
 
-
-#ifdef USE_TRANSPARENCY
 
 		/* Point to start of line */
 		pa = mp_a;
@@ -1476,18 +1443,6 @@ void prt_map(void)
 		/* Efficiency -- Redraw that row of the map */
 		Term_queue_line(xmin - panel_col_prt, y - panel_row_prt, xmax - xmin + 1
 			, pa, pc, pta, ptc);
-
-#else /* USE_TRANSPARENCY */
-
-		/* Point to start of line */
-		pa = mp_a;
-		pc = mp_c;
-
-		/* Efficiency -- Redraw that row of the map */
-		Term_queue_line(xmin - panel_col_prt, y - panel_row_prt, xmax - xmin + 1
-			, pa, pc);
-
-#endif /* USE_TRANSPARENCY */
 	}
 
 	/* Restore the cursor */
@@ -1728,11 +1683,7 @@ void display_map(int *cy, int *cx)
 			}
 #endif
 			/* Extract the current attr/char at that map location */
-#ifdef USE_TRANSPARENCY
 			map_info(j, i, &ta, &tc, &ta, &tc);
-#else /* USE_TRANSPARENC*/
-			map_info(j, i, &ta, &tc);
-#endif /* USE_TRANSPAREN */
 
 			/* Extract the priority of that attr/char */
 			tp += priority(ta, tc);

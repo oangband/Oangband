@@ -167,10 +167,8 @@ bool panel_extra_rows=FALSE;
 byte *mp_a = NULL;
 char *mp_c = NULL;
 
-#ifdef USE_TRANSPARENCY
 byte *mp_ta = NULL;
 char *mp_tc = NULL;
-#endif /* USE_TRANSPARENCY */
 
 /*
  * Player info

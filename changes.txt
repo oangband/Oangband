@@ -27,6 +27,7 @@ confusion and fear), to encourage their use.
 - Removed check_load & check_time code.
 - Removed X11 Athena widgets port.
 - Removed MS/DOS ports.
+- Transparency is turned on permanently.
 
 Coding changes
 ==============

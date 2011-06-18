@@ -184,16 +184,11 @@
  *
  *   Term->init_hook = Init the term
  *   Term->nuke_hook = Nuke the term
- *   Term->user_hook = Perform user actions
  *   Term->xtra_hook = Perform extra actions
  *   Term->curs_hook = Draw (or Move) the cursor
  *   Term->wipe_hook = Draw some blank spaces
  *   Term->text_hook = Draw some text in the window
  *   Term->pict_hook = Draw some attr/chars in the window
- *
- * The "Term->user_hook" hook provides a simple hook to an implementation
- * defined function, with application defined semantics.  It is available
- * to the program via the "Term_user()" function.
  *
  * The "Term->xtra_hook" hook provides a variety of different functions,
  * based on the first parameter (which should be taken from the various
@@ -230,7 +225,11 @@
  * a byte "a" and a char "c" to taking a length "n", an array of bytes
  * "ap" and an array of chars "cp".  Old implementations of this hook
  * should now iterate over all "n" attr/char pairs.
- *
+ * The two new arrays "tap" and "tcp" can contain the attr/char pairs
+ * of the terrain below the values in "ap" and "cp".  These values can
+ * be used to implement transparency when using graphics by drawing
+ * the terrain values as a background and the "ap", "cp" values in
+ * the foreground.
  *
  * The game "Angband" uses a set of files called "main-xxx.c", for
  * various "xxx" suffixes.  Most of these contain a function called
@@ -253,12 +252,6 @@
  * by always taking every attr code mod 16.  Many of the "main-xxx.c"
  * files use "white space" ("attr 1" / "char 32") to "erase" or "clear"
  * any window, for efficiency.
- *
- * The game "Angband" uses the "Term_user" hook to allow any of the
- * "main-xxx.c" files to interact with the user, by calling this hook
- * whenever the user presses the "!" key when the game is waiting for
- * a new command.  This could be used, for example, to provide "unix
- * shell commands" to the Unix versions of the game.
  *
  * See "main-xxx.c" for a simple skeleton file which can be used to
  * create a "visual system" for a new platform when porting Angband.
@@ -391,18 +384,6 @@ static errr term_win_copy(term_win *s, term_win *f, int w, int h)
 
 /*** External hooks ***/
 
-
-/*
- * Execute the "Term->user_hook" hook, if available (see above).
- */
-errr Term_user(int n)
-{
-	/* Verify the hook */
-	if (!Term->user_hook) return (-1);
-
-	/* Call the hook */
-	return ((*Term->user_hook)(n));
-}
 
 /*
  * Execute the "Term->xtra_hook" hook, if available (see above).
@@ -590,7 +571,7 @@ void Term_queue_line(int x, int y, int n, byte *a, char *c, byte *ta, char *tc)
  * a valid location, so the first "n" characters of "s" can all be added
  * starting at (x,y) without causing any illegal operations.
  */
-void Term_queue_chars(int x, int y, int n, byte a, const char * s)
+void Term_queue_chars(int x, int y, int n, byte a, const char *s)
 {
 	int x1 = -1, x2 = -1;
 
@@ -1607,7 +1588,7 @@ errr Term_putch(int x, int y, byte a, char c)
 /*
  * Move to a location and, using an attr, add a string
  */
-errr Term_putstr(int x, int y, int n, byte a, const char * s)
+errr Term_putstr(int x, int y, int n, byte a, const char *s)
 {
 	errr res;
 

@@ -2397,20 +2397,6 @@ static void Term_nuke_mac(term *t)
 
 
 /*
- * Unused
- */
-static errr Term_user_mac(int n)
-{
-
-#pragma unused (n)
-
-	/* Success */
-	return (0);
-}
-
-
-
-/*
  * React to changes
  */
 static errr Term_xtra_mac_react(void)
@@ -2991,7 +2977,6 @@ static void term_data_link(int i)
 	td->t->nuke_hook = Term_nuke_mac;
 
 	/* Prepare the function hooks */
-	td->t->user_hook = Term_user_mac;
 	td->t->xtra_hook = Term_xtra_mac;
 	td->t->wipe_hook = Term_wipe_mac;
 	td->t->curs_hook = Term_curs_mac;

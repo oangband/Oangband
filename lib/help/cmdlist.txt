@@ -43,7 +43,7 @@ mation about any command, consult the help file "cmddesc.txt".
  x  (unused - easy rest macro)           X  (unused - switch weapon macro)
  y  (unused)                             Y  (unused)
  z  Zap a rod                            Z  (unused)
- !  Interact with system                ^A  (special - debug command)
+ !  (unused)                            ^A  (special - debug command)
  @  Interact with macros                ^B  (unused)
  #  (unused)                            ^C  (special - break)
  $  User interface                      ^D  (unused)
@@ -104,7 +104,7 @@ mation about any command, consult the help file "cmddesc.txt".
  x  Look around                          X  (unused - switch weapon macro)
  y  (walk - north west)                  Y  (run - north west)
  z  Aim a wand (Zap)                     Z  Use a staff (Zap)
- !  Interact with system                ^A  (special - debug command)
+ !  (unused)                            ^A  (special - debug command)
  @  Interact with macros                ^B  (alter - south west)
  #  Toggle search mode                  ^C  (special - break)
  $  (unused)                            ^D  Destroy item

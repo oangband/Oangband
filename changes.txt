@@ -46,3 +46,4 @@ removed.
 - Removed support for savefiles older than Angband 2.7.0.
 - Updated h-type.h to Vanilla standard.
 - Clean ups in main-gcu.c.
+- Removed unused Term_user.

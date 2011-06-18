@@ -1669,9 +1669,9 @@ void display_map(int *cy, int *cx)
 	view_granite_lite = FALSE;
 
 	/* Allocate the maps */
-	C_MAKE(ma, (hgt + 2), byte_ptr);
-	C_MAKE(mc, (hgt + 2), char_ptr);
-	C_MAKE(mp, (hgt + 2), byte_ptr);
+	C_MAKE(ma, (hgt + 2), byte *);
+	C_MAKE(mc, (hgt + 2), char *);
+	C_MAKE(mp, (hgt + 2), byte *);
 
 	/* Allocate and wipe each line map */
 	for (i = 0; i < (hgt + 2); i++)
@@ -1798,9 +1798,9 @@ void display_map(int *cy, int *cx)
 	}
 
 	/* Free the maps */
-	C_FREE(ma, (hgt + 2), byte_ptr);
-	C_FREE(mc, (hgt + 2), char_ptr);
-	C_FREE(mp, (hgt + 2), byte_ptr);
+	C_FREE(ma, (hgt + 2), byte *);
+	C_FREE(mc, (hgt + 2), char *);
+	C_FREE(mp, (hgt + 2), byte *);
 }
 
 /*

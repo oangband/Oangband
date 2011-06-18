@@ -44,13 +44,6 @@
 #endif
 
 /*
- * OPTION: Compile on a SunOS machine
- */
-#ifndef SUNOS
-/* #define SUNOS */
-#endif
-
-/*
  * OPTION: Compile on an ultrix/4.2BSD/Dynix/etc. version of UNIX,
  * Do not define this if you are on any kind of SunOS.
  */
@@ -59,15 +52,6 @@
 #endif
 
 
-
-/*
- * Extract the "SUNOS" flag from the compiler
- */
-#if defined(sun)
-# ifndef SUNOS
-#   define SUNOS
-# endif
-#endif
 
 /*
  * Extract the "ULTRIX" flag from the compiler
@@ -149,17 +133,18 @@
  */
 #undef PATH_SEP
 #define PATH_SEP "/"
+#define PATH_SEPC '/'
+
 #ifdef MACINTOSH
 # undef PATH_SEP
 # define PATH_SEP ":"
 #endif
-#if defined(WINDOWS) || defined(WINNT)
+
+#ifdef WINDOWS
 # undef PATH_SEP
+# undef PATH_SEPC
 # define PATH_SEP "\\"
-#endif
-#ifdef __GO32__
-# undef PATH_SEP
-# define PATH_SEP "/"
+# define PATH_SEPC '\\'
 #endif
 
 
@@ -190,6 +175,6 @@
 
 
 
-#endif
+#endif /* INCLUDED_H_CONFIG_H */
 
 

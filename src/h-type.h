@@ -107,13 +107,5 @@ typedef signed long s32b;
 typedef unsigned long u32b;
 #endif
 
-
-
-
-/*** Pointers to all the basic types defined above ***/
-
-typedef char *char_ptr;
-typedef byte *byte_ptr;
-
 #endif /* INCLUDED_H_TYPE_H */
 

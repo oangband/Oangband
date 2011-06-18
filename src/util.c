@@ -79,7 +79,7 @@ void create_user_dirs(void)
  *
  * Fake "usleep()" function grabbed from the inl netrek server -cba
  */
-int usleep(huge usecs)
+int usleep(unsigned long usecs)
 {
 	struct timeval      Timer;
 
@@ -414,9 +414,9 @@ FILE *my_fopen_temp(char *buf, size_t max)
  *
  * Process tabs, strip internal non-printables
  */
-errr my_fgets(FILE *fff, char *buf, huge n)
+errr my_fgets(FILE *fff, char *buf, size_t n)
 {
-	huge i = 0;
+	int i = 0;
 
 	char *s;
 
@@ -478,7 +478,7 @@ errr my_fgets(FILE *fff, char *buf, huge n)
  *
  * Perhaps this function should handle internal weirdness.
  */
-errr my_fputs(FILE *fff, cptr buf, huge n)
+errr my_fputs(FILE *fff, cptr buf, size_t n)
 {
 	/* Dump, ignore errors */
 	(void)fprintf(fff, "%s\n", buf);
@@ -661,7 +661,7 @@ errr fd_lock(int fd, int what)
 /*
  * Hack -- attempt to seek on a file descriptor
  */
-errr fd_seek(int fd, huge n)
+errr fd_seek(int fd, long n)
 {
 	long p;
 
@@ -675,25 +675,7 @@ errr fd_seek(int fd, huge n)
 	if (p < 0) return (1);
 
 	/* Failure */
-	if ((huge)p != n) return (1);
-
-	/* Success */
-	return (0);
-}
-
-
-/*
- * Hack -- attempt to truncate a file descriptor
- */
-errr fd_chop(int fd, huge n)
-{
-	/* Verify the fd */
-	if (fd < 0) return (-1);
-
-#if defined(SUNOS) || defined(ULTRIX) || defined(NeXT)
-	/* Truncate */
-	ftruncate(fd, n);
-#endif
+	if (p != n) return (1);
 
 	/* Success */
 	return (0);
@@ -707,7 +689,7 @@ errr fd_chop(int fd, huge n)
 /*
  * Hack -- attempt to read data from a file descriptor
  */
-errr fd_read(int fd, char *buf, huge n)
+errr fd_read(int fd, char *buf, size_t n)
 {
 	/* Verify the fd */
 	if (fd < 0) return (-1);
@@ -740,7 +722,7 @@ errr fd_read(int fd, char *buf, huge n)
 /*
  * Hack -- Attempt to write data to a file descriptor
  */
-errr fd_write(int fd, cptr buf, huge n)
+errr fd_write(int fd, cptr buf, size_t n)
 {
 	/* Verify the fd */
 	if (fd < 0) return (-1);

@@ -17,7 +17,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
-/* assert.h */
+#include <assert.h>
 
 #include <stdarg.h>
 #include <stdio.h>

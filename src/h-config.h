@@ -113,11 +113,6 @@
 #define PATH_SEP "/"
 #define PATH_SEPC '/'
 
-#ifdef MACINTOSH
-# undef PATH_SEP
-# define PATH_SEP ":"
-#endif
-
 #ifdef WINDOWS
 # undef PATH_SEP
 # undef PATH_SEPC

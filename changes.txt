@@ -47,3 +47,4 @@ removed.
 - Updated h-type.h to Vanilla standard.
 - Clean ups in main-gcu.c.
 - Removed unused Term_user.
+- Started upgrading z-form to Vanilla standard.

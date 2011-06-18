@@ -28,25 +28,25 @@
 /**** Available Functions ****/
 
 /* Format arguments into given bounded-length buffer */
-extern unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp);
+extern size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp);
 
 /* Simple interface to "vstrnfmt()" */
-extern unsigned int strnfmt(char *buf, unsigned int max, const char * fmt, ...);
-
-/* Simple interface to "vstrnfmt()", assuming infinite length */
-extern unsigned int strfmt(char *buf, const char * fmt, ...);
+extern size_t strnfmt(char *buf, size_t max, const char *fmt, ...);
 
 /* Format arguments into a static resizing buffer */
 extern char *vformat(const char * fmt, va_list vp);
 
+/* Free the memory allocated for the format buffer */
+extern void vformat_kill(void);
+
 /* Simple interface to "vformat()" */
-extern char *format(const char * fmt, ...);
+extern char *format(const char *fmt, ...);
 
 /* Vararg interface to "plog()", using "format()" */
-extern void plog_fmt(const char * fmt, ...);
+extern void plog_fmt(const char *fmt, ...);
 
 /* Vararg interface to "quit()", using "format()" */
-extern void quit_fmt(const char * fmt, ...);
+extern void quit_fmt(const char *fmt, ...);
 
 
 #endif /* INCLUDED_Z_FORM_H */

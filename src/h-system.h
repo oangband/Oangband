@@ -16,7 +16,7 @@
 /** ANSI C headers **/
 #include <ctype.h>
 #include <errno.h>
-/* limits.h */
+#include <limits.h>
 /* assert.h */
 
 #include <stdarg.h>

@@ -4,43 +4,8 @@
 #ifndef INCLUDED_H_TYPE_H
 #define INCLUDED_H_TYPE_H
 
-/*
- * Basic "types".
- *
- * Note the attempt to make all basic types have 4 letters.
- * This improves readibility and standardizes the code.
- *
- * Likewise, all complex types are at least 4 letters.
- * Thus, almost every three letter word is a legal variable.
- * But beware of certain reserved words ('for' and 'if' and 'do').
- *
- * Note that the type used in structures for bit flags should be uint.
- * As long as these bit flags are sequential, they will be space smart.
- *
- * Note that on some machines, apparently "signed char" is illegal.
- *
- * It must be true that char/byte takes exactly 1 byte
- * It must be true that sind/uind takes exactly 2 bytes
- * It must be true that sbig/ubig takes exactly 4 bytes
- *
- * On Sparc's, a sint takes 4 bytes (2 is legal)
- * On Sparc's, a uint takes 4 bytes (2 is legal)
- * On Sparc's, a long takes 4 bytes (8 is legal)
- * On Sparc's, a huge takes 4 bytes (8 is legal)
- * On Sparc's, a vptr takes 4 bytes (8 is legal)
- *
- * Note that some files have already been included by "h-include.h"
- * These include <stdio.h> and <sys/types>, which define some types
- * In particular, uint is defined so we do not have to define it
- *
- * Also, see <limits.h> for min/max values for sind, uind, long, huge
- * (SHRT_MIN, SHRT_MAX, USHRT_MAX, LONG_MIN, LONG_MAX, ULONG_MAX)
- * These limits should be verified and coded into "h-constant.h".
- */
 
-
-
-/*** Special 4 letter names for some standard types ***/
+/* Remove: vptr, cptr, uint, huge */
 
 
 /* A standard pointer (to "void" because ANSI C says so) */
@@ -48,11 +13,6 @@ typedef void *vptr;
 
 /* A simple pointer (to unmodifiable strings) */
 typedef const char *cptr;
-
-
-/* Error codes for function return values */
-/* Success = 0, Failure = -N, Problem = +N */
-typedef int errr;
 
 
 /*
@@ -67,24 +27,6 @@ typedef int errr;
 #undef huge
 #define huge huge_hack
 
-/*
- * Hack -- prevent problems with C++
- */
-#undef bool
-#define bool bool_hack
-
-
-/* Note that unsigned values can cause math problems */
-/* An unsigned byte of memory */
-typedef unsigned char byte;
-
-/* Note that a bool is smaller than a full "int" */
-/* Simple True/False type */
-typedef char bool;
-
-
-/* A signed, standard integer (at least 2 bytes) */
-typedef int sint;
 
 /* An unsigned, "standard" integer (often pre-defined) */
 typedef unsigned int uint;
@@ -94,18 +36,92 @@ typedef unsigned int uint;
 typedef unsigned long huge;
 
 
-/* Signed/Unsigned 16 bit value */
-typedef signed short s16b;
-typedef unsigned short u16b;
 
-/* Signed/Unsigned 32 bit value */
-#ifdef L64	/* 64 bit longs */
-typedef signed int s32b;
-typedef unsigned int u32b;
+
+/*** Define the basic game types ***/
+
+/*
+ * errr is an error code
+ *
+ * A "byte" is an unsigned byte of memory.
+ * s16b/u16b are exactly 2 bytes (when possible)
+ * s32b/u32b are exactly 4 bytes (when possible)
+ */
+
+/* C++ defines its own bool type, so we hack around it */
+#undef bool
+#define bool bool_hack
+
+typedef int errr;
+
+
+/*
+ * Use a real bool type where possible
+ */
+#ifdef HAVE_STDBOOL_H
+
+  #include <stdbool.h>
+
+  #define TRUE  true
+  #define FALSE false
+
 #else
-typedef signed long s32b;
-typedef unsigned long u32b;
+
+  /* Use a char otherwise */
+  typedef char bool;
+
+  #undef TRUE
+  #undef FALSE
+
+  #define TRUE	1
+  #define FALSE	0
+
 #endif
+
+
+
+/*
+ * Use guaranteed-size ints where possible
+ */
+#ifdef HAVE_STDINT_H
+
+  /* Use guaranteed-size types */
+  #include <stdint.h>
+
+  typedef uint8_t byte;
+
+  typedef uint16_t u16b;
+  typedef int16_t s16b;
+
+  typedef uint32_t u32b;
+  typedef int32_t s32b;
+
+  typedef uint64_t u64b;
+  typedef int64_t s64b;
+
+#define MAX_UCHAR       UINT8_MAX
+#define MAX_SHORT       INT16_MAX
+
+#else /* HAVE_STDINT_H */
+
+  /* Try hacks instead (not guaranteed to work) */
+  typedef unsigned char byte;
+  typedef signed short s16b;
+  typedef unsigned short u16b;
+
+#define MAX_UCHAR       UCHAR_MAX
+#define MAX_SHORT       32767
+
+  /* Detect >32-bit longs */
+  #if (UINT_MAX == 0xFFFFFFFFUL) && (ULONG_MAX > 0xFFFFFFFFUL)
+    typedef signed int s32b;
+    typedef unsigned int u32b;
+  #else
+    typedef signed long s32b;
+    typedef unsigned long u32b;
+  #endif
+
+#endif /* HAVE_STDINT_H */
 
 #endif /* INCLUDED_H_TYPE_H */
 

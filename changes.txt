@@ -43,3 +43,4 @@ removed.
 - Trimming down a number of compile-time options.
 - Cleaned up setuid code a bit, started on z-file.
 - Removed support for savefiles older than Angband 2.7.0.
+- Updated h-type.h to Vanilla standard.

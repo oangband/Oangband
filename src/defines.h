@@ -326,17 +326,6 @@
 #define MESSAGE_BUF	32768
 
 
-/*
- * Maximum value storable in a "byte" (hard-coded)
- */
-#define MAX_UCHAR       255
-
-/*
- * Maximum value storable in a "s16b" (hard-coded)
- */
-#define MAX_SHORT       32767
-
-
 
 /*** Oangband Themed Levels ***/
 

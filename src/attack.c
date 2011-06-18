@@ -308,7 +308,7 @@ void spread_target(int spread_y_cen, int spread_x_cen, int spread_roll, int *spr
  * vary according to the quality of the hit.  A distinction is made between
  * visible and invisible monsters.
  */
-static sint critical_melee(int chance, int sleeping_bonus, bool visible,
+static int critical_melee(int chance, int sleeping_bonus, bool visible,
 	char m_name[], const object_type *o_ptr)
 {
 	bool vorpal = FALSE;
@@ -454,7 +454,7 @@ static sint critical_melee(int chance, int sleeping_bonus, bool visible,
  * messages, which vary according to the quality of the hit.  A distinction
  * is made between visible and invisible monsters.
  */
-static sint critical_shot(int chance, int sleeping_bonus, bool thrown_weapon,
+static int critical_shot(int chance, int sleeping_bonus, bool thrown_weapon,
 	bool visible, char m_name[], object_type *o_ptr)
 {
 	char o_name[80];
@@ -567,7 +567,7 @@ static sint critical_shot(int chance, int sleeping_bonus, bool thrown_weapon,
  * Players may have temporary magic branding.  Paladins do not get to apply
  * temporary brands to missiles.  A nasty hack, but necessary. -LM-
  */
-static sint adjust_dam(long *die_average, object_type *o_ptr, monster_type *m_ptr, u32b f1, u32b f2, u32b f3)
+static int adjust_dam(long *die_average, object_type *o_ptr, monster_type *m_ptr, u32b f1, u32b f2, u32b f3)
 {
 	monster_race *r_ptr = &r_info[m_ptr->r_idx];
 	monster_lore *l_ptr = &l_list[m_ptr->r_idx];

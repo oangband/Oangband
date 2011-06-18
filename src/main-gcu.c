@@ -48,14 +48,13 @@
 #ifdef USE_GCU
 
 /*
- * Hack -- play games with "bool"
- */
-#undef bool
-
-/*
  * Include the proper "header" file
  */
 #ifdef USE_NCURSES
+# ifdef HAVE_STDBOOL_H
+#  define NCURSES_ENABLE_STDBOOL_H 0
+# endif
+
 # include <ncurses.h>
 #else
 # include <curses.h>

@@ -971,7 +971,7 @@ void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3)
  */
 #define object_desc_int_macro(T,I) do { \
  \
-	sint i = (I); \
+	int i = (I); \
  \
 	/* Negative */ \
 	if (i < 0) \

@@ -3017,7 +3017,7 @@ void ang_sort(vptr u, vptr v, int n)
 /*
  * Extract a direction (or zero) from a character
  */
-sint target_dir(char ch)
+int target_dir(char ch)
 {
 	int d = 0;
 

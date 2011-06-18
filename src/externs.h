@@ -196,9 +196,9 @@ extern term *angband_term[TERM_WIN_MAX];
 extern char angband_term_name[TERM_WIN_MAX][16];
 extern byte angband_color_table[256][4];
 extern char angband_sound_name[SOUND_MAX][16];
-extern sint view_n;
+extern int view_n;
 extern u16b *view_g;
-extern sint temp_n;
+extern int temp_n;
 extern u16b *temp_g;
 extern byte *temp_y;
 extern byte *temp_x;
@@ -357,7 +357,7 @@ extern void player_clear(bool full);
 extern void player_birth(void);
 
 /* cave.c */
-extern sint distance(int y1, int x1, int y2, int x2);
+extern int distance(int y1, int x1, int y2, int x2);
 extern bool los(int y1, int x1, int y2, int x2);
 extern bool no_lite(void);
 extern bool cave_valid_bold(int y, int x);
@@ -383,7 +383,7 @@ extern void wiz_lite(bool wizard);
 extern void wiz_dark(void);
 extern void town_illuminate(bool daytime);
 extern void cave_set_feat(int y, int x, int feat);
-extern sint project_path(u16b *gp, int range, \
+extern int project_path(u16b *gp, int range, \
                          int y1, int x1, int y2, int x2, int flg);
 extern byte projectable(int y1, int x1, int y2, int x2, int flg);
 extern void scatter(int *yp, int *xp, int y, int x, int d, int m);
@@ -861,7 +861,7 @@ extern errr fd_close(int fd);
 extern errr check_modification_date(int fd, cptr template_file);
 extern void text_to_ascii(char *buf, cptr str);
 extern void ascii_to_text(char *buf, cptr str);
-extern sint macro_find_exact(cptr pat);
+extern int macro_find_exact(cptr pat);
 extern errr macro_add(char *pat, char *act);
 extern errr macro_init(void);
 extern void flush(void);
@@ -971,7 +971,7 @@ extern void verify_panel(void);
 extern cptr look_mon_desc(int m_idx);
 extern void ang_sort_aux(vptr u, vptr v, int p, int q);
 extern void ang_sort(vptr u, vptr v, int n);
-extern sint target_dir(char ch);
+extern int target_dir(char ch);
 extern bool target_able(int m_idx);
 extern bool target_okay(void);
 extern void target_set_monster(int m_idx);

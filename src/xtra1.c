@@ -2078,7 +2078,7 @@ static int weight_limit(void)
  * a large, heavy weapon - training that many classes simply do not have the
  * time or inclination for.  -LM-
  */
-sint add_special_melee_skill (byte pclass, s16b weight, object_type *o_ptr)
+int add_special_melee_skill (byte pclass, s16b weight, object_type *o_ptr)
 {
 	int add_skill = 0;
 	int max_weight = 0;
@@ -2153,7 +2153,7 @@ sint add_special_melee_skill (byte pclass, s16b weight, object_type *o_ptr)
  * Calculate all class and race-based bonuses and
  * penalties to missile Skill
  */
-sint add_special_missile_skill (byte pclass, s16b weight, object_type *o_ptr)
+int add_special_missile_skill (byte pclass, s16b weight, object_type *o_ptr)
 {
 	int add_skill = 0;
 

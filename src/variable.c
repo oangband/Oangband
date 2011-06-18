@@ -335,13 +335,13 @@ char angband_sound_name[SOUND_MAX][16] =
 /*
  * Array[VIEW_MAX] used by "update_view()"
  */
-sint view_n = 0;
+int view_n = 0;
 u16b *view_g;
 
 /*
  * Arrays[TEMP_MAX] used for various things
  */
-sint temp_n = 0;
+int temp_n = 0;
 u16b *temp_g;
 byte *temp_y;
 byte *temp_x;

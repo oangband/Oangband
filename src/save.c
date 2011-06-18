@@ -1965,15 +1965,15 @@ bool load_player(bool silent)
 		/* Parse "ancient" savefiles */
 		if (sf_major < 2)
 		{
-			/* Attempt to load */
-			err = rd_savefile_old();
+			/* Do not attempt to load */
+			err = -1;
 		}
 
 		/* Parse "old" savefiles */
 		else if ((sf_major == 2) && (sf_minor < 7))
 		{
-			/* Attempt to load */
-			err = rd_savefile_old();
+			/* Do not attempt to load */
+			err = -1;
 		}
 
 		/* Parse "new" savefiles */

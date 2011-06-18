@@ -562,7 +562,6 @@ extern void init_file_paths(char *path);
 extern void init_angband(void);
 
 /* load1.c */
-extern errr rd_savefile_old(void);
 extern void save_savefile_names();
 extern void savefile_load(bool force_menu);
 

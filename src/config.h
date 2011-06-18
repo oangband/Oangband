@@ -150,13 +150,6 @@
 #define ALLOW_TEMPLATES
 
 /*
- * OPTION: Allow loading of pre-2.7.0 savefiles.  Note that it takes
- * about 15K of code in "save-old.c" to parse the old savefile format.
- */
-#define ALLOW_OLD_SAVEFILES
-
-
-/*
  * OPTION: Delay the loading of the "f_text" array until it is actually
  * needed, saving ~1K, since "feature" descriptions are unused.
  */
@@ -446,7 +439,6 @@
 # undef ALLOW_VISUALS
 # undef ALLOW_MACROS
 # undef MONSTER_FLOW
-# undef ALLOW_OLD_SAVEFILES
 # undef ALLOW_BORG
 # undef ALLOW_DEBUG
 # undef ALLOW_SPOILERS

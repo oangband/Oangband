@@ -74,11 +74,11 @@
 
 /* Free an array of N things of type T at P, return NULL */
 #define C_FREE(P,N,T) \
-	(T*)(rnfree(P, (N) * sizeof(T)))
+	(T*)(rnfree(P))
 
 /* Free one thing of type T at P, return NULL */
 #define FREE(P,T) \
-	(T*)(rnfree(P, sizeof(T)))
+	(T*)(rnfree(P))
 
 
 /* Allocate, and return, an array of type T[N] */
@@ -121,7 +121,7 @@
 /**** Available variables ****/
 
 /* Replacement hook for "rnfree()" */
-extern void *(*rnfree_aux)(void *, size_t);
+extern void *(*rnfree_aux)(void *);
 
 /* Replacement hook for "ralloc()" */
 extern void *(*ralloc_aux)(size_t);
@@ -130,13 +130,13 @@ extern void *(*ralloc_aux)(size_t);
 /**** Available functions ****/
 
 /* De-allocate a given amount of memory */
-extern void *rnfree(void *p, size_t len);
+extern void *rnfree(void *p);
 
 /* Allocate (and return) 'len', or exit */
 extern void *ralloc(size_t len);
 
 /* Create a "dynamic string" */
-extern char *string_make(char *str);
+extern char *string_make(const char *str);
 
 /* Free a string allocated with "string_make()" */
 extern errr string_free(char *str);
@@ -144,7 +144,7 @@ extern errr string_free(char *str);
 
 
 
-#endif
+#endif /* INCLUDED_Z_VIRT_H */
 
 
 

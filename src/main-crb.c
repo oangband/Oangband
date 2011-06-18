@@ -520,7 +520,6 @@
 /* OAngband 1.1.0 characteristics */
 /* #define USE_DOUBLE_TILES */
 #define ALLOW_BIG_SCREEN
-/* #define NEW_ZVIRT_HOOKS */
 /* I can't ditch these, yet, because there are many variants */
 #define USE_TRANSPARENCY
 #define ZANG_AUTO_SAVE
@@ -6071,11 +6070,7 @@ static void *lifeboat = NULL;
 /*
  * Hook to "release" memory
  */
-#ifdef NEW_ZVIRT_HOOKS /* [V] removed the unused 'size' argument. */
 static void *hook_rnfree(void *v)
-#else
-static void *hook_rnfree(void *v, size_t size)
-#endif /* NEW_ZVIRT_HOOKS */
 {
 
 #ifdef USE_MALLOC

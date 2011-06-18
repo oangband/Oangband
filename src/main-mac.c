@@ -3977,10 +3977,8 @@ static void * lifeboat = NULL;
 /*
  * Hook to "release" memory
  */
-static void *hook_rnfree(void *v, size_t size)
+static void *hook_rnfree(void *v)
 {
-
-#pragma unused (size)
 
 #ifdef USE_MALLOC
 

@@ -18,18 +18,17 @@
 /*
  * Optional auxiliary "rnfree" function
  */
-void * (*rnfree_aux)(void *, size_t) = NULL;
+void * (*rnfree_aux)(void *) = NULL;
 
 /*
  * Free some memory (allocated by ralloc), return NULL
  */
-void *rnfree(void *p, size_t len)
+void *rnfree(void *p)
 {
-	/* Easy to free zero bytes */
-	if (len == 0) return (NULL);
+	if (!p) return (NULL);
 
 	/* Use the "aux" function */
-	if (rnfree_aux) return ((*rnfree_aux)(p, len));
+	if (rnfree_aux) return ((*rnfree_aux)(p));
 
 	/* Use "free" */
 	free ((char*)(p));
@@ -76,7 +75,7 @@ void *ralloc(size_t len)
 /*
  * Allocate a constant string, containing the same thing as 'str'
  */
-char *string_make(char *str)
+char *string_make(const char *str)
 {
 	size_t len = 0;
 	const char * t = str;
@@ -105,16 +104,11 @@ char *string_make(char *str)
  */
 errr string_free(char *str)
 {
-	size_t len = 0;
-
 	/* Succeed on non-strings */
 	if (!str) return (0);
 
-	/* Count the number of chars in 'str' plus the terminator */
-	while (str[len++]) /* loop */;
-
 	/* Kill the buffer of chars we must have allocated above */
-	rnfree((void *)(str), len);
+	rnfree((void *)(str));
 
 	/* Success */
 	return (0);

@@ -276,7 +276,7 @@ term *Term = NULL;
 /*
  * Nuke a term_win (see below)
  */
-static errr term_win_nuke(term_win *s, int w, int h)
+static errr term_win_nuke(term_win *s)
 {
 	/* Free the window access arrays */
 	FREE(s->a);
@@ -307,21 +307,20 @@ static errr term_win_init(term_win *s, int w, int h)
 	int y;
 
 	/* Make the window access arrays */
-	C_MAKE(s->a, h, byte*);
-	C_MAKE(s->c, h, char*);
+	s->a = C_ZNEW(h, byte *);
+	s->c = C_ZNEW(h, char *);
 
 	/* Make the window content arrays */
-	C_MAKE(s->va, h * w, byte);
-	C_MAKE(s->vc, h * w, char);
+	s->va = C_ZNEW(h * w, byte);
+	s->vc = C_ZNEW(h * w, char);
 
 	/* Make the terrain access arrays */
-	C_MAKE(s->ta, h, byte*);
-	C_MAKE(s->tc, h, char*);
+	s->ta = C_ZNEW(h, byte *);
+	s->tc = C_ZNEW(h, char *);
 
 	/* Make the terrain content arrays */
-	C_MAKE(s->vta, h * w, byte);
-	C_MAKE(s->vtc, h * w, char);
-
+	s->vta = C_ZNEW(h * w, byte);
+	s->vtc = C_ZNEW(h * w, char);
 
 	/* Prepare the window access arrays */
 	for (y = 0; y < h; y++)
@@ -438,6 +437,7 @@ static errr Term_text_hack(int x, int y, int n, byte a, const char *cp)
 	return (-1);
 }
 
+
 /*
  * Hack -- fake hook for "Term_pict()" (see above)
  */
@@ -449,7 +449,6 @@ static errr Term_pict_hack(int x, int y, int n, const byte *ap, const char *cp, 
 	/* Oops */
 	return (-1);
 }
-
 
 
 /*** Efficient routines ***/
@@ -687,8 +686,8 @@ static void Term_fresh_row_pict(int y, int x1, int x2)
 			if (fn)
 			{
 				/* Draw pending attr/char pairs */
-				(void)((*Term->pict_hook)(fx, y, fn,
-				       &scr_aa[fx], &scr_cc[fx],&scr_taa[fx], &scr_tcc[fx]));
+				(void)((*Term->pict_hook)(fx, y, fn, &scr_aa[fx], &scr_cc[fx],
+							  &scr_taa[fx], &scr_tcc[fx]));
 
 				/* Forget */
 				fn = 0;
@@ -697,6 +696,7 @@ static void Term_fresh_row_pict(int y, int x1, int x2)
 			/* Skip */
 			continue;
 		}
+
 		/* Save new contents */
 		old_aa[x] = na;
 		old_cc[x] = nc;
@@ -712,8 +712,8 @@ static void Term_fresh_row_pict(int y, int x1, int x2)
 	if (fn)
 	{
 		/* Draw pending attr/char pairs */
-		(void)((*Term->pict_hook)(fx, y, fn,
-			&scr_aa[fx], &scr_cc[fx], &scr_taa[fx], &scr_tcc[fx]));
+		(void)((*Term->pict_hook)(fx, y, fn, &scr_aa[fx], &scr_cc[fx],
+					  &scr_taa[fx], &scr_tcc[fx]));
 	}
 }
 
@@ -731,7 +731,6 @@ static void Term_fresh_row_both(int y, int x1, int x2)
 
 	byte *old_aa = Term->old->a[y];
 	char *old_cc = Term->old->c[y];
-
 	byte *scr_aa = Term->scr->a[y];
 	char *scr_cc = Term->scr->c[y];
 
@@ -1176,7 +1175,8 @@ errr Term_fresh(void)
 		Term_xtra(TERM_XTRA_CLEAR, 0);
 
 		/* Hack -- clear all "cursor" data */
-		old->cv = old->cu = old->cx = old->cy = 0;
+		old->cv = old->cu = FALSE;
+		old->cx = old->cy = 0;
 
 		/* Wipe each row */
 		for (y = 0; y < h; y++)
@@ -1407,7 +1407,7 @@ errr Term_fresh(void)
 /*
  * Set the cursor visibility
  */
-errr Term_set_cursor(int v)
+errr Term_set_cursor(bool v)
 {
 	/* Already done */
 	if (Term->scr->cv == v) return (1);
@@ -1533,7 +1533,7 @@ errr Term_addch(byte a, char c)
  * positive value, future calls to either function will
  * return negative ones.
  */
-errr Term_addstr(int n, byte a, const char * s)
+errr Term_addstr(int n, byte a, const char *s)
 {
 	int k;
 
@@ -1617,8 +1617,8 @@ errr Term_erase(int x, int y, int n)
 	int x1 = -1;
 	int x2 = -1;
 
-	int na = Term->attr_blank;
-	int nc = Term->char_blank;
+	byte na = Term->attr_blank;
+	char nc = Term->char_blank;
 
 	byte *scr_aa;
 	char *scr_cc;
@@ -1642,8 +1642,8 @@ errr Term_erase(int x, int y, int n)
 	/* Scan every column */
 	for (i = 0; i < n; i++, x++)
 	{
-		int oa = scr_aa[x];
-		int oc = scr_cc[x];
+		byte oa = scr_aa[x];
+		char oc = scr_cc[x];
 
 		/* Hack -- Ignore "non-changes" */
 		if ((oa == na) && (oc == nc)) continue;
@@ -1805,7 +1805,7 @@ errr Term_redraw_section(int x1, int y1, int x2, int y2)
 /*
  * Extract the cursor visibility
  */
-errr Term_get_cursor(int *v)
+errr Term_get_cursor(bool *v)
 {
 	/* Extract visibility */
 	(*v) = Term->scr->cv;
@@ -2023,7 +2023,7 @@ errr Term_save(void)
 	if (!Term->mem)
 	{
 		/* Allocate window */
-		MAKE(Term->mem, term_win);
+		Term->mem = ZNEW(term_win);
 
 		/* Initialize window */
 		term_win_init(Term->mem, w, h);
@@ -2053,7 +2053,7 @@ errr Term_load(void)
 	if (!Term->mem)
 	{
 		/* Allocate window */
-		MAKE(Term->mem, term_win);
+		Term->mem = ZNEW(term_win);
 
 		/* Initialize window */
 		term_win_init(Term->mem, w, h);
@@ -2096,7 +2096,7 @@ errr Term_exchange(void)
 	if (!Term->tmp)
 	{
 		/* Allocate window */
-		MAKE(Term->tmp, term_win);
+		Term->tmp = ZNEW(term_win);
 
 		/* Initialize window */
 		term_win_init(Term->tmp, w, h);
@@ -2172,11 +2172,11 @@ errr Term_resize(int w, int h)
 	hold_tmp = Term->tmp;
 
 	/* Create new scanners */
-	C_MAKE(Term->x1, h, byte);
-	C_MAKE(Term->x2, h, byte);
+	Term->x1 = C_ZNEW(h, byte);
+	Term->x2 = C_ZNEW(h, byte);
 
 	/* Create new window */
-	MAKE(Term->old, term_win);
+	Term->old = ZNEW(term_win);
 
 	/* Initialize new window */
 	term_win_init(Term->old, w, h);
@@ -2185,7 +2185,7 @@ errr Term_resize(int w, int h)
 	term_win_copy(Term->old, hold_old, wid, hgt);
 
 	/* Create new window */
-	MAKE(Term->scr, term_win);
+	Term->scr = ZNEW(term_win);
 
 	/* Initialize new window */
 	term_win_init(Term->scr, w, h);
@@ -2197,7 +2197,7 @@ errr Term_resize(int w, int h)
 	if (hold_mem)
 	{
 		/* Create new window */
-		MAKE(Term->mem, term_win);
+		Term->mem = ZNEW(term_win);
 
 		/* Initialize new window */
 		term_win_init(Term->mem, w, h);
@@ -2210,7 +2210,7 @@ errr Term_resize(int w, int h)
 	if (hold_tmp)
 	{
 		/* Create new window */
-		MAKE(Term->tmp, term_win);
+		Term->tmp = ZNEW(term_win);
 
 		/* Initialize new window */
 		term_win_init(Term->tmp, w, h);
@@ -2224,7 +2224,7 @@ errr Term_resize(int w, int h)
 	FREE(hold_x2);
 
 	/* Nuke */
-	term_win_nuke(hold_old, Term->wid, Term->hgt);
+	term_win_nuke(hold_old);
 
 	/* Kill */
 	FREE(hold_old);
@@ -2234,7 +2234,7 @@ errr Term_resize(int w, int h)
 	if (Term->old->cy >= h) Term->old->cu = 1;
 
 	/* Nuke */
-	term_win_nuke(hold_scr, Term->wid, Term->hgt);
+	term_win_nuke(hold_scr);
 
 	/* Kill */
 	FREE(hold_scr);
@@ -2247,7 +2247,7 @@ errr Term_resize(int w, int h)
 	if (hold_mem)
 	{
 		/* Nuke */
-		term_win_nuke(hold_mem, Term->wid, Term->hgt);
+		term_win_nuke(hold_mem);
 
 		/* Kill */
 		FREE(hold_mem);
@@ -2261,7 +2261,7 @@ errr Term_resize(int w, int h)
 	if (hold_tmp)
 	{
 		/* Nuke */
-		term_win_nuke(hold_tmp, Term->wid, Term->hgt);
+		term_win_nuke(hold_tmp);
 
 		/* Kill */
 		FREE(hold_tmp);
@@ -2349,10 +2349,6 @@ errr Term_activate(term *t)
  */
 errr term_nuke(term *t)
 {
-	int w = t->wid;
-	int h = t->hgt;
-
-
 	/* Hack -- Call the special "nuke" hook */
 	if (t->active_flag)
 	{
@@ -2368,13 +2364,13 @@ errr term_nuke(term *t)
 
 
 	/* Nuke "displayed" */
-	term_win_nuke(t->old, w, h);
+	term_win_nuke(t->old);
 
 	/* Kill "displayed" */
 	FREE(t->old);
 
 	/* Nuke "requested" */
-	term_win_nuke(t->scr, w, h);
+	term_win_nuke(t->scr);
 
 	/* Kill "requested" */
 	FREE(t->scr);
@@ -2383,7 +2379,7 @@ errr term_nuke(term *t)
 	if (t->mem)
 	{
 		/* Nuke "memorized" */
-		term_win_nuke(t->mem, w, h);
+		term_win_nuke(t->mem);
 
 		/* Kill "memorized" */
 		FREE(t->mem);
@@ -2393,7 +2389,7 @@ errr term_nuke(term *t)
 	if (t->tmp)
 	{
 		/* Nuke "temporary" */
-		term_win_nuke(t->tmp, w, h);
+		term_win_nuke(t->tmp);
 
 		/* Kill "temporary" */
 		FREE(t->tmp);
@@ -2433,7 +2429,7 @@ errr term_init(term *t, int w, int h, int k)
 	t->key_size = k;
 
 	/* Allocate the input queue */
-	C_MAKE(t->key_queue, t->key_size, char);
+	t->key_queue = C_ZNEW(t->key_size, char);
 
 
 	/* Save the size */
@@ -2441,19 +2437,19 @@ errr term_init(term *t, int w, int h, int k)
 	t->hgt = h;
 
 	/* Allocate change arrays */
-	C_MAKE(t->x1, h, byte);
-	C_MAKE(t->x2, h, byte);
+	t->x1 = C_ZNEW(h, byte);
+	t->x2 = C_ZNEW(h, byte);
 
 
 	/* Allocate "displayed" */
-	MAKE(t->old, term_win);
+	t->old = ZNEW(term_win);
 
 	/* Initialize "displayed" */
 	term_win_init(t->old, w, h);
 
 
 	/* Allocate "requested" */
-	MAKE(t->scr, term_win);
+	t->scr = ZNEW(term_win);
 
 	/* Initialize "requested" */
 	term_win_init(t->scr, w, h);

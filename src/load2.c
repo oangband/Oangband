@@ -1755,7 +1755,7 @@ static int convert_saved_names(void)
 	{
 		name_size += strlen(names[i]) + 1;	/* skip first char */
 	}
-	if ((a_base = ralloc(name_size)) == NULL)
+	if ((a_base = mem_alloc(name_size)) == NULL)
 	{
 		note("Memory allocation error");
 		return 1;

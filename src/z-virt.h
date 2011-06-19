@@ -13,36 +13,6 @@
 
 #include "h-basic.h"
 
-/*
- * Memory management routines.
- *
- * Set ralloc_aux to modify the memory allocation routine.
- * Set rnfree_aux to modify the memory de-allocation routine.
- *
- * These routines work best as a *replacement* for malloc/free.
- *
- * The string_make() and string_free() routines handle dynamic strings.
- * A dynamic string is a string allocated at run-time, which should not
- * be modified once it has been created.
- *
- * Note the macros below which simplify the details of allocation,
- * deallocation, setting, clearing, casting, size extraction, etc.
- *
- * The macros MAKE/C_MAKE have a "procedural" metaphor,
- * and they actually modify their arguments.
- *
- * Note that, for some reason, some allocation macros may disallow
- * "stars" in type names, but you can use typedefs to circumvent
- * this.  For example, instead of "type **p; MAKE(p,type*);" you
- * can use "typedef type *type_ptr; type_ptr *p; MAKE(p,type_ptr)".
- *
- * Note that it is assumed that "memset()" will function correctly,
- * in particular, that it returns its first argument.
- */
-
-
-
-/**** Available macros ****/
 
 
 /* Set every byte in an array of type T[N], at location P, to V, and return P */
@@ -56,34 +26,29 @@
 
 /* Wipe an array of type T[N], at location P, and return P */
 #define C_WIPE(P, N, T) \
-	(T*)(memset((char*)(P), 0, (N) * sizeof(T)))
+	(memset((P), 0, (N) * sizeof(T)))
 
 /* Wipe a thing of type T, at location P, and return P */
 #define WIPE(P, T) \
-	(T*)(memset((char*)(P), 0, sizeof(T)))
+	(memset((P), 0, sizeof(T)))
 
 
 /* Load an array of type T[N], at location P1, from another, at location P2 */
 #define C_COPY(P1, P2, N, T) \
-	(T*)(memcpy((char*)(P1),(char*)(P2), (N) * sizeof(T)))
+	(memcpy((P1), (P2), (N) * sizeof(T)))
 
 /* Load a thing of type T, at location P1, from another, at location P2 */
 #define COPY(P1, P2, T) \
-	(T*)(memcpy((char*)(P1),(char*)(P2), sizeof(T)))
-
-
-/* Free one thing at P, return NULL */
-#define FREE(P) \
-	(rnfree(P), P = NULL)
+	(memcpy((P1), (P2), sizeof(T)))
 
 
 /* Allocate, and return, an array of type T[N] */
 #define C_RNEW(N, T) \
-	((T*)(ralloc((N) * sizeof(T))))
+	(T*)(mem_alloc((N) * sizeof(T)))
 
 /* Allocate, and return, a thing of type T */
 #define RNEW(T) \
-	((T*)(ralloc(sizeof(T))))
+	(T*)(mem_alloc(sizeof(T)))
 
 
 /* Allocate, wipe, and return an array of type T[N] */
@@ -103,34 +68,24 @@
 #define MAKE(P,T) \
 	((P)=ZNEW(T))
 
+/* Free one thing at P, return NULL */
+#define FREE(P) (mem_free(P), P = NULL)
 
-/**** Available variables ****/
+/* Replacements for malloc() and friends that die on failure. */
+void *mem_alloc(size_t len);
+void *mem_zalloc(size_t len);
+void mem_free(void *p);
+void *mem_realloc(void *p, size_t len);
 
-/* Replacement hook for "rnfree()" */
-extern void *(*rnfree_aux)(void *);
+char *string_make(const char *str);
+void string_free(char *str);
+char *string_append(char *s1, const char *s2);
 
-/* Replacement hook for "ralloc()" */
-extern void *(*ralloc_aux)(size_t);
+enum {
+	MEM_POISON_ALLOC = 0x00000001,
+	MEM_POISON_FREE  = 0x00000002
+};
 
-
-/**** Available functions ****/
-
-/* De-allocate a given amount of memory */
-extern void *rnfree(void *p);
-
-/* Allocate (and return) 'len', or exit */
-extern void *ralloc(size_t len);
-
-/* Create a "dynamic string" */
-extern char *string_make(const char *str);
-
-/* Free a string allocated with "string_make()" */
-extern void string_free(char *str);
-
-
-
+extern unsigned int mem_flags;
 
 #endif /* INCLUDED_Z_VIRT_H */
-
-
-

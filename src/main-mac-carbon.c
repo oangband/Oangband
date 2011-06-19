@@ -5769,48 +5769,6 @@ static void * lifeboat = NULL;
 
 
 /*
- * Hook to "release" memory
- */
-static void *hook_rnfree(void *v)
-{
-
-#ifdef USE_MALLOC
-
-	/* Alternative method */
-	free(v);
-
-#else
-
-	/* Dispose */
-	DisposePtr(v);
-
-#endif
-
-	/* Success */
-	return (NULL);
-}
-
-/*
- * Hook to "allocate" memory
- */
-static void *hook_ralloc(size_t size)
-{
-
-#ifdef USE_MALLOC
-
-	/* Make a new pointer */
-	return (malloc(size));
-
-#else
-
-	/* Make a new pointer */
-	return (NewPtr(size));
-
-#endif
-
-}
-
-/*
  * Hook to tell the user something important
  */
 static void hook_plog(const char * str)
@@ -6081,10 +6039,6 @@ int main(void)
 	_ftype = 'TEXT';
 
 #endif
-
-	/* Hook in some "z-virt.c" hooks */
-	rnfree_aux = hook_rnfree;
-	ralloc_aux = hook_ralloc;
 
 	/* Hooks in some "z-util.c" hooks */
 	plog_aux = hook_plog;

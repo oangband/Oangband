@@ -1,6 +1,9 @@
 /* File: z-form.c */
 
 /*
+ * File: z-form.c
+ * Purpose: Low-level text formatting (snprintf() replacement)
+ *
  * Copyright (c) 1997 Ben Harrison
  *
  * This software may be copied and distributed for educational, research,
@@ -555,6 +558,32 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 
 	/* Return length */
 	return (n);
+}
+
+
+/*
+ * Add a formatted string to the end of a string
+ */
+void strnfcat(char *str, size_t max, size_t *end, const char *fmt, ...)
+{
+	size_t len;
+
+	va_list vp;
+
+	/* Paranoia */
+	if (*end >= max) return;
+
+	/* Begin the Varargs Stuff */
+	va_start(vp, fmt);
+
+	/* Build the string */
+	len = vstrnfmt(&str[*end], max - *end, fmt, vp);
+
+	/* End the Varargs Stuff */
+	va_end(vp);
+
+	/* Change the end value */
+	*end += len;
 }
 
 

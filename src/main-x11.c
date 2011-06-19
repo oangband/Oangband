@@ -1,6 +1,9 @@
 /* File: main-x11.c */
 
 /*
+ * File: main-x11.c
+ * Purpose: Provide support for the X Windowing System
+ *
  * Copyright (c) 1997 Ben Harrison, and others
  *
  * This software may be copied and distributed for educational, research,
@@ -8,6 +11,7 @@
  * are included in all such copies.
  */
 
+#include "angband.h"
 
 /*
  * This file helps Angband work with UNIX/X11 computers.
@@ -92,9 +96,6 @@
 
 
 
-#include "angband.h"
-
-
 #ifdef USE_X11
 
 #include <X11/Xlib.h>
@@ -107,6 +108,42 @@
  * Include some helpful X11 code.
  */
 #include "maid-x11.c"
+
+
+#ifndef IsModifierKey
+
+/*
+ * Keysym macros, used on Keysyms to test for classes of symbols
+ * These were stolen from one of the X11 header files
+ */
+
+#define IsKeypadKey(keysym) \
+  (((unsigned)(keysym) >= XK_KP_Space) && ((unsigned)(keysym) <= XK_KP_Equal))
+
+#define IsCursorKey(keysym) \
+  (((unsigned)(keysym) >= XK_Home)     && ((unsigned)(keysym) <  XK_Select))
+
+#define IsPFKey(keysym) \
+  (((unsigned)(keysym) >= XK_KP_F1)    && ((unsigned)(keysym) <= XK_KP_F4))
+
+#define IsFunctionKey(keysym) \
+  (((unsigned)(keysym) >= XK_F1)       && ((unsigned)(keysym) <= XK_F35))
+
+#define IsMiscFunctionKey(keysym) \
+  (((unsigned)(keysym) >= XK_Select)   && ((unsigned)(keysym) <  XK_KP_Space))
+
+#define IsModifierKey(keysym) \
+  (((unsigned)(keysym) >= XK_Shift_L)  && ((unsigned)(keysym) <= XK_Hyper_R))
+
+#endif /* IsModifierKey */
+
+
+/*
+ * Checks if the keysym is a special key or a normal key
+ * Assume that XK_MISCELLANY keysyms are special
+ */
+#define IsSpecialKey(keysym) \
+  ((unsigned)(keysym) >= 0xFF00)
 
 
 /*
@@ -315,6 +352,7 @@ struct infofnt
 	const char *name;
 
 	s16b wid;
+	s16b twid;
 	s16b hgt;
 	s16b asc;
 
@@ -324,6 +362,40 @@ struct infofnt
 	unsigned int nuke:1;
 };
 
+
+
+/*
+ * Forward declare
+ */
+typedef struct term_data term_data;
+
+/*
+ * A structure for each "term"
+ */
+struct term_data
+{
+	term t;
+
+	infofnt *fnt;
+
+	infowin *win;
+
+	int tile_wid;
+	int tile_wid2; /* Tile-width with bigscreen */
+	int tile_hgt;
+
+#ifdef USE_GRAPHICS
+
+	XImage *tiles;
+
+	/* Tempory storage for overlaying tiles. */
+	XImage *TmpImage;
+
+#endif
+	/* Pointers to allocated data, needed to clear up memory */
+	XClassHint *classh;
+	XSizeHints *sizeh;
+};
 
 
 
@@ -421,6 +493,73 @@ static infoclr *Infoclr = (infoclr*)(NULL);
 static infofnt *Infofnt = (infofnt*)(NULL);
 
 
+/*
+ * Actual color table
+ */
+static infoclr *clr[256];
+
+
+
+/**** Code imported from the old maid-x11.c ****/
+
+#ifdef SUPPORT_GAMMA
+static bool gamma_table_ready = FALSE;
+static int gamma_val = 0;
+#endif /* SUPPORT_GAMMA */
+
+
+/*
+ * Hack -- Convert an RGB value to an X11 Pixel, or die.
+ */
+static u32b create_pixel(Display *dpy, byte red, byte green, byte blue)
+{
+	Colormap cmap = DefaultColormapOfScreen(DefaultScreenOfDisplay(dpy));
+
+	XColor xcolour;
+
+#ifdef SUPPORT_GAMMA
+
+	if (!gamma_table_ready)
+	{
+		const char *str = getenv("ANGBAND_X11_GAMMA");
+		if (str != NULL) gamma_val = atoi(str);
+
+		gamma_table_ready = TRUE;
+
+		/* Only need to build the table if gamma exists */
+		if (gamma_val) build_gamma_table(gamma_val);
+	}
+
+	/* Hack -- Gamma Correction */
+	if (gamma_val > 0)
+	{
+		red = gamma_table[red];
+		green = gamma_table[green];
+		blue = gamma_table[blue];
+	}
+
+#endif /* SUPPORT_GAMMA */
+
+	/* Build the color */
+
+	xcolour.red = red * 255;
+	xcolour.green = green * 255;
+	xcolour.blue = blue * 255;
+	xcolour.flags = DoRed | DoGreen | DoBlue;
+
+	/* Attempt to Allocate the Parsed color */
+	if (!(XAllocColor(dpy, cmap, &xcolour)))
+	{
+		quit_fmt("Couldn't allocate bitmap color #%04x%04x%04x\n",
+			 xcolour.red, xcolour.green, xcolour.blue);
+	}
+
+	return (xcolour.pixel);
+}
+
+
+
+
 
 /**** Generic code ****/
 
@@ -500,7 +639,7 @@ static errr Metadpy_init_2(Display *dpy, const char *name)
 	m->fg = m->white;
 
 	/* Calculate the Maximum allowed Pixel value.  */
-	m->zg = (1 << m->depth) - 1;
+	m->zg = ((Pixell)1 << m->depth) - 1;
 
 	/* Save various default Flag Settings */
 	m->color = ((m->depth > 1) ? 1 : 0);
@@ -1214,6 +1353,7 @@ static errr Infofnt_prepare(XFontStruct *info)
 	ifnt->asc = info->ascent;
 	ifnt->hgt = info->ascent + info->descent;
 	ifnt->wid = cs->width;
+	ifnt->twid = cs->width;
 
 	/* Success */
 	return (0);
@@ -1284,6 +1424,9 @@ static errr Infofnt_init_data(const char *name)
 	/* Mark it as nukable */
 	Infofnt->nuke = 1;
 
+	/* HACK - force all fonts to be printed character by character */
+	Infofnt->mono = 1;
+
 	/* Success */
 	return (0);
 }
@@ -1295,7 +1438,9 @@ static errr Infofnt_init_data(const char *name)
 static errr Infofnt_text_std(int x, int y, const char *str, int len)
 {
 	int i;
+	int w, h;
 
+	term_data *td = (term_data*)(Term->data);
 
 	/*** Do a brief info analysis ***/
 
@@ -1305,23 +1450,37 @@ static errr Infofnt_text_std(int x, int y, const char *str, int len)
 	/* Get the length of the string */
 	if (len < 0) len = strlen(str);
 
-
 	/*** Decide where to place the string, vertically ***/
 
 	/* Ignore Vertical Justifications */
-	y = (y * Infofnt->hgt) + Infofnt->asc + Infowin->oy;
+	y = (y * td->tile_hgt) + Infowin->oy;
 
 
 	/*** Decide where to place the string, horizontally ***/
 
 	/* Line up with x at left edge of column 'x' */
-	x = (x * Infofnt->wid) + Infowin->ox;
+	x = (x * td->tile_wid) + Infowin->ox;
+
+
+	/*** Erase the background ***/
+
+	/* The total width will be 'len' chars * standard width */
+	w = len * td->tile_wid;
+
+	/* Simply do 'td->tile_hgt' (a single row) high */
+	h = td->tile_hgt;
+
+	/* Fill the background */
+	XFillRectangle(Metadpy->dpy, Infowin->win, clr[TERM_DARK]->gc, x, y, w, h);
 
 
 	/*** Actually draw 'str' onto the infowin ***/
 
 	/* Be sure the correct font is ready */
 	XSetFont(Metadpy->dpy, Infoclr->gc, Infofnt->info->fid);
+
+
+	y += Infofnt->asc;
 
 
 	/*** Handle the fake mono we can enforce on fonts ***/
@@ -1334,7 +1493,7 @@ static errr Infofnt_text_std(int x, int y, const char *str, int len)
 		{
 			/* Note that the Infoclr is set up to contain the Infofnt */
 			XDrawImageString(Metadpy->dpy, Infowin->win, Infoclr->gc,
-			                 x + i * Infofnt->wid + Infofnt->off, y, str + i, 1);
+			                 x + i * td->tile_wid + Infofnt->off, y, str + i, 1);
 		}
 	}
 
@@ -1345,7 +1504,6 @@ static errr Infofnt_text_std(int x, int y, const char *str, int len)
 		XDrawImageString(Metadpy->dpy, Infowin->win, Infoclr->gc,
 		                 x, y, str, len);
 	}
-
 
 	/* Success */
 	return (0);
@@ -1359,6 +1517,7 @@ static errr Infofnt_text_non(int x, int y, const char *str, int len)
 {
 	int w, h;
 
+	term_data *td = (term_data*)(Term->data);
 
 	/*** Find the width ***/
 
@@ -1366,19 +1525,19 @@ static errr Infofnt_text_non(int x, int y, const char *str, int len)
 	if (len < 0) len = strlen(str);
 
 	/* The total width will be 'len' chars * standard width */
-	w = len * Infofnt->wid;
+	w = len * td->tile_wid;
 
 
 	/*** Find the X dimensions ***/
 
 	/* Line up with x at left edge of column 'x' */
-	x = x * Infofnt->wid + Infowin->ox;
+	x = x * td->tile_wid + Infowin->ox;
 
 
 	/*** Find other dimensions ***/
 
-	/* Simply do 'Infofnt->hgt' (a single row) high */
-	h = Infofnt->hgt;
+	/* Simply do 'td->tile_hgt' (a single row) high */
+	h = td->tile_hgt;
 
 	/* Simply do "at top" in row 'y' */
 	y = y * h + Infowin->oy;
@@ -1408,46 +1567,11 @@ static errr Infofnt_text_non(int x, int y, const char *str, int len)
  */
 static infoclr *xor;
 
-/*
- * Actual color table
- */
-static infoclr *clr[256];
 
 /*
  * Color info (unused, red, green, blue).
  */
-static byte color_table[256][4];
-
-/*
- * Forward declare
- */
-typedef struct term_data term_data;
-
-/*
- * A structure for each "term"
- */
-struct term_data
-{
-	term t;
-
-	infofnt *fnt;
-
-	infowin *win;
-
-#ifdef USE_GRAPHICS
-
-	XImage *tiles;
-
-	/* Tempory storage for overlaying tiles. */
-	XImage *TmpImage;
-
-#endif
-	/* Pointers to allocated data, needed to clear up memory */
-	XClassHint *classh;
-	XSizeHints *sizeh;
-
-};
-
+static byte color_table_x11[256][4];
 
 /*
  * The number of term data structures
@@ -1465,16 +1589,17 @@ static term_data data[MAX_TERM_DATA];
  */
 char settings[1024];
 
+
+
 /*
  * Remember the number of terminal windows open
  */
 static int term_windows_open;
 
 
+
 /*
  * Process a keypress event
- *
- * Also appears in "main-xaw.c".
  */
 static void react_keypress(XKeyEvent *xev)
 {
@@ -1766,8 +1891,8 @@ static errr CheckEvent(bool wait)
 			Infowin->h = xev->xconfigure.height;
 
 			/* Determine "proper" number of rows/cols */
-			cols = ((Infowin->w - (ox + ox)) / td->fnt->wid);
-			rows = ((Infowin->h - (oy + oy)) / td->fnt->hgt);
+			cols = ((Infowin->w - (ox + ox)) / td->tile_wid);
+			rows = ((Infowin->h - (oy + oy)) / td->tile_hgt);
 
 			/* Hack -- minimal size */
 			if (cols < 1) cols = 1;
@@ -1781,8 +1906,8 @@ static errr CheckEvent(bool wait)
 			}
 
 			/* Desired size of window */
-			wid = cols * td->fnt->wid + (ox + ox);
-			hgt = rows * td->fnt->hgt + (oy + oy);
+			wid = cols * td->tile_wid + (ox + ox);
+			hgt = rows * td->tile_hgt + (oy + oy);
 
 			/* Resize the Term (if needed) */
 			(void) Term_resize(cols, rows);
@@ -1846,24 +1971,24 @@ static errr Term_xtra_x11_react(void)
 		/* Check the colors */
 		for (i = 0; i < 256; i++)
 		{
-			if ((color_table[i][0] != angband_color_table[i][0]) ||
-			    (color_table[i][1] != angband_color_table[i][1]) ||
-			    (color_table[i][2] != angband_color_table[i][2]) ||
-			    (color_table[i][3] != angband_color_table[i][3]))
+			if ((color_table_x11[i][0] != angband_color_table[i][0]) ||
+			    (color_table_x11[i][1] != angband_color_table[i][1]) ||
+			    (color_table_x11[i][2] != angband_color_table[i][2]) ||
+			    (color_table_x11[i][3] != angband_color_table[i][3]))
 			{
 				Pixell pixel;
 
 				/* Save new values */
-				color_table[i][0] = angband_color_table[i][0];
-				color_table[i][1] = angband_color_table[i][1];
-				color_table[i][2] = angband_color_table[i][2];
-				color_table[i][3] = angband_color_table[i][3];
+				color_table_x11[i][0] = angband_color_table[i][0];
+				color_table_x11[i][1] = angband_color_table[i][1];
+				color_table_x11[i][2] = angband_color_table[i][2];
+				color_table_x11[i][3] = angband_color_table[i][3];
 
 				/* Create pixel */
 				pixel = create_pixel(Metadpy->dpy,
-				                     color_table[i][1],
-				                     color_table[i][2],
-				                     color_table[i][3]);
+				                     color_table_x11[i][1],
+				                     color_table_x11[i][2],
+				                     color_table_x11[i][3]);
 
 				/* Change the foreground */
 				Infoclr_set(clr[i]);
@@ -1919,17 +2044,33 @@ static errr Term_xtra_x11(int n, int v)
 
 
 /*
- * Draw the cursor as an inverted rectangle.
- *
- * Consider a rectangular outline like "main-mac.c".  XXX XXX
+ * Draw the cursor as a rectangular outline
  */
 static errr Term_curs_x11(int x, int y)
 {
-	/* Draw the cursor */
-	Infoclr_set(xor);
+	term_data *td = (term_data*)(Term->data);
 
-	/* Hilite the cursor character */
-	Infofnt_text_non(x, y, " ", 1);
+	XDrawRectangle(Metadpy->dpy, Infowin->win, xor->gc,
+		       x * td->tile_wid + Infowin->ox,
+		       y * td->tile_hgt + Infowin->oy,
+		       td->tile_wid - 1, td->tile_hgt - 1);
+
+	/* Success */
+	return (0);
+}
+
+
+/*
+ * Draw the double width cursor as a rectangular outline
+ */
+static errr Term_bigcurs_x11(int x, int y)
+{
+	term_data *td = (term_data*)(Term->data);
+
+	XDrawRectangle(Metadpy->dpy, Infowin->win, xor->gc,
+		       x * td->tile_wid + Infowin->ox,
+		       y * td->tile_hgt + Infowin->oy,
+		       td->tile_wid2 - 1, td->tile_hgt - 1);
 
 	/* Success */
 	return (0);
@@ -2123,6 +2264,12 @@ static void save_prefs(void)
 
 		/* Window specific font name */
 		fprintf(fff, "FONT_%d=%s\n", i, td->fnt->name);
+
+		/* Window specific tile width */
+		fprintf(fff, "TILE_WIDTH_%d=%d\n", i, td->tile_wid);
+
+		/* Window specific tile height */
+		fprintf(fff, "TILE_HEIGHT_%d=%d\n", i, td->tile_hgt);
 
 		/* Footer */
 		fprintf(fff, "\n");
@@ -2336,6 +2483,28 @@ static errr term_data_init(term_data *td, int i)
 				}
 				continue;
 			}
+
+			/* Window specific tile width */
+			strnfmt(cmd, sizeof(cmd), "TILE_WIDTH_%d", i);
+
+			if (prefix(buf, cmd))
+			{
+				str = strstr(buf, "=");
+				val = (str != NULL) ? atoi(str + 1) : -1;
+				if (val > 0) td->tile_wid = val;
+				continue;
+			}
+
+			/* Window specific tile height */
+			strnfmt(cmd, sizeof(cmd), "TILE_HEIGHT_%d", i);
+
+			if (prefix(buf, cmd))
+			{
+				str = strstr(buf, "=");
+				val = (str != NULL) ? atoi(str + 1) : -1;
+				if (val > 0) td->tile_hgt = val;
+				continue;
+			}
 		}
 
 		/* Close */
@@ -2399,12 +2568,19 @@ static errr term_data_init(term_data *td, int i)
 	Infofnt_set(td->fnt);
 	if (Infofnt_init_data(font)) quit_fmt("Couldn't load the requested font. (%s)", font);
 
+	/* Use proper tile size */
+	if (td->tile_wid <= 0) td->tile_wid = td->fnt->twid;
+	if (td->tile_hgt <= 0) td->tile_hgt = td->fnt->hgt;
+
+	/* Don't allow bigtile mode - one day maybe NRM */
+	td->tile_wid2 = td->tile_wid;
+
 	/* Hack -- key buffer size */
 	num = ((i == 0) ? 1024 : 16);
 
 	/* Assume full size windows */
-	wid = cols * td->fnt->wid + (ox + ox);
-	hgt = rows * td->fnt->hgt + (oy + oy);
+	wid = cols * td->tile_wid + (ox + ox);
+	hgt = rows * td->tile_hgt + (oy + oy);
 
 	/* Create a top-window */
 	td->win = ZNEW(infowin);
@@ -2447,10 +2623,10 @@ static errr term_data_init(term_data *td, int i)
 	{
 		/* Main window min size is 80x24 */
 		sh->flags = PMinSize | PMaxSize;
-		sh->min_width = 80 * td->fnt->wid + (ox + ox);
-		sh->min_height = 24 * td->fnt->hgt + (oy + oy);
-		sh->max_width = 255 * td->fnt->wid + (ox + ox);
-		sh->max_height = 255 * td->fnt->hgt + (oy + oy);
+		sh->min_width = 80 * td->tile_wid + (ox + ox);
+		sh->min_height = 24 * td->tile_hgt + (oy + oy);
+		sh->max_width = 255 * td->tile_wid + (ox + ox);
+		sh->max_height = 255 * td->tile_hgt + (oy + oy);
 	}
 
 	/* Other windows can be shrunk to 1x1 */
@@ -2458,16 +2634,16 @@ static errr term_data_init(term_data *td, int i)
 	{
 		/* Other windows */
 		sh->flags = PMinSize | PMaxSize;
-		sh->min_width = td->fnt->wid + (ox + ox);
-		sh->min_height = td->fnt->hgt + (oy + oy);
-		sh->max_width = 255 * td->fnt->wid + (ox + ox);
-		sh->max_height = 255 * td->fnt->hgt + (oy + oy);
+		sh->min_width = td->tile_wid + (ox + ox);
+		sh->min_height = td->tile_hgt + (oy + oy);
+		sh->max_width = 255 * td->tile_wid + (ox + ox);
+		sh->max_height = 255 * td->tile_hgt + (oy + oy);
 	}
 
 	/* Resize increment */
 	sh->flags |= PResizeInc;
-	sh->width_inc = td->fnt->wid;
-	sh->height_inc = td->fnt->hgt;
+	sh->width_inc = td->tile_wid;
+	sh->height_inc = td->tile_hgt;
 
 	/* Base window size */
 	sh->flags |= PBaseSize;
@@ -2677,7 +2853,7 @@ errr init_x11(int argc, char **argv)
 	term_windows_open = num_term;
 
 	/* Prepare cursor color */
-	MAKE(xor, infoclr);
+	xor = ZNEW(infoclr);
 	Infoclr_set(xor);
 	Infoclr_init_ppn(Metadpy->fg, Metadpy->bg, "xor", 0);
 
@@ -2692,10 +2868,10 @@ errr init_x11(int argc, char **argv)
 		Infoclr_set(clr[i]);
 
 		/* Acquire Angband colors */
-		color_table[i][0] = angband_color_table[i][0];
-		color_table[i][1] = angband_color_table[i][1];
-		color_table[i][2] = angband_color_table[i][2];
-		color_table[i][3] = angband_color_table[i][3];
+		color_table_x11[i][0] = angband_color_table[i][0];
+		color_table_x11[i][1] = angband_color_table[i][1];
+		color_table_x11[i][2] = angband_color_table[i][2];
+		color_table_x11[i][3] = angband_color_table[i][3];
 
 		/* Default to monochrome */
 		pixel = ((i == 0) ? Metadpy->bg : Metadpy->fg);
@@ -2705,9 +2881,9 @@ errr init_x11(int argc, char **argv)
 		{
 			/* Create pixel */
 			pixel = create_pixel(Metadpy->dpy,
-			                     color_table[i][1],
-			                     color_table[i][2],
-			                     color_table[i][3]);
+			                     color_table_x11[i][1],
+			                     color_table_x11[i][2],
+			                     color_table_x11[i][3]);
 		}
 
 		/* Initialize the color */
@@ -2841,4 +3017,5 @@ errr init_x11(int argc, char **argv)
 }
 
 #endif /* USE_X11 */
+
 

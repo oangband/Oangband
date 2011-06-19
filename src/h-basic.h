@@ -106,9 +106,76 @@ typedef int errr;
 #endif /* HAVE_STDINT_H */
 
 
-/* Basic constants and macros */
-#include "h-define.h"
+/*
+ * Define some simple constants
+ *
+ * MOVE to z-file.h XXX
+ */
+
+
+/*
+ * Hack -- force definitions -- see fd_seek()
+ */
+#ifndef SEEK_SET
+# define SEEK_SET	0
+#endif
+#ifndef SEEK_CUR
+# define SEEK_CUR	1
+#endif
+#ifndef SEEK_END
+# define SEEK_END	2
+#endif
+
+/*
+ * Hack -- force definitions -- see fd_lock()  XXX XXX XXX
+ */
+#ifndef F_UNLCK
+# define F_UNLCK	0
+#endif
+#ifndef F_RDLCK
+# define F_RDLCK	1
+#endif
+#ifndef F_WRLCK
+# define F_WRLCK	2
+#endif
+
+
+/*** Basic math macros ***/
+
+#undef MIN
+#undef MAX
+#undef ABS
+#undef SGN
+#undef CMP
+
+#define MIN(a,b)	(((a) > (b)) ? (b)  : (a))
+#define MAX(a,b)	(((a) < (b)) ? (b)  : (a))
+#define ABS(a)		(((a) < 0)   ? (-(a)) : (a))
+#define SGN(a)		(((a) < 0)   ? (-1) : ((a) != 0))
+#define CMP(a,b) ((a) < (b) ? -1 : ((b) < (a) ? 1 : 0))
+
+
+/*** Useful fairly generic macros ***/
+
+/*
+ * Given an array, determine how many elements are in it.
+ */
+#define N_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
+
+
+
+/*** Some hackish character manipulation ***/
+
+/*
+ * Note that all "index" values must be "lowercase letters", while
+ * all "digits" must be "digits".  Control characters can be made
+ * from any legal characters.  XXX XXX XXX
+ */
+#define A2I(X)	((X) - 'a')
+#define I2A(X)	((X) + 'a')
+#define D2I(X)	((X) - '0')
+#define I2D(X)	((X) + '0')
+#define KTRL(X)	((X) & 0x1F)
+#define ESCAPE	'\033'
 
 #endif /* INCLUDED_H_BASIC_H */
-
-

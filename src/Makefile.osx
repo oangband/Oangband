@@ -164,7 +164,7 @@ depend:
 
 HDRS = \
   h-basic.h \
-  h-define.h h-system.h h-config.h
+  h-system.h h-config.h
 
 INCS = \
   angband.h \

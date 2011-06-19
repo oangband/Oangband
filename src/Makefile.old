@@ -141,7 +141,7 @@ SUFFIXES = .o .c .h
 HDRS = \
   angband.h externs.h defines.h types.h config.h \
   z-term.h z-rand.h z-form.h z-virt.h z-util.h \
-  h-basic.h h-define.h h-system.h h-config.h
+  h-basic.h h-system.h h-config.h
   
 SRCS = \
   z-util.c z-virt.c z-form.c z-rand.c z-term.c \

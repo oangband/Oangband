@@ -3864,8 +3864,3 @@
 #define TERM_WIN_MAX 8
 
 
-/*
- * Given an array, determine how many elements are in the array.
- */
-#define N_ELEMENTS(a) (int)(sizeof(a) / sizeof((a)[0]))
-

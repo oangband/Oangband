@@ -267,6 +267,16 @@ errr path_build(char *buf, int max, const char * path, const char * file)
 
 /*** File-handling API ***/
 
+/* Private structure to hold file pointers and useful info. */
+struct ang_file
+{
+	FILE *fh;
+	char *fname;
+	file_mode mode;
+};
+
+
+
 /** Utility functions **/
 
 /*
@@ -297,8 +307,41 @@ bool file_move(const char *fname, const char *newname)
 	return (rename(buf, aux) == 0);
 }
 
+/** File-handle functions **/
 
+/*
+ * Open file 'fname', in mode 'mode', with filetype 'ftype'.
+ * Returns file handle or NULL.
+ */
+ang_file *file_open(const char *fname, file_mode mode, file_type ftype)
+{
+	ang_file *f = ZNEW(ang_file);
+	char buf[1024];
 
+	(void)ftype;
+
+	/* Get the system-specific path */
+	path_parse(buf, sizeof(buf), fname);
+
+	switch (mode)
+	{
+		case MODE_WRITE:  f->fh = fopen(buf, "wb"); break;
+		case MODE_READ:   f->fh = fopen(buf, "rb"); break;
+		case MODE_APPEND: f->fh = fopen(buf, "a+"); break;
+		default:          f->fh = fopen(buf, "__");
+       	}
+
+	if (f->fh == NULL)
+	{
+		FREE(f);
+		return NULL;
+	}
+
+	f->fname = string_make(buf);
+	f->mode = mode;
+
+	return f;
+}
 
 
 /*
@@ -326,6 +369,19 @@ FILE *my_fopen(const char * file, const char * mode)
 	return (fff);
 }
 
+/*
+ * Close file handle 'f'.
+ */
+bool file_close(ang_file *f)
+{
+	if (fclose(f->fh) != 0)
+		return FALSE;
+
+	FREE(f->fname);
+	FREE(f);
+
+	return TRUE;
+}
 
 /*
  * Hack -- replacement for "fclose()"
@@ -341,6 +397,186 @@ errr my_fclose(FILE *fff)
 	/* Success */
 	return (0);
 }
+
+
+/** Locking functions **/
+
+/*
+ * Lock a file using POSIX locks, on platforms where this is supported.
+ */
+void file_lock(ang_file *f)
+{
+
+}
+
+/*
+ * Unlock a file locked using file_lock().
+ */
+void file_unlock(ang_file *f)
+{
+
+}
+
+/*
+ * Read a single, 8-bit character from file 'f'.
+ */
+bool file_readc(ang_file *f, byte *b)
+{
+	int i = fgetc(f->fh);
+
+	if (i == EOF)
+		return FALSE;
+
+	*b = (byte)i;
+	return TRUE;
+}
+
+/*
+ * Write a single, 8-bit character 'b' to file 'f'.
+ */
+bool file_writec(ang_file *f, byte b)
+{
+	return file_write(f, (const char *)&b, 1);
+}
+
+/*
+ * Append 'n' bytes of array 'buf' to file 'f'.
+ */
+bool file_write(ang_file *f, const char *buf, size_t n)
+{
+	return fwrite(buf, 1, n, f->fh) == n;
+}
+
+/** Line-based IO **/
+
+/*
+ * Read a line of text from file 'f' into buffer 'buf' of size 'n' bytes.
+ */
+#define TAB_COLUMNS 4
+
+bool file_getl(ang_file *f, char *buf, size_t len)
+{
+	bool seen_cr = FALSE;
+	byte b;
+	size_t i = 0;
+
+	bool check_encodes = FALSE;
+
+	/* Leave a byte for the terminating 0 */
+	size_t max_len = len - 1;
+
+	while (i < max_len)
+	{
+		char c;
+
+		if (!file_readc(f, &b))
+		{
+			buf[i] = '\0';
+			return (i == 0) ? FALSE : TRUE;
+		}
+
+		c = (char) b;
+
+		if (c == '\r')
+		{
+			seen_cr = TRUE;
+			continue;
+		}
+
+		if (seen_cr && c != '\n')
+		{
+			fseek(f->fh, -1, SEEK_CUR);
+			buf[i] = '\0';
+			return TRUE;
+		}
+
+		if (c == '\n')
+		{
+			buf[i] = '\0';
+			return TRUE;
+		}
+
+		/* Expand tabs */
+		if (c == '\t')
+		{
+			/* Next tab stop */
+			size_t tabstop = ((i + TAB_COLUMNS) / TAB_COLUMNS) * TAB_COLUMNS;
+			if (tabstop >= len) break;
+
+			/* Convert to spaces */
+			while (i < tabstop)
+				buf[i++] = ' ';
+
+			continue;
+		}
+
+		/* Ignore non-printables */
+		/* else if (my_isprint((unsigned char)c)) */
+		/* { */
+		/* 	buf[i++] = c; */
+
+		/* 	/\* Notice possible encode *\/ */
+		/* 	if (c == '[') check_encodes = TRUE; */
+
+		/* 	continue; */
+		/* } */
+		else
+		{
+			buf[i++] = '?';
+			continue;
+		}
+	}
+
+	buf[i] = '\0';
+	return TRUE;
+}
+
+/*
+ * Append a line of text 'buf' to the end of file 'f', usign system-dependent
+ * line ending.
+ */
+bool file_put(ang_file *f, const char *buf)
+{
+	return file_write(f, buf, strlen(buf));
+}
+
+
+/**
+ * Append a formatted line of text to the end of file 'f'.
+ *
+ * file_putf() is the ellipsis version. Most file output will call this
+ * version. It calls file_vputf() to do the real work. It returns TRUE
+ * if the write was successful and FALSE otherwise.
+ */
+bool file_putf(ang_file *f, const char *fmt, ...)
+{
+	va_list vp;
+	bool status;
+
+	if (!f) return FALSE;
+
+	va_start(vp, fmt);
+	status = file_vputf(f, fmt, vp);
+	va_end(vp);
+
+	return status;
+}
+
+/**
+ * Append a formatted line of text to the end of file 'f'.
+ *
+ * file_vputf() is the va_list version. It returns TRUE if the write was
+ * successful and FALSE otherwise.
+ */
+bool file_vputf(ang_file *f, const char *fmt, va_list vp)
+{
+	char buf[1024];
+
+	if (!f) return FALSE;
+
+	(void)vstrnfmt(buf, sizeof(buf), fmt, vp);
+	return file_put(f, buf);
+} 
 
 
 #ifdef HAVE_MKSTEMP
@@ -552,8 +788,6 @@ int fd_open(const char * file, int flags)
 #endif
 
 }
-
-/** Locking functions **/
 
 /*
  * Hack -- attempt to lock a file descriptor

@@ -30,6 +30,50 @@ int player_uid;
 int player_egid;
 
 
+
+/*
+ * Drop permissions
+ */
+void safe_setuid_drop(void)
+{
+
+#ifdef SET_UID
+
+	if (setuid(getuid()) != 0)
+	{
+		quit("setuid(): cannot set permissions correctly!");
+	}
+	if (setgid(getgid()) != 0)
+	{
+		quit("setgid(): cannot set permissions correctly!");
+	}
+
+#endif
+
+}
+
+
+/*
+ * Grab permissions
+ */
+void safe_setuid_grab(void)
+{
+
+#ifdef SET_UID
+
+	if (setuid(player_euid) != 0)
+	{
+		quit("setuid(): cannot set permissions correctly!");
+	}
+	if (setgid(player_egid) != 0)
+	{
+		quit("setgid(): cannot set permissions correctly!");
+	}
+
+#endif
+
+}
+
 /*
  * The concept of the "file" routines below (and elsewhere) is that all
  * file handling should be done using as few routines as possible, since
@@ -221,6 +265,42 @@ errr path_build(char *buf, int max, const char * path, const char * file)
 }
 
 
+/*** File-handling API ***/
+
+/** Utility functions **/
+
+/*
+ * Delete file 'fname'.
+ */
+bool file_delete(const char *fname)
+{
+	char buf[1024];
+
+	/* Get the system-specific paths */
+	path_parse(buf, sizeof(buf), fname);
+
+	return (remove(buf) == 0);
+}
+
+/*
+ * Hack -- attempt to move a file
+ */
+bool file_move(const char *fname, const char *newname)
+{
+	char buf[1024];
+	char aux[1024];
+
+	/* Get the system-specific paths */
+	path_parse(buf, sizeof(buf), fname);
+	path_parse(aux, sizeof(aux), newname);
+
+	return (rename(buf, aux) == 0);
+}
+
+
+
+
+
 /*
  * Hack -- replacement for "fopen()"
  */
@@ -385,40 +465,6 @@ errr my_fputs(FILE *fff, const char * buf, size_t n)
 #endif /* O_BINARY */
 
 
-/*
- * Hack -- attempt to delete a file
- */
-errr fd_kill(const char * file)
-{
-	char buf[1024];
-
-	/* Hack -- Try to parse the path */
-	if (path_parse(buf, sizeof(buf), file)) return (-1);
-
-	/* Remove, return 0 on success, non-zero on failure */
-	return (remove(buf));
-}
-
-
-/*
- * Hack -- attempt to move a file
- */
-errr fd_move(const char * file, const char * what)
-{
-	char buf[1024];
-	char aux[1024];
-
-	/* Hack -- Try to parse the path */
-	if (path_parse(buf, sizeof(buf), file)) return (-1);
-
-	/* Hack -- Try to parse the path */
-	if (path_parse(aux, sizeof(aux), what)) return (-1);
-
-	/* Rename, return 0 on success, non-zero on failure */
-	return (rename(buf, aux));
-}
-
-
 #if 0   /* Broken! XXX XXX */
 /*
  * Hack -- attempt to copy a file
@@ -507,6 +553,7 @@ int fd_open(const char * file, int flags)
 
 }
 
+/** Locking functions **/
 
 /*
  * Hack -- attempt to lock a file descriptor
@@ -546,6 +593,7 @@ errr fd_lock(int fd, int what)
 	return (0);
 }
 
+/** Byte-based IO and functions **/
 
 /*
  * Hack -- attempt to seek on a file descriptor
@@ -654,49 +702,5 @@ errr fd_close(int fd)
 }
 
 
-
-
-/*
- * Hack -- drop permissions
- */
-void safe_setuid_drop(void)
-{
-
-#ifdef SET_UID
-
-	if (setuid(getuid()) != 0)
-	{
-		quit("setuid(): cannot set permissions correctly!");
-	}
-	if (setgid(getgid()) != 0)
-	{
-		quit("setgid(): cannot set permissions correctly!");
-	}
-
-#endif
-
-}
-
-
-/*
- * Hack -- grab permissions
- */
-void safe_setuid_grab(void)
-{
-
-#ifdef SET_UID
-
-	if (setuid(player_euid) != 0)
-	{
-		quit("setuid(): cannot set permissions correctly!");
-	}
-	if (setgid(player_egid) != 0)
-	{
-		quit("setgid(): cannot set permissions correctly!");
-	}
-
-#endif
-
-}
 
 

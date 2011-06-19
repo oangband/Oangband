@@ -456,7 +456,7 @@ static errr init_f_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "terrain.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -708,7 +708,7 @@ static errr init_k_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "object.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -938,7 +938,7 @@ static errr init_h_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_hist.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -1166,7 +1166,7 @@ static errr init_b_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "cost_adj.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -1383,7 +1383,7 @@ static errr init_g_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "shop_own.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -1708,7 +1708,7 @@ static errr init_a_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "artifact.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -1960,7 +1960,7 @@ static errr init_s_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "set_item.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -2212,7 +2212,7 @@ static errr init_e_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "ego_item.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -2464,7 +2464,7 @@ static errr init_r_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "monster.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -2715,7 +2715,7 @@ static errr init_v_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "vault.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -2961,7 +2961,7 @@ static errr init_rp_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_race.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -3208,7 +3208,7 @@ static errr init_cp_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_class.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -3432,7 +3432,7 @@ static errr init_ch_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_chest.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);
@@ -3645,7 +3645,7 @@ static errr init_mp_info(void)
 	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_magic.raw");
 
 	/* Kill the old file */
-	fd_kill(buf);
+	file_delete(buf);
 
 	/* Attempt to create the raw file */
 	fd = fd_make(buf, mode);

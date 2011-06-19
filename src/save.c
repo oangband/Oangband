@@ -1655,7 +1655,7 @@ static bool save_player_aux(char *name)
 		}
 
 		/* Remove "broken" files */
-		if (!ok) fd_kill(name);
+		if (!ok) file_delete(name);
 	}
 
 
@@ -1686,7 +1686,7 @@ bool save_player(void)
 	strcat(safe, ".new");
 
 	/* Remove it */
-	fd_kill(safe);
+	file_delete(safe);
 
 	/* Attempt to save the player */
 	if (save_player_aux(safe))
@@ -1698,16 +1698,16 @@ bool save_player(void)
 		strcat(temp, ".old");
 
 		/* Remove it */
-		fd_kill(temp);
+		file_delete(temp);
 
 		/* Preserve old savefile */
-		fd_move(savefile, temp);
+		file_move(savefile, temp);
 
 		/* Activate new savefile */
-		fd_move(safe, savefile);
+		file_move(safe, savefile);
 
 		/* Remove preserved savefile */
-		fd_kill(temp);
+		file_delete(temp);
 
 		/* Hack -- Pretend the character was loaded */
 		character_loaded = TRUE;
@@ -1719,7 +1719,7 @@ bool save_player(void)
 		strcat(temp, ".lok");
 
 		/* Remove lock file */
-		fd_kill(temp);
+		file_delete(temp);
 
 #endif
 
@@ -2098,7 +2098,7 @@ bool load_player(bool silent)
 		strcat(temp, ".lok");
 
 		/* Remove lock */
-		fd_kill(temp);
+		file_delete(temp);
 	}
 
 #endif
@@ -2541,7 +2541,7 @@ static void savefile_menu(bool *new_game, bool *reload_menu)
 			path_build(filename, sizeof(filename), ANGBAND_DIR_SAVE, tmp);
 
 			/* Delete this file */
-			fd_kill(filename);
+			file_delete(filename);
 
 			/* Reload the savefile record */
 			max = load_savefile_names() + 2;

@@ -35,8 +35,7 @@ EXTRA_oangband_SOURCES = \
   Makefile.gtk \
   Makefile.lcc Makefile.std \
   Makefile.win Makefile.mpw Makefile.osx \
-  angband.rc angband.ico readdib.c readdib.h \
-  maid-x11.c maid-x11.h 
+  angband.rc angband.ico readdib.c readdib.h
 
 install-exec-hook:
 if SET_GID

@@ -69,32 +69,25 @@ void *ralloc(size_t len)
 	return (mem);
 }
 
-
-
-
 /*
- * Allocate a constant string, containing the same thing as 'str'
+ * Duplicates an existing string `str`, allocating as much memory as necessary.
  */
 char *string_make(const char *str)
 {
-	size_t len = 0;
-	const char * t = str;
-	char *s, *res;
+	char *res;
+	size_t siz;
 
-	/* Simple sillyness */
-	if (!str) return (str);
+	/* Error-checking */
+	if (!str) return NULL;
 
-	/* Get the number of chars in the string, including terminator */
-	while (str[len++]) /* loop */;
-
-	/* Allocate space for the string */
-	s = res = (char*)(ralloc(len));
+	/* Allocate space for the string (including terminator) */
+	siz = strlen(str) + 1;
+	res = (char*)(ralloc(siz));
 
 	/* Copy the string (with terminator) */
-	while ((*s++ = *t++) != 0) /* loop */;
+	my_strcpy(res, str, siz);
 
-	/* Return the allocated, initialized, string */
-	return (res);
+	return res;
 }
 
 
@@ -102,16 +95,10 @@ char *string_make(const char *str)
  * Un-allocate a string allocated above.
  * Depends on no changes being made to the string.
  */
-errr string_free(char *str)
+void string_free(char *str)
 {
-	/* Succeed on non-strings */
-	if (!str) return (0);
-
 	/* Kill the buffer of chars we must have allocated above */
 	rnfree((void *)(str));
-
-	/* Success */
-	return (0);
 }
 
 

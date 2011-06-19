@@ -55,20 +55,20 @@
 
 
 /* Wipe an array of type T[N], at location P, and return P */
-#define C_WIPE(P,N,T) \
+#define C_WIPE(P, N, T) \
 	(T*)(memset((char*)(P), 0, (N) * sizeof(T)))
 
 /* Wipe a thing of type T, at location P, and return P */
-#define WIPE(P,T) \
+#define WIPE(P, T) \
 	(T*)(memset((char*)(P), 0, sizeof(T)))
 
 
 /* Load an array of type T[N], at location P1, from another, at location P2 */
-#define C_COPY(P1,P2,N,T) \
+#define C_COPY(P1, P2, N, T) \
 	(T*)(memcpy((char*)(P1),(char*)(P2), (N) * sizeof(T)))
 
 /* Load a thing of type T, at location P1, from another, at location P2 */
-#define COPY(P1,P2,T) \
+#define COPY(P1, P2, T) \
 	(T*)(memcpy((char*)(P1),(char*)(P2), sizeof(T)))
 
 
@@ -78,7 +78,7 @@
 
 
 /* Allocate, and return, an array of type T[N] */
-#define C_RNEW(N,T) \
+#define C_RNEW(N, T) \
 	((T*)(ralloc((N) * sizeof(T))))
 
 /* Allocate, and return, a thing of type T */
@@ -87,12 +87,12 @@
 
 
 /* Allocate, wipe, and return an array of type T[N] */
-#define C_ZNEW(N,T) \
-	((T*)(C_WIPE(C_RNEW(N,T),N,T)))
+#define C_ZNEW(N, T) \
+	(T*)(C_WIPE(C_RNEW(N, T), N, T))
 
 /* Allocate, wipe, and return a thing of type T */
 #define ZNEW(T) \
-	((T*)(WIPE(RNEW(T),T)))
+	(T*)(WIPE(RNEW(T), T))
 
 
 /* Allocate a wiped array of type T[N], assign to pointer P */
@@ -125,7 +125,7 @@ extern void *ralloc(size_t len);
 extern char *string_make(const char *str);
 
 /* Free a string allocated with "string_make()" */
-extern errr string_free(char *str);
+extern void string_free(char *str);
 
 
 

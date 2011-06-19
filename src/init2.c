@@ -484,11 +484,11 @@ static errr init_f_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "f_info" array */
-	C_KILL(f_info, f_head->info_num, feature_type);
+	FREE(f_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(f_name, FAKE_NAME_SIZE, char);
-	C_KILL(f_text, FAKE_TEXT_SIZE, char);
+	FREE(f_name);
+	FREE(f_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -736,11 +736,11 @@ static errr init_k_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "k_info" array */
-	C_KILL(k_info, k_head->info_num, object_kind);
+	FREE(k_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(k_name, FAKE_NAME_SIZE, char);
-	C_KILL(k_text, FAKE_TEXT_SIZE, char);
+	FREE(k_name);
+	FREE(k_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -963,10 +963,10 @@ static errr init_h_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "h_info" array */
-	C_KILL(h_info, h_head->info_num, hist_type);
+	FREE(h_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(h_text, FAKE_TEXT_SIZE, char);
+	FREE(h_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -1191,10 +1191,10 @@ static errr init_b_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "b_info" array */
-	C_KILL(b_info, b_head->info_num, owner_type);
+	FREE(b_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(b_name, FAKE_NAME_SIZE, char);
+	FREE(b_name);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -1405,7 +1405,7 @@ static errr init_g_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "g_info" array */
-	C_KILL(g_info, g_head->info_num, byte);
+	FREE(g_info);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -1736,11 +1736,11 @@ static errr init_a_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "a_info" array */
-	C_KILL(a_info, a_head->info_num, artifact_type);
+	FREE(a_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(a_name, FAKE_NAME_SIZE, char);
-	C_KILL(a_text, FAKE_TEXT_SIZE, char);
+	FREE(a_name);
+	FREE(a_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -1988,11 +1988,11 @@ static errr init_s_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "s_info" array */
-	C_KILL(s_info, s_head->info_num, set_type);
+	FREE(s_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(s_name, FAKE_NAME_SIZE, char);
-	C_KILL(s_text, FAKE_TEXT_SIZE, char);
+	FREE(s_name);
+	FREE(s_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -2240,11 +2240,11 @@ static errr init_e_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "e_info" array */
-	C_KILL(e_info, e_head->info_num, ego_item_type);
+	FREE(e_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(e_name, FAKE_NAME_SIZE, char);
-	C_KILL(e_text, FAKE_TEXT_SIZE, char);
+	FREE(e_name);
+	FREE(e_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -2492,11 +2492,11 @@ static errr init_r_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "r_info" array */
-	C_KILL(r_info, r_head->info_num, monster_race);
+	FREE(r_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(r_name, FAKE_NAME_SIZE, char);
-	C_KILL(r_text, FAKE_TEXT_SIZE, char);
+	FREE(r_name);
+	FREE(r_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -2743,11 +2743,11 @@ static errr init_v_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "v_info" array */
-	C_KILL(v_info, v_head->info_num, vault_type);
+	FREE(v_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(v_name, FAKE_NAME_SIZE, char);
-	C_KILL(v_text, FAKE_TEXT_SIZE, char);
+	FREE(v_name);
+	FREE(v_text);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -2989,11 +2989,11 @@ static errr init_rp_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "rp_info" array */
-	C_KILL(rp_info, rp_head->info_num, player_race);
+	FREE(rp_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(rp_name, FAKE_NAME_SIZE, char);
-	C_KILL(rp_text, FAKE_TEXT_SIZE, char);
+	FREE(rp_name);
+	FREE(rp_text);
 
 
 #endif	/* ALLOW_TEMPLATES */
@@ -3236,11 +3236,11 @@ static errr init_cp_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "cp_info" array */
-	C_KILL(cp_info, cp_head->info_num, player_class);
+	FREE(cp_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(cp_name, FAKE_NAME_SIZE, char);
-	C_KILL(cp_text, FAKE_TEXT_SIZE, char);
+	FREE(cp_name);
+	FREE(cp_text);
 
 
 #endif	/* ALLOW_TEMPLATES */
@@ -3454,7 +3454,7 @@ static errr init_ch_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "ch_info" array */
-	C_KILL(ch_info, ch_head->info_num, chest_drops);
+	FREE(ch_info);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -3667,7 +3667,7 @@ static errr init_mp_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "mp_info" array */
-	C_KILL(mp_info, mp_head->info_num, player_magic);
+	FREE(mp_info);
 
 #endif	/* ALLOW_TEMPLATES */
 
@@ -3808,11 +3808,11 @@ void kill_t_info(void)
 	/*** Kill the fake arrays ***/
 
 	/* Free the "t_info" array */
-	C_KILL(t_info, t_head->info_num, vault_type);
+	FREE(t_info);
 
 	/* Hack -- Free the "fake" arrays */
-	C_KILL(t_name, FAKE_NAME_SIZE, char);
-	C_KILL(t_text, FAKE_TEXT_SIZE, char);
+	FREE(t_name);
+	FREE(t_text);
 }
 
 

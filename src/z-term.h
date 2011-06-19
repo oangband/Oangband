@@ -26,6 +26,9 @@
  *	- Array[h*w] -- Attribute array
  *	- Array[h*w] -- Character array
  *
+ *	- next screen saved
+ *	- hook to be called on screen size change
+ *
  * Note that the attr/char pair at (x,y) is a[y][x]/c[y][x]
  * and that the row of attr/chars at (0,y) is a[y]/c[y]
  */
@@ -43,16 +46,14 @@ struct term_win
 	byte *va;
 	char *vc;
 
-#ifdef USE_TRANSPARENCY
 	byte **ta;
 	char **tc;
 
 	byte *vta;
 	char *vtc;
-#endif /* USE_TRANSPARENCY */
 
+	term_win *next;
 };
-
 
 
 /*
@@ -142,8 +143,6 @@ struct term_win
  *	- Hook for init-ing the term
  *	- Hook for nuke-ing the term
  *
- *	- Hook for user actions
- *
  *	- Hook for extra actions
  *
  *	- Hook for placing the cursor
@@ -159,9 +158,9 @@ typedef struct term term;
 
 struct term
 {
-	void * user;
+	void *user;
 
-	void * data;
+	void *data;
 
 	bool user_flag;
 
@@ -205,10 +204,11 @@ struct term
 	term_win *tmp;
 	term_win *mem;
 
+	/* Number of times saved */
+	byte saved;
+
 	void (*init_hook)(term *t);
 	void (*nuke_hook)(term *t);
-
-	errr (*user_hook)(int n);
 
 	errr (*xtra_hook)(int n, int v);
 
@@ -216,16 +216,11 @@ struct term
 
 	errr (*wipe_hook)(int x, int y, int n);
 
-	errr (*text_hook)(int x, int y, int n, byte a, const char * s);
+	errr (*text_hook)(int x, int y, int n, byte a, const char *s);
 
 	void (*resize_hook)(void);
 
-#ifdef USE_TRANSPARENCY
 	errr (*pict_hook)(int x, int y, int n, const byte *ap, const char *cp, const byte *tap, const char *tcp);
-#else /* USE_TRANSPARENCY */
-	errr (*pict_hook)(int x, int y, int n, const byte *ap, const char *cp);
-#endif /* USE_TRANSPARENCY */
-
 };
 
 
@@ -269,6 +264,40 @@ struct term
 #define TERM_XTRA_DELAY 13	/* Delay some milliseconds (optional) */
 
 
+
+/*** Color constants ***/
+
+
+/*
+ * Angband "attributes" (with symbols, and base (R,G,B) codes)
+ *
+ * The "(R,G,B)" codes are given in "fourths" of the "maximal" value,
+ * and should "gamma corrected" on most (non-Macintosh) machines.
+ */
+#define TERM_DARK     0  /* d */    /* 0 0 0 */
+#define TERM_WHITE    1  /* w */    /* 4 4 4 */
+#define TERM_SLATE    2  /* s */    /* 2 2 2 */
+#define TERM_ORANGE   3  /* o */    /* 4 2 0 */
+#define TERM_RED      4  /* r */    /* 3 0 0 */
+#define TERM_GREEN    5  /* g */    /* 0 2 1 */
+#define TERM_BLUE     6  /* b */    /* 0 0 4 */
+#define TERM_UMBER    7  /* u */    /* 2 1 0 */
+#define TERM_L_DARK   8  /* D */    /* 1 1 1 */
+#define TERM_L_WHITE  9  /* W */    /* 3 3 3 */
+#define TERM_VIOLET		10	/* 'v' */	/* 4,0,4 */
+#define TERM_YELLOW   11 /* y */    /* 4 4 0 */
+#define TERM_L_RED    12 /* R */    /* 4 0 0 */
+#define TERM_L_GREEN  13 /* G */    /* 0 4 0 */
+#define TERM_L_BLUE   14 /* B */    /* 0 4 4 */
+#define TERM_L_UMBER  15 /* U */    /* 3 2 1 */
+
+/*
+ * Maximum number of colours, and number of "basic" Angband colours
+ */
+#define MAX_COLORS        256
+#define BASIC_COLORS    28
+
+
 /**** Available Variables ****/
 
 extern term *Term;
@@ -276,35 +305,27 @@ extern term *Term;
 
 /**** Available Functions ****/
 
-extern errr Term_user(int n);
 extern errr Term_xtra(int n, int v);
 
-#ifdef USE_TRANSPARENCY
 extern void Term_queue_char(int x, int y, byte a, char c, byte ta, char tc);
 
 extern void Term_queue_line(int x, int y, int n, byte *a, char *c, byte *ta, char *tc);
-#else /* USE_TRANSPARENCY */
-extern void Term_queue_char(int x, int y, byte a, char c);
-
-extern void Term_queue_line(int x, int y, int n, byte *a, char *c);
-#endif /* USE_TRANSPARENCY */
-
-extern void Term_queue_chars(int x, int y, int n, byte a, const char * s);
+extern void Term_queue_chars(int x, int y, int n, byte a, const char *s);
 
 extern errr Term_fresh(void);
-extern errr Term_set_cursor(int v);
+extern errr Term_set_cursor(bool v);
 extern errr Term_gotoxy(int x, int y);
 extern errr Term_draw(int x, int y, byte a, char c);
 extern errr Term_addch(byte a, char c);
-extern errr Term_addstr(int n, byte a, const char * s);
+extern errr Term_addstr(int n, byte a, const char *s);
 extern errr Term_putch(int x, int y, byte a, char c);
-extern errr Term_putstr(int x, int y, int n, byte a, const char * s);
+extern errr Term_putstr(int x, int y, int n, byte a, const char *s);
 extern errr Term_erase(int x, int y, int n);
 extern errr Term_clear(void);
 extern errr Term_redraw(void);
 extern errr Term_redraw_section(int x1, int y1, int x2, int y2);
 
-extern errr Term_get_cursor(int *v);
+extern errr Term_get_cursor(bool *v);
 extern errr Term_get_size(int *w, int *h);
 extern errr Term_locate(int *x, int *y);
 extern errr Term_what(int x, int y, byte *a, char *c);
@@ -317,8 +338,6 @@ extern errr Term_inkey(char *ch, bool wait, bool take);
 extern errr Term_save(void);
 extern errr Term_load(void);
 
-extern errr Term_exchange(void);
-
 extern errr Term_resize(int w, int h);
 
 extern errr Term_activate(term *t);
@@ -326,6 +345,6 @@ extern errr Term_activate(term *t);
 extern errr term_nuke(term *t);
 extern errr term_init(term *t, int w, int h, int k);
 
-#endif
+#endif /* INCLUDED_Z_TERM_H */
 
 

@@ -28,13 +28,6 @@
 #endif
 
 /*
- * OPTION: Compile on a SYS V version of UNIX
- */
-#ifndef SYS_V
-/* #define SYS_V */
-#endif
-
-/*
  * OPTION: Compile on a HPUX version of UNIX
  */
 #ifndef HPUX
@@ -112,11 +105,6 @@
 #undef PATH_SEP
 #define PATH_SEP "/"
 #define PATH_SEPC '/'
-
-#ifdef MACINTOSH
-# undef PATH_SEP
-# define PATH_SEP ":"
-#endif
 
 #ifdef WINDOWS
 # undef PATH_SEP

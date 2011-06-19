@@ -27,6 +27,7 @@ confusion and fear), to encourage their use.
 - Removed check_load & check_time code.
 - Removed X11 Athena widgets port.
 - Removed MS/DOS ports.
+- Transparency is turned on permanently.
 
 Coding changes
 ==============
@@ -44,3 +45,8 @@ removed.
 - Cleaned up setuid code a bit, started on z-file.
 - Removed support for savefiles older than Angband 2.7.0.
 - Updated h-type.h to Vanilla standard.
+- Clean ups in main-gcu.c.
+- Removed unused Term_user.
+- Started upgrading z-form to Vanilla standard.
+- Clean ups in main-x11.c.
+- Nearly updated z-virt to Vanilla standard.

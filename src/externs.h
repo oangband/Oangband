@@ -171,10 +171,8 @@ extern s16b panel_col_prt, panel_row_prt;
 extern bool panel_extra_rows;
 extern byte *mp_a;
 extern char *mp_c;
-#ifdef USE_TRANSPARENCY
 extern byte *mp_ta;
 extern char *mp_tc;
-#endif /* USE_TRANSPARENCY */
 extern int player_euid;
 extern char savefile[1024];
 extern s16b macro__num;
@@ -361,11 +359,7 @@ extern int distance(int y1, int x1, int y2, int x2);
 extern bool los(int y1, int x1, int y2, int x2);
 extern bool no_lite(void);
 extern bool cave_valid_bold(int y, int x);
-#ifdef USE_TRANSPARENCY
 extern void map_info(int y, int x, byte *ap, char *cp, byte *tap, char *tcp);
-#else /* USE_TRANSPARENCY */
-extern void map_info(int y, int x, byte *ap, char *cp);
-#endif /* USE_TRANSPARENCY */
 extern void move_cursor_relative(int y, int x);
 extern void print_rel(char c, byte a, int y, int x);
 extern void note_spot(int y, int x);

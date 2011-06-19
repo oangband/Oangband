@@ -1,6 +1,9 @@
 /* File: z-form.c */
 
 /*
+ * File: z-form.c
+ * Purpose: Low-level text formatting (snprintf() replacement)
+ *
  * Copyright (c) 1997 Ben Harrison
  *
  * This software may be copied and distributed for educational, research,
@@ -27,8 +30,8 @@
  *
  * The format strings allow the basic "sprintf()" format sequences, though
  * some of them are processed slightly more carefully or portably, as well
- * as a few "special" sequences, including the "%r" and "%v" sequences, and
- * the "capilitization" sequences of "%C", "%S", and "%V".
+ * as a few "special" sequences, including the "capilitization" sequences of
+ * "%C" and "%S".
  *
  * Note that some "limitations" are enforced by the current implementation,
  * for example, no "format sequence" can exceed 100 characters, including any
@@ -46,17 +49,17 @@
  * removed from the "format sequence", and replaced by the textual form
  * of the next argument in the argument list.  See examples below.
  *
- * Legal format characters: %,n,p,c,s,d,i,o,u,X,x,E,e,F,f,G,g,r,v.
+ * Legal format characters: %,n,p,c,s,d,i,o,u,X,x,E,e,F,f,G,g.
  *
  * Format("%%")
  *   Append the literal "%".
  *   No legal modifiers.
  *
- * Format("%n", int *np)
+ * Format("%n", size_t *np)
  *   Save the current length into (*np).
  *   No legal modifiers.
  *
- * Format("%p", void * v)
+ * Format("%p", void *v)
  *   Append the pointer "v" (implementation varies).
  *   No legal modifiers.
  *
@@ -100,21 +103,10 @@
  *   Append the character "c".
  *   Do not use the "+" or "0" flags.
  *
- * Format("%s", const char * s)
+ * Format("%s", const char *s)
  *   Append the string "s".
  *   Do not use the "+" or "0" flags.
  *   Note that a "NULL" value of "s" is converted to the empty string.
- *
- * Format("%V", void * v)
- *   Note -- possibly significant mode flag
- * Format("%v", void * v)
- *   Append the object "v", using the current "user defined print routine".
- *   User specified modifiers, often ignored.
- *
- * Format("%r", vstrnfmt_aux_func *fp)
- *   Set the "user defined print routine" (vstrnfmt_aux) to "fp".
- *   No legal modifiers.
- *
  *
  * For examples below, assume "int n = 0; int m = 100; char buf[100];",
  * plus "char *s = NULL;", and unknown values "char *txt; int i;".
@@ -134,51 +126,10 @@
  * For example: "s = buf; n = vstrnfmt(s+n, 100-n, ...); ..." will allow
  * multiple bounded "appends" to "buf", with constant access to "strlen(buf)".
  *
- * For example: "format("The %r%v was destroyed!", obj_desc, obj);"
- * (where "obj_desc(buf, max, fmt, obj)" will "append" a "description"
- * of the given object to the given buffer, and return the total length)
- * will return a "useful message" about the object "obj", for example,
- * "The Large Shield was destroyed!".
- *
  * For example: "format("%^-.*s", i, txt)" will produce a string containing
  * the first "i" characters of "txt", left justified, with the first non-space
  * character capitilized, if reasonable.
  */
-
-
-
-
-
-/*
- * The "type" of the "user defined print routine" pointer
- */
-typedef unsigned int (*vstrnfmt_aux_func)(char *buf, unsigned int max, const char * fmt, void * arg);
-
-/*
- * The "default" user defined print routine.  Ignore the "fmt" string.
- */
-static unsigned int vstrnfmt_aux_dflt(char *buf, unsigned int max, const char * fmt, void * arg)
-{
-	unsigned int len;
-	char tmp[32];
-
-	/* XXX XXX */
-	fmt = fmt ? fmt : 0;
-
-	/* Pointer display */
-	sprintf(tmp, "<<%p>>", arg);
-	len = strlen(tmp);
-	if (len >= max) len = max - 1;
-	tmp[len] = '\0';
-	strcpy(buf, tmp);
-	return (len);
-}
-
-/*
- * The "current" user defined print routine.  It can be changed
- * dynamically by sending the proper "%r" sequence to "vstrnfmt()"
- */
-static vstrnfmt_aux_func vstrnfmt_aux = vstrnfmt_aux_dflt;
 
 
 
@@ -232,9 +183,9 @@ static vstrnfmt_aux_func vstrnfmt_aux = vstrnfmt_aux_dflt;
  * the given buffer to a length of zero, and return a "length" of zero.
  * The contents of "buf", except for "buf[0]", may then be undefined.
  */
-unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
+size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 {
-	const char * s;
+	const char *s;
 
 	/* The argument is "long" */
 	bool do_long;
@@ -243,10 +194,10 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 	bool do_xtra;
 
 	/* Bytes used in buffer */
-	unsigned int n;
+	size_t n;
 
 	/* Bytes used in format sequence */
-	unsigned int q;
+	size_t q;
 
 	/* Format sequence */
 	char aux[128];
@@ -254,13 +205,8 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 	/* Resulting string */
 	char tmp[1024];
 
-
-	/* Mega-Hack -- treat "illegal" length as "infinite" */
-	if (!max) max = 32767;
-
-	/* Mega-Hack -- treat "no format" as "empty string" */
-	if (!fmt) fmt = "";
-
+	assert(max);
+	assert(fmt);
 
 	/* Begin the buffer */
 	n = 0;
@@ -309,28 +255,15 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 		/* Pre-process "%n" */
 		if (*s == 'n')
 		{
-			int *arg;
+			size_t *arg;
 
-			/* Access the next argument */
-			arg = va_arg(vp, int *);
+			/* Get the next argument */
+			arg = va_arg(vp, size_t *);
 
 			/* Save the current length */
 			(*arg) = n;
 
 			/* Skip the "n" */
-			s++;
-
-			/* Continue */
-			continue;
-		}
-
-		/* Hack -- Pre-process "%r" */
-		if (*s == 'r')
-		{
-			/* Extract the next argument, and save it (globally) */
-			vstrnfmt_aux = va_arg(vp, vstrnfmt_aux_func);
-
-			/* Skip the "r" */
 			s++;
 
 			/* Continue */
@@ -374,7 +307,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 			}
 
 			/* Handle "alphabetic" chars */
-			if (isalpha(*s))
+			if (isalpha((unsigned char)*s))
 			{
 				/* Hack -- handle "long" request */
 				if (*s == 'l')
@@ -415,7 +348,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 				{
 					int arg;
 
-					/* Access the next argument */
+					/* Get the next argument */
 					arg = va_arg(vp, int);
 
 					/* Hack -- append the "length" */
@@ -454,7 +387,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 		/* Clear "tmp" */
 		tmp[0] = '\0';
 
-		/* Process the "format" char */
+		/* Process the "format" symbol */
 		switch (aux[q-1])
 		{
 			/* Simple Character -- standard format */
@@ -479,7 +412,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 				{
 					long arg;
 
-					/* Access next argument */
+					/* Get the next argument */
 					arg = va_arg(vp, long);
 
 					/* Format the argument */
@@ -507,7 +440,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 				{
 					unsigned long arg;
 
-					/* Access next argument */
+					/* Get the next argument */
 					arg = va_arg(vp, unsigned long);
 
 					/* Format the argument */
@@ -517,7 +450,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 				{
 					unsigned int arg;
 
-					/* Access next argument */
+					/* Get the next argument */
 					arg = va_arg(vp, unsigned int);
 
 					/* Format the argument */
@@ -548,10 +481,10 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 			/* Pointer -- implementation varies */
 			case 'p':
 			{
-				void * arg;
+				void *arg;
 
-				/* Access next argument */
-				arg = va_arg(vp, void *);
+				/* Get the next argument */
+				arg = va_arg(vp, void*);
 
 				/* Format the argument */
 				sprintf(tmp, aux, arg);
@@ -563,7 +496,7 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 			/* String */
 			case 's':
 			{
-				const char * arg;
+				const char *arg;
 
 				/* Access next argument */
 				arg = va_arg(vp, const char *);
@@ -577,23 +510,6 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 				/* Done */
 				break;
 			}
-
-			/* User defined data */
-			case 'V':
-			case 'v':
-			{
-				void * arg;
-
-				/* Access next argument */
-				arg = va_arg(vp, void *);
-
-				/* Format the "user data" */
-				(void)vstrnfmt_aux(tmp, 1000, aux, arg);
-
-				/* Done */
-				break;
-			}
-
 
 			/* Oops */
 			default:
@@ -646,14 +562,41 @@ unsigned int vstrnfmt(char *buf, unsigned int max, const char * fmt, va_list vp)
 
 
 /*
+ * Add a formatted string to the end of a string
+ */
+void strnfcat(char *str, size_t max, size_t *end, const char *fmt, ...)
+{
+	size_t len;
+
+	va_list vp;
+
+	/* Paranoia */
+	if (*end >= max) return;
+
+	/* Begin the Varargs Stuff */
+	va_start(vp, fmt);
+
+	/* Build the string */
+	len = vstrnfmt(&str[*end], max - *end, fmt, vp);
+
+	/* End the Varargs Stuff */
+	va_end(vp);
+
+	/* Change the end value */
+	*end += len;
+}
+
+
+static char *format_buf = NULL;
+static size_t format_len = 0;
+
+
+/*
  * Do a vstrnfmt (see above) into a (growable) static buffer.
  * This buffer is usable for very short term formatting of results.
  */
-char *vformat(const char * fmt, va_list vp)
+char *vformat(const char *fmt, va_list vp)
 {
-	static char *format_buf = NULL;
-	static unsigned long format_len = 0;
-
 	/* Initial allocation */
 	if (!format_buf)
 	{
@@ -667,7 +610,7 @@ char *vformat(const char * fmt, va_list vp)
 	/* Keep going until successful */
 	while (1)
 	{
-		unsigned int len;
+		size_t len;
 
 		/* Build the string */
 		len = vstrnfmt(format_buf, format_len, fmt, vp);
@@ -676,7 +619,7 @@ char *vformat(const char * fmt, va_list vp)
 		if (len < format_len-1) break;
 
 		/* Grow the buffer */
-		C_KILL(format_buf, format_len, char);
+		FREE(format_buf);
 		format_len = format_len * 2;
 		C_MAKE(format_buf, format_len, char);
 	}
@@ -685,21 +628,25 @@ char *vformat(const char * fmt, va_list vp)
 	return (format_buf);
 }
 
+void vformat_kill(void)
+{
+	FREE(format_buf);
+}
 
 
 /*
  * Do a vstrnfmt (see above) into a buffer of a given size.
  */
-unsigned int strnfmt(char *buf, unsigned int max, const char * fmt, ...)
+size_t strnfmt(char *buf, size_t max, const char *fmt, ...)
 {
-	unsigned int len;
+	size_t len;
 
 	va_list vp;
 
 	/* Begin the Varargs Stuff */
 	va_start(vp, fmt);
 
-	/* Do a virtual fprintf to stderr */
+	/* Do the va_arg fmt to the buffer */
 	len = vstrnfmt(buf, max, fmt, vp);
 
 	/* End the Varargs Stuff */
@@ -711,38 +658,12 @@ unsigned int strnfmt(char *buf, unsigned int max, const char * fmt, ...)
 
 
 /*
- * Do a vstrnfmt (see above) into a buffer of unknown size.
- * Since the buffer size is unknown, the user better verify the args.
- */
-unsigned int strfmt(char *buf, const char * fmt, ...)
-{
-	unsigned int len;
-
-	va_list vp;
-
-	/* Begin the Varargs Stuff */
-	va_start(vp, fmt);
-
-	/* Build the string, assume 32K buffer */
-	len = vstrnfmt(buf, 32767, fmt, vp);
-
-	/* End the Varargs Stuff */
-	va_end(vp);
-
-	/* Return the number of bytes written */
-	return (len);
-}
-
-
-
-
-/*
  * Do a vstrnfmt() into (see above) into a (growable) static buffer.
  * This buffer is usable for very short term formatting of results.
  * Note that the buffer is (technically) writable, but only up to
  * the length of the string contained inside it.
  */
-char *format(const char * fmt, ...)
+char *format(const char *fmt, ...)
 {
 	char *res;
 	va_list vp;
@@ -766,7 +687,7 @@ char *format(const char * fmt, ...)
 /*
  * Vararg interface to plog()
  */
-void plog_fmt(const char * fmt, ...)
+void plog_fmt(const char *fmt, ...)
 {
 	char *res;
 	va_list vp;
@@ -789,7 +710,7 @@ void plog_fmt(const char * fmt, ...)
 /*
  * Vararg interface to quit()
  */
-void quit_fmt(const char * fmt, ...)
+void quit_fmt(const char *fmt, ...)
 {
 	char *res;
 	va_list vp;

@@ -119,19 +119,6 @@ typedef struct start_item start_item;
  * Note that, on some machines, for example, the Macintosh, the standard
  * "read()" and "write()" functions cannot handle more than 32767 bytes
  * at one time, so we need replacement functions, see "util.c" for details.
- *
- * Note that, on some machines, for example, the Macintosh, the standard
- * "malloc()" function cannot handle more than 32767 bytes at one time,
- * but we may assume that the "ralloc()" function can handle up to 65535
- * butes at one time.  We should not, however, assume that the "ralloc()"
- * function can handle more than 65536 bytes at a time, since this might
- * result in segmentation problems on certain older machines, and in fact,
- * we should not assume that it can handle exactly 65536 bytes at a time,
- * since the internal functions may use an unsigned short to specify size.
- *
- * In general, these problems occur only on machines (such as most personal
- * computers) which use 2 byte "int" values, and which use "int" for the
- * arguments to the relevent functions.
  */
 struct header
 {

@@ -520,9 +520,7 @@
 /* OAngband 1.1.0 characteristics */
 /* #define USE_DOUBLE_TILES */
 #define ALLOW_BIG_SCREEN
-/* #define NEW_ZVIRT_HOOKS */
 /* I can't ditch these, yet, because there are many variants */
-#define USE_TRANSPARENCY
 #define ZANG_AUTO_SAVE
 
 /* Default creator signature */
@@ -2438,18 +2436,6 @@ static void Term_nuke_mac(term *t)
 
 
 /*
- * Unused
- */
-static errr Term_user_mac(int n)
-{
-#pragma unused(n)
-	/* Success */
-	return (0);
-}
-
-
-
-/*
  * React to changes
  */
 static errr Term_xtra_mac_react(void)
@@ -2956,12 +2942,8 @@ static errr Term_text_mac(int x, int y, int n, byte a, const char *cp)
  *
  * Erase "n" characters starting at (x,y)
  */
-#ifdef USE_TRANSPARENCY
 static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp,
 			  const byte *tap, const char *tcp)
-#else /* USE_TRANSPARENCY */
-static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
-#endif /* USE_TRANSPARENCY */
 {
 	int i;
 	Rect dst_r;
@@ -2997,10 +2979,8 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 		byte a = *ap++;
 		char c = *cp++;
 
-#ifdef USE_TRANSPARENCY
 		byte ta = *tap++;
 		char tc = *tcp++;
-#endif
 
 
 #ifdef USE_DOUBLE_TILES
@@ -3025,10 +3005,9 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 		{
 			int col, row;
 			Rect src_r;
-#ifdef USE_TRANSPARENCY
+
 			int t_col, t_row;
 			Rect terrain_r;
-#endif /* USE_TRANSPARENCY */
 
 			/* Row and Col */
 			row = ((byte)a & 0x7F) % pict_rows;
@@ -3040,7 +3019,6 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 			src_r.right = src_r.left + graf_width;
 			src_r.bottom = src_r.top + graf_height;
 
-#ifdef USE_TRANSPARENCY
 			/* Row and Col */
 			t_row = ((byte)ta & 0x7F) % pict_rows;
 			t_col = ((byte)tc & 0x7F) % pict_cols;
@@ -3050,7 +3028,6 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 			terrain_r.top = t_row * graf_height;
 			terrain_r.right = terrain_r.left + graf_width;
 			terrain_r.bottom = terrain_r.top + graf_height;
-#endif /* USE_TRANSPARENCY */
 
 			/* Hardwire CopyBits */
 			RGBBackColor(&white);
@@ -3078,8 +3055,6 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 
 			/* Get Pixmap handle */
 			pixmap_h = GetPortPixMap(port);
-
-#ifdef USE_TRANSPARENCY
 
 			/* Transparency effect */
 			switch (transparency_mode)
@@ -3119,15 +3094,6 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 					break;
 				}
 			}
-
-#else /* USE_TRANSPARENCY */
-
-			/* Draw the picture */
-			CopyBits((BitMap*)frameP->framePix,
-				(BitMap*)*pixmap_h,
-				&src_r, &dst_r, srcCopy, NULL);
-
-#endif /* USE_TRANSPARENCY */
 
 			/* Release the lock and dispose the PixMap handle */
 			UnlockPortBits(port);
@@ -3240,7 +3206,6 @@ static void term_data_link(int i)
 	td->t->nuke_hook = Term_nuke_mac;
 
 	/* Prepare the function hooks */
-	td->t->user_hook = Term_user_mac;
 	td->t->xtra_hook = Term_xtra_mac;
 	td->t->wipe_hook = Term_wipe_mac;
 	td->t->curs_hook = Term_curs_mac;
@@ -6069,52 +6034,6 @@ static void *lifeboat = NULL;
 
 
 /*
- * Hook to "release" memory
- */
-#ifdef NEW_ZVIRT_HOOKS /* [V] removed the unused 'size' argument. */
-static void *hook_rnfree(void *v)
-#else
-static void *hook_rnfree(void *v, size_t size)
-#endif /* NEW_ZVIRT_HOOKS */
-{
-
-#ifdef USE_MALLOC
-
-	/* Alternative method */
-	free(v);
-
-#else
-
-	/* Dispose */
-	DisposePtr(v);
-
-#endif
-
-	/* Success */
-	return (NULL);
-}
-
-/*
- * Hook to "allocate" memory
- */
-static void *hook_ralloc(size_t size)
-{
-
-#ifdef USE_MALLOC
-
-	/* Make a new pointer */
-	return (malloc(size));
-
-#else
-
-	/* Make a new pointer */
-	return (NewPtr(size));
-
-#endif
-
-}
-
-/*
  * Hook to tell the user something important
  */
 static void hook_plog(const char * str)
@@ -6420,10 +6339,6 @@ int main(void)
 	/* Default to saving a "text" file */
 	_ftype = 'TEXT';
 
-
-	/* Hook in some "z-virt.c" hooks */
-	rnfree_aux = hook_rnfree;
-	ralloc_aux = hook_ralloc;
 
 	/* Hooks in some "z-util.c" hooks */
 	plog_aux = hook_plog;

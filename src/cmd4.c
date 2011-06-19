@@ -3278,7 +3278,7 @@ static int collect_artifacts(int grp_cur, int object_idx[])
 	object_idx[object_cnt] = 0;
 
 	/* clear the array */
-	C_KILL(okay, MAX_A_IDX, bool);
+	FREE(okay);
 
 	/* Return the number of races */
 	return object_cnt;
@@ -3483,7 +3483,7 @@ static void do_cmd_knowledge_artifacts(void)
 	}
 
 	/* XXX XXX Free the "object_idx" array */
-	C_KILL(artifact_idx, MAX_A_IDX, int);
+	FREE(artifact_idx);
 }
 
 
@@ -3951,7 +3951,7 @@ static void do_cmd_knowledge_monsters(void)
 	}
 
 	/* XXX XXX Free the "mon_idx" array */
-	C_KILL(mon_idx, MAX_R_IDX, monster_list_entry);
+	FREE(mon_idx);
 }
 
 
@@ -4203,7 +4203,7 @@ static void do_cmd_knowledge_objects(void)
 	}
 
 	/* XXX XXX Free the "object_idx" array */
-	C_KILL(object_idx, MAX_K_IDX, int);
+	FREE(object_idx);
 }
 
 

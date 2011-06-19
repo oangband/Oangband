@@ -1751,13 +1751,6 @@ static void process_command(void)
 
 		/*** System Commands ***/
 
-		/* Hack -- User interface */
-		case '!':
-		{
-			(void)Term_user(0);
-			break;
-		}
-
 		/* Single line from a pref file */
 		case '"':
 		{

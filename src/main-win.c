@@ -1254,7 +1254,7 @@ static int new_palette(void)
 	/* Use the bitmap */
 	if (hBmPal)
 	{
-		lppe = ralloc(256 * sizeof(PALETTEENTRY));
+		lppe = mem_alloc(256 * sizeof(PALETTEENTRY));
 		nEntries = GetPaletteEntries(hBmPal, 0, 255, lppe);
 		if ((nEntries == 0) || (nEntries > 220))
 		{
@@ -1275,7 +1275,7 @@ static int new_palette(void)
 	pLogPalSize = sizeof(LOGPALETTE) + (nEntries + 16) * sizeof(PALETTEENTRY);
 
 	/* Allocate palette */
-	pLogPal = (LPLOGPALETTE)ralloc(pLogPalSize);
+	pLogPal = (LPLOGPALETTE)mem_alloc(pLogPalSize);
 
 	/* Version */
 	pLogPal->palVersion = 0x300;
@@ -1715,18 +1715,6 @@ static void Term_nuke_win(term *t)
 
 #endif /* 0 */
 
-
-/*
- * Interact with the User
- */
-static errr Term_user_win(int n)
-{
-	/* Unused parameter */
-	(void)n;
-
-	/* Success */
-	return (0);
-}
 
 /*
  * React to global changes
@@ -2578,7 +2566,6 @@ static void term_data_link(term_data *td)
 #endif /* 0 */
 
 	/* Prepare the template hooks */
-	t->user_hook = Term_user_win;
 	t->xtra_hook = Term_xtra_win;
 	t->curs_hook = Term_curs_win;
 	t->wipe_hook = Term_wipe_win;

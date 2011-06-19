@@ -1755,7 +1755,7 @@ static int convert_saved_names(void)
 	{
 		name_size += strlen(names[i]) + 1;	/* skip first char */
 	}
-	if ((a_base = ralloc(name_size)) == NULL)
+	if ((a_base = mem_alloc(name_size)) == NULL)
 	{
 		note("Memory allocation error");
 		return 1;
@@ -1773,7 +1773,7 @@ static int convert_saved_names(void)
 
 
 	/* Free some of our now unneeded memory. */
-	KILL (a_name, char);
+	FREE (a_name);
 	for (i = ART_MIN_RANDOM; i < MAX_A_IDX; i++)
 	{
 		free(names[i]);

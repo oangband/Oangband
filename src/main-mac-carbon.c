@@ -2397,20 +2397,6 @@ static void Term_nuke_mac(term *t)
 
 
 /*
- * Unused
- */
-static errr Term_user_mac(int n)
-{
-
-#pragma unused (n)
-
-	/* Success */
-	return (0);
-}
-
-
-
-/*
  * React to changes
  */
 static errr Term_xtra_mac_react(void)
@@ -2712,11 +2698,7 @@ static errr Term_text_mac(int x, int y, int n, byte a, const char *cp)
  *
  * Erase "n" characters starting at (x,y)
  */
-#ifdef USE_TRANSPARENCY
 static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp, const byte *tap, const char *tcp)
-#else
-static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
-#endif
 {
 	int i;
 	Rect r2;
@@ -2784,10 +2766,8 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 		byte a = ap[i];
 		char c = cp[i];
 
-#ifdef USE_TRANSPARENCY
 		byte ta = tap[i];
 		char tc = tcp[i];
-#endif
 
 #ifdef ANGBAND_LITE_MAC
 
@@ -2802,19 +2782,15 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 			int col, row;
 			Rect r1;
 
-#ifdef USE_TRANSPARENCY
 			int terrain_col, terrain_row;
 			Rect terrain_rect;
-#endif
 
 			/* Row and Col */
 			row = ((byte)a & 0x7F) % gTileRows;
 			col = ((byte)c & 0x7F) % gTileCols;
 
-#ifdef USE_TRANSPARENCY
 			terrain_row = ((byte)ta & 0x7F) % gTileRows;
 			terrain_col = ((byte)tc & 0x7F) % gTileCols;
-#endif
 
 			/* Source rectangle */
 			r1.left = col * gTileWidth;
@@ -2827,7 +2803,6 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 			ForeColor(blackColor);
 
 			/* Draw the picture */
-#ifdef USE_TRANSPARENCY
 			{
 				int lock_pixels = 0;
 				BitMapPtr	srcBitMap = (BitMapPtr)(frameP->framePix);
@@ -2874,49 +2849,6 @@ static errr Term_pict_mac(int x, int y, int n, const byte *ap, const char *cp)
 				if( lock_pixels == 1 )
 					UnlockPixels( GetPortPixMap(GetWindowPort(td->w)) );
 			}
-
-#else /* USE_TRANSPARENCY : Do not allow terrain */
-
-			{
-				int lock_pixels = 0;
-				BitMapPtr	srcBitMap = (BitMapPtr)(frameP->framePix);
-				BitMapPtr	destBitMap;
-
-#ifdef TARGET_CARBON
-				if( use_buffer )
-				{
-					destBitMap = (BitMapPtr)(frameP->bufferPix);
-				}
-				else
-				{
-					PixMapHandle	bMap = 0L;
-					LockPixels( GetPortPixMap(GetWindowPort(td->w)) );
-					bMap = GetPortPixMap(GetWindowPort(td->w));
-					destBitMap = *bMap;
-					lock_pixels = 1;
-					//destBitMap = GetPortBitMapForCopyBits( (CGrafPtr)(td->w) );
-				}
-#else
-				if( use_buffer )
-				{
-					destBitMap = (BitMapPtr)(frameP->bufferPix);
-				}
-				else
-				{
-					destBitMap = (BitMapPtr)&(td->w->portBits);
-				}
-#endif
-
-				// draw transparent tile
-				// BackColor is ignored and the destination is left untouched
-				BackColor(blackColor);
-				CopyBits( srcBitMap, destBitMap, &r1, &r2, transparent, NULL );
-
-				if( lock_pixels == 1 )
-					UnlockPixels( GetPortPixMap(GetWindowPort(td->w)) );
-			}
-
-#endif /* USE_TRANSPARENCY */
 
 			/* Restore colors */
 			BackColor(blackColor);
@@ -3045,7 +2977,6 @@ static void term_data_link(int i)
 	td->t->nuke_hook = Term_nuke_mac;
 
 	/* Prepare the function hooks */
-	td->t->user_hook = Term_user_mac;
 	td->t->xtra_hook = Term_xtra_mac;
 	td->t->wipe_hook = Term_wipe_mac;
 	td->t->curs_hook = Term_curs_mac;
@@ -5838,50 +5769,6 @@ static void * lifeboat = NULL;
 
 
 /*
- * Hook to "release" memory
- */
-static void *hook_rnfree(void *v, size_t size)
-{
-
-#pragma unused (size)
-
-#ifdef USE_MALLOC
-
-	/* Alternative method */
-	free(v);
-
-#else
-
-	/* Dispose */
-	DisposePtr(v);
-
-#endif
-
-	/* Success */
-	return (NULL);
-}
-
-/*
- * Hook to "allocate" memory
- */
-static void *hook_ralloc(size_t size)
-{
-
-#ifdef USE_MALLOC
-
-	/* Make a new pointer */
-	return (malloc(size));
-
-#else
-
-	/* Make a new pointer */
-	return (NewPtr(size));
-
-#endif
-
-}
-
-/*
  * Hook to tell the user something important
  */
 static void hook_plog(const char * str)
@@ -6152,10 +6039,6 @@ int main(void)
 	_ftype = 'TEXT';
 
 #endif
-
-	/* Hook in some "z-virt.c" hooks */
-	rnfree_aux = hook_rnfree;
-	ralloc_aux = hook_ralloc;
 
 	/* Hooks in some "z-util.c" hooks */
 	plog_aux = hook_plog;

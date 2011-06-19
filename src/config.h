@@ -40,27 +40,9 @@
 
 
 /*
- * OPTION: define "SPECIAL_BSD" for using certain versions of UNIX
- * that use the 4.4BSD Lite version of Curses in "main-gcu.c"
- */
-/* #define SPECIAL_BSD */
-
-
-/*
  * OPTION: Use the POSIX "termios" methods in "main-gcu.c"
  */
 /* #define USE_TPOSIX */
-
-
-/*
- * OPTION: Use "blocking getch() calls" in "main-gcu.c".
- * Hack -- Note that this option will NOT work on many BSD machines
- * Currently used whenever available, if you get a warning about
- * "nodelay()" undefined, then make sure to undefine this.
- */
-#if defined(SYS_V)
-# define USE_GETCH
-#endif
 
 
 /*

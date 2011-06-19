@@ -1,14 +1,22 @@
-/* File: z-util.c */
-
 /*
- * Copyright (c) 1997 Ben Harrison
+ * File: z-util.c
+ * Purpose: Low-level string handling and other utilities.
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.
+ * Copyright (c) 1997-2005 Ben Harrison, Robert Ruehlmann.
+ *
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 
-/* Purpose: Low level utilities -BEN- */
+#include <stdlib.h>
 
 #include "z-util.h"
 
@@ -55,9 +63,9 @@ int my_stricmp(const char *s1, const char *s2)
 /*
  * Case insensitive comparison between the first n characters of two strings
  */
-int my_strnicmp(const char * a, const char * b, int n)
+int my_strnicmp(const char *a, const char *b, int n)
 {
-	const char * s1, * s2;
+	const char *s1, *s2;
 	char z1, z2;
 
 	/* Scan the strings */
@@ -173,7 +181,7 @@ size_t my_strcat(char *buf, const char *src, size_t bufsize)
 /*
  * Determine if string "a" is equal to string "b"
  */
-bool streq(const char * a, const char * b)
+bool streq(const char *a, const char *b)
 {
 	return (!strcmp(a, b));
 }
@@ -182,7 +190,7 @@ bool streq(const char * a, const char * b)
 /*
  * Determine if string "t" is a suffix of string "s"
  */
-bool suffix(const char * s, const char * t)
+bool suffix(const char *s, const char *t)
 {
 	size_t tlen = strlen(t);
 	size_t slen = strlen(s);
@@ -198,7 +206,7 @@ bool suffix(const char * s, const char * t)
 /*
  * Determine if string "t" is a prefix of string "s"
  */
-bool prefix(const char * s, const char * t)
+bool prefix(const char *s, const char *t)
 {
 	/* Scan "t" */
 	while (*t)
@@ -212,6 +220,27 @@ bool prefix(const char * s, const char * t)
 }
 
 
+/*
+ * Determine if string "t" is a prefix of string "s" - case insensitive.
+ */
+bool prefix_i(const char *s, const char *t)
+{
+	/* Scan "t" */
+	while (*t)
+	{
+		if (toupper((unsigned char)*t) != toupper((unsigned char)*s))
+			return (FALSE);
+		else
+		{
+			t++;
+			s++;
+		}
+	}
+
+	/* Matched, we have a prefix */
+	return (TRUE);
+}
+
 
 /*
  * Redefinable "plog" action
@@ -222,7 +251,7 @@ void (*plog_aux)(const char *) = NULL;
  * Print (or log) a "warning" message (ala "perror()")
  * Note the use of the (optional) "plog_aux" hook.
  */
-void plog(const char * str)
+void plog(const char *str)
 {
 	/* Use the "alternative" function if possible */
 	if (plog_aux) (*plog_aux)(str);
@@ -243,7 +272,7 @@ void (*quit_aux)(const char *) = NULL;
  * Otherwise, plog() 'str' and exit with an error code of -1.
  * But always use 'quit_aux', if set, before anything else.
  */
-void quit(const char * str)
+void quit(const char *str)
 {
 	/* Attempt to use the aux function */
 	if (quit_aux) (*quit_aux)(str);

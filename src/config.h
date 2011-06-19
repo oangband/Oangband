@@ -46,17 +46,6 @@
 
 
 /*
- * OPTION: Use "blocking getch() calls" in "main-gcu.c".
- * Hack -- Note that this option will NOT work on many BSD machines
- * Currently used whenever available, if you get a warning about
- * "nodelay()" undefined, then make sure to undefine this.
- */
-#if defined(SYS_V)
-# define USE_GETCH
-#endif
-
-
-/*
  * OPTION: Include "ncurses.h" instead of "curses.h" in "main-gcu.c"
  */
 /* #define USE_NCURSES */

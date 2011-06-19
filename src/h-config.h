@@ -28,13 +28,6 @@
 #endif
 
 /*
- * OPTION: Compile on a SYS V version of UNIX
- */
-#ifndef SYS_V
-/* #define SYS_V */
-#endif
-
-/*
  * OPTION: Compile on a HPUX version of UNIX
  */
 #ifndef HPUX

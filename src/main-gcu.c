@@ -1,6 +1,9 @@
 /* File: main-gcu.c */
 
 /*
+ * File: main-gcu.c
+ * Purpose: Support for "curses" systems
+ *
  * Copyright (c) 1997 Ben Harrison, and others
  *
  * This software may be copied and distributed for educational, research,
@@ -85,10 +88,6 @@
  */
 #define USE_CURS_SET
 
-
-
-
-
 /*
  * OPTION: some machines lack "cbreak()"
  * On these machines, we use an older definition
@@ -102,7 +101,6 @@
  */
 /* #define nonl() */
 /* #define nl() */
-
 
 /*
  * Save the "normal" and "angband" terminal settings
@@ -121,14 +119,11 @@ static bool           split_window=TRUE;
 /*
  * Information about a term
  */
-typedef struct term_data term_data;
-
-struct term_data
+typedef struct term_data
 {
 	term t;                 /* All term info */
-
 	WINDOW *win;            /* Pointer to the curses window */
-};
+} term_data;
 
 /* Max number of windows on screen */
 #define MAX_TERM_DATA 4
@@ -141,9 +136,7 @@ struct term_data
 static term_data data[MAX_TERM_DATA];
 
 
-/*
- * Hack -- Number of initialized "term" structures
- */
+/* Number of initialized "term" structures */
 static int active = 0;
 
 
@@ -205,7 +198,7 @@ static void keymap_game(void)
 
 #ifdef USE_TPOSIX
 
-	/* restore the saved values of the special chars */
+	/* Set the game's termios settings */
 	(void)tcsetattr(0, TCSAFLUSH, &game_termios);
 
 #endif
@@ -221,7 +214,7 @@ static void keymap_norm_prepare(void)
 
 #ifdef USE_TPOSIX
 
-	/* Get the normal keymap */
+	/* Restore the normal termios settings */
 	tcgetattr(0, &norm_termios);
 
 #endif
@@ -237,7 +230,7 @@ static void keymap_game_prepare(void)
 
 #ifdef USE_TPOSIX
 
-	/* Acquire the current mapping */
+	/* Save the current termios settings */
 	tcgetattr(0, &game_termios);
 
 	/* Force "Ctrl-C" to interupt */
@@ -259,11 +252,11 @@ static void keymap_game_prepare(void)
 	game_termios.c_cc[VMIN] = 1;
 	game_termios.c_cc[VTIME] = 0;
 
+	/* Turn off flow control (enable ^S) */
+	game_termios.c_iflag &= ~IXON;
 #endif
 
 }
-
-
 
 
 /*
@@ -293,7 +286,7 @@ static errr Term_xtra_gcu_alive(int v)
 		/* Get current cursor position */
 		getyx(stdscr, y, x);
 
-		/* this moves curses to bottom right corner */
+		/* Move the cursor to bottom right corner */
 		mvcur(y, x, LINES - 1, 0);
 
 		/* Exit curses */
@@ -332,6 +325,12 @@ static errr Term_xtra_gcu_alive(int v)
 static void Term_init_gcu(term *t)
 {
 	term_data *td = (term_data *)(t->data);
+
+	/*
+	 * This is necessary to keep the first call to getch()
+	 * from clearing the screen
+	 */
+	wrefresh(stdscr);
 
 	/* Count init's, handle first */
 	if (active++ != 0) return;
@@ -394,8 +393,6 @@ static void Term_nuke_gcu(term *t)
 
 
 
-#ifdef USE_GETCH
-
 /*
  * Process events, with optional wait
  */
@@ -444,57 +441,6 @@ static errr Term_xtra_gcu_event(int v)
 	return (0);
 }
 
-#else	/* USE_GETCH */
-
-/*
- * Process events (with optional wait)
- */
-static errr Term_xtra_gcu_event(int v)
-{
-	int i, k;
-
-	char buf[2];
-
-	/* Wait */
-	if (v)
-	{
-		/* Wait for one byte */
-		i = read(0, buf, 1);
-
-		/* Hack -- Handle bizarre "errors" */
-		if ((i <= 0) && (errno != EINTR)) exit_game_panic();
-	}
-
-	/* Do not wait */
-	else
-	{
-		/* Get the current flags for stdin */
-		k = fcntl(0, F_GETFL, 0);
-
-		/* Oops */
-		if (k < 0) return (1);
-
-		/* Tell stdin not to block */
-		if (fcntl(0, F_SETFL, k | O_NONBLOCK) < 0) return (1);
-
-		/* Read one byte, if possible */
-		i = read(0, buf, 1);
-
-		/* Replace the flags for stdin */
-		if (fcntl(0, F_SETFL, k)) return (1);
-	}
-
-	/* Ignore "invalid" keys */
-	if ((i != 1) || (!buf[0])) return (1);
-
-	/* Enqueue the keypress */
-	Term_keypress(buf[0]);
-
-	/* Success */
-	return (0);
-}
-
-#endif	/* USE_GETCH */
 
 /*
  * React to changes
@@ -756,14 +702,14 @@ static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x, 
 
 
 /*
- * Prepare "curses" for use by the file "term.c"
+ * Prepare "curses" for use by the file "z-term.c"
  *
  * Installs the "hook" functions defined above, and then activates
  * the main screen "term", which clears the screen and such things.
  *
  * Someone should really check the semantics of "initscr()"
  */
-errr init_gcu(int argc, char *argv[])
+errr init_gcu(int argc, char **argv)
 {
 	int i;
 
@@ -877,12 +823,8 @@ errr init_gcu(int argc, char *argv[])
 
 	/*** Low level preparation ***/
 
-#ifdef USE_GETCH
-
 	/* Paranoia -- Assume no waiting */
 	nodelay(stdscr, FALSE);
-
-#endif
 
 	/* Prepare */
 	cbreak();

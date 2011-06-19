@@ -24,7 +24,7 @@
 #define MAX_AMULETS    30	/* Used with amulets (min 15) */
 #define MAX_WOODS      51	/* Used with staffs (min 44) */
 #define MAX_METALS     51	/* Used with wands/rods (min 44/44) */
-#define MAX_COLORS     84	/* Used with potions (min 60) */
+#define MAX_POTS     84	/* Used with potions (min 60) */
 #define MAX_SHROOM     25	/* Used with mushrooms (min 20) */
 #define MAX_TITLES     60	/* Used with scrolls (min 48) */
 #define MAX_SYLLABLES 164	/* Used with scrolls (see below) */
@@ -198,7 +198,7 @@ static byte food_col[MAX_SHROOM] =
  * (water, apple juice, slime mold juice, something)
  */
 
-static const char * potion_adj[MAX_COLORS] =
+static const char * potion_adj[MAX_POTS] =
 {
 	"Clear", "Light Brown", "Icky Green", "xxx",
 
@@ -220,7 +220,7 @@ static const char * potion_adj[MAX_COLORS] =
 	"Vermilion", "Viscous Pink", "White", "Yellow", "Yellow Dappled"
 };
 
-static byte potion_col[MAX_COLORS] =
+static byte potion_col[MAX_POTS] =
 {
 	TERM_WHITE, TERM_L_UMBER, TERM_GREEN, 0,
 	TERM_ORANGE, TERM_WHITE, TERM_UMBER, TERM_L_BLUE, TERM_L_DARK,
@@ -531,9 +531,9 @@ void flavor_init(void)
 	}
 
 	/* Potions */
-	for (i = 4; i < MAX_COLORS; i++)
+	for (i = 4; i < MAX_POTS; i++)
 	{
-		j = rand_int(MAX_COLORS - 4) + 4;
+		j = rand_int(MAX_POTS - 4) + 4;
 		temp_adj = potion_adj[i];
 		potion_adj[i] = potion_adj[j];
 		potion_adj[j] = temp_adj;

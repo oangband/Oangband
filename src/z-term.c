@@ -1,14 +1,13 @@
-/* File: z-term.c */
-
 /*
+ * File: z-term.c
+ * Purpose: a generic, efficient, terminal window package
+ *
  * Copyright (c) 1997 Ben Harrison
  *
  * This software may be copied and distributed for educational, research,
  * and not for profit purposes provided that this copyright and statement
  * are included in all such copies.
  */
-
-/* Purpose: a generic, efficient, terminal window package -BEN- */
 
 #include "angband.h"
 
@@ -2008,7 +2007,6 @@ errr Term_inkey(char *ch, bool wait, bool take)
 
 /*** Extra routines ***/
 
-
 /*
  * Save the "requested" screen into the "memorized" screen
  *
@@ -2019,18 +2017,23 @@ errr Term_save(void)
 	int w = Term->wid;
 	int h = Term->hgt;
 
-	/* Create */
-	if (!Term->mem)
-	{
-		/* Allocate window */
-		Term->mem = ZNEW(term_win);
+	term_win *mem;
 
-		/* Initialize window */
-		term_win_init(Term->mem, w, h);
-	}
+	/* Allocate window */
+	mem = ZNEW(term_win);
+
+	/* Initialize window */
+	term_win_init(mem, w, h);
 
 	/* Grab */
-	term_win_copy(Term->mem, Term->scr, w, h);
+	term_win_copy(mem, Term->scr, w, h);
+
+	/* Front of the queue */
+	mem->next = Term->mem;
+	Term->mem = mem;
+
+	/* One more saved */
+	Term->saved++;
 
 	/* Success */
 	return (0);
@@ -2049,18 +2052,26 @@ errr Term_load(void)
 	int w = Term->wid;
 	int h = Term->hgt;
 
-	/* Create */
-	if (!Term->mem)
+	term_win *tmp;
+
+	/* Pop off window from the list */
+	if (Term->mem)
 	{
-		/* Allocate window */
-		Term->mem = ZNEW(term_win);
+		/* Save pointer to old mem */
+		tmp = Term->mem;
 
-		/* Initialize window */
-		term_win_init(Term->mem, w, h);
+		/* Forget it */
+		Term->mem = Term->mem->next;
+
+		/* Load */
+		term_win_copy(Term->scr, tmp, w, h);
+
+		/* Free the old window */
+		(void)term_win_nuke(tmp);
+
+		/* Kill it */
+		FREE(tmp);
 	}
-
-	/* Load */
-	term_win_copy(Term->scr, Term->mem, w, h);
 
 	/* Assume change */
 	for (y = 0; y < h; y++)
@@ -2074,54 +2085,13 @@ errr Term_load(void)
 	Term->y1 = 0;
 	Term->y2 = h - 1;
 
-	/* Success */
-	return (0);
-}
-
-
-/*
- * Exchange the "requested" screen with the "tmp" screen
- */
-errr Term_exchange(void)
-{
-	int y;
-
-	int w = Term->wid;
-	int h = Term->hgt;
-
-	term_win *exchanger;
-
-
-	/* Create */
-	if (!Term->tmp)
-	{
-		/* Allocate window */
-		Term->tmp = ZNEW(term_win);
-
-		/* Initialize window */
-		term_win_init(Term->tmp, w, h);
-	}
-
-	/* Swap */
-	exchanger = Term->scr;
-	Term->scr = Term->tmp;
-	Term->tmp = exchanger;
-
-	/* Assume change */
-	for (y = 0; y < h; y++)
-	{
-		/* Assume change */
-		Term->x1[y] = 0;
-		Term->x2[y] = w - 1;
-	}
-
-	/* Assume change */
-	Term->y1 = 0;
-	Term->y2 = h - 1;
+	/* One less saved */
+	Term->saved--;
 
 	/* Success */
 	return (0);
 }
+
 
 /*
  * React to a new physical window size.
@@ -2475,6 +2445,8 @@ errr term_init(term *t, int w, int h, int k)
 	t->attr_blank = 0;
 	t->char_blank = ' ';
 
+	/* No saves yet */
+	t->saved = 0;
 
 	/* Success */
 	return (0);

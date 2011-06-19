@@ -26,6 +26,9 @@
  *	- Array[h*w] -- Attribute array
  *	- Array[h*w] -- Character array
  *
+ *	- next screen saved
+ *	- hook to be called on screen size change
+ *
  * Note that the attr/char pair at (x,y) is a[y][x]/c[y][x]
  * and that the row of attr/chars at (0,y) is a[y]/c[y]
  */
@@ -48,8 +51,9 @@ struct term_win
 
 	byte *vta;
 	char *vtc;
-};
 
+	term_win *next;
+};
 
 
 /*
@@ -200,6 +204,9 @@ struct term
 	term_win *tmp;
 	term_win *mem;
 
+	/* Number of times saved */
+	byte saved;
+
 	void (*init_hook)(term *t);
 	void (*nuke_hook)(term *t);
 
@@ -257,6 +264,40 @@ struct term
 #define TERM_XTRA_DELAY 13	/* Delay some milliseconds (optional) */
 
 
+
+/*** Color constants ***/
+
+
+/*
+ * Angband "attributes" (with symbols, and base (R,G,B) codes)
+ *
+ * The "(R,G,B)" codes are given in "fourths" of the "maximal" value,
+ * and should "gamma corrected" on most (non-Macintosh) machines.
+ */
+#define TERM_DARK     0  /* d */    /* 0 0 0 */
+#define TERM_WHITE    1  /* w */    /* 4 4 4 */
+#define TERM_SLATE    2  /* s */    /* 2 2 2 */
+#define TERM_ORANGE   3  /* o */    /* 4 2 0 */
+#define TERM_RED      4  /* r */    /* 3 0 0 */
+#define TERM_GREEN    5  /* g */    /* 0 2 1 */
+#define TERM_BLUE     6  /* b */    /* 0 0 4 */
+#define TERM_UMBER    7  /* u */    /* 2 1 0 */
+#define TERM_L_DARK   8  /* D */    /* 1 1 1 */
+#define TERM_L_WHITE  9  /* W */    /* 3 3 3 */
+#define TERM_VIOLET		10	/* 'v' */	/* 4,0,4 */
+#define TERM_YELLOW   11 /* y */    /* 4 4 0 */
+#define TERM_L_RED    12 /* R */    /* 4 0 0 */
+#define TERM_L_GREEN  13 /* G */    /* 0 4 0 */
+#define TERM_L_BLUE   14 /* B */    /* 0 4 4 */
+#define TERM_L_UMBER  15 /* U */    /* 3 2 1 */
+
+/*
+ * Maximum number of colours, and number of "basic" Angband colours
+ */
+#define MAX_COLORS        256
+#define BASIC_COLORS    28
+
+
 /**** Available Variables ****/
 
 extern term *Term;
@@ -297,8 +338,6 @@ extern errr Term_inkey(char *ch, bool wait, bool take);
 extern errr Term_save(void);
 extern errr Term_load(void);
 
-extern errr Term_exchange(void);
-
 extern errr Term_resize(int w, int h);
 
 extern errr Term_activate(term *t);
@@ -306,6 +345,6 @@ extern errr Term_activate(term *t);
 extern errr term_nuke(term *t);
 extern errr term_init(term *t, int w, int h, int k);
 
-#endif
+#endif /* INCLUDED_Z_TERM_H */
 
 

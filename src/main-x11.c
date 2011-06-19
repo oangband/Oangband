@@ -15,8 +15,6 @@
  * To use this file, compile with "USE_X11" defined, and link against all
  * the various "X11" libraries which may be needed.
  *
- * See also "main-xaw.c".
- *
  * Part of this file provides a user interface package composed of several
  * pseudo-objects, including "metadpy" (a display), "infowin" (a window),
  * "infoclr" (a color), and "infofnt" (a font).  Actually, the package was
@@ -99,13 +97,10 @@
 
 #ifdef USE_X11
 
-
-#ifndef __MAKEDEPEND__
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
-#endif /* __MAKEDEPEND__ */
 
 
 /*
@@ -317,7 +312,7 @@ struct infofnt
 {
 	XFontStruct *info;
 
-	const char * name;
+	const char *name;
 
 	s16b wid;
 	s16b hgt;
@@ -444,7 +439,7 @@ static infofnt *Infofnt = (infofnt*)(NULL);
  *
  * Return -1 if no Display given, and none can be opened.
  */
-static errr Metadpy_init_2(Display *dpy, const char * name)
+static errr Metadpy_init_2(Display *dpy, const char *name)
 {
 	metadpy *m = Metadpy;
 
@@ -574,13 +569,13 @@ static errr Metadpy_do_beep(void)
 /*
  * Set the name (in the title bar) of Infowin
  */
-static errr Infowin_set_name(const char * name)
+static errr Infowin_set_name(const char *name)
 {
 	Status st;
 	XTextProperty tp;
 	char buf[128];
 	char *bp = buf;
-	strcpy(buf, name);
+	my_strcpy(buf, name, sizeof(buf));
 	st = XStringListToTextProperty(&bp, 1, &tp);
 	if (st) XSetWMName(Metadpy->dpy, Infowin->win, &tp);
 	return (0);
@@ -592,13 +587,13 @@ static errr Infowin_set_name(const char * name)
 /*
  * Set the icon name of Infowin
  */
-static errr Infowin_set_icon_name(const char * name)
+static errr Infowin_set_icon_name(const char *name)
 {
 	Status st;
 	XTextProperty tp;
 	char buf[128];
 	char *bp = buf;
-	strcpy(buf, name);
+	my_strcpy(buf, name, sizeof(buf));
 	st = XStringListToTextProperty(&bp, 1, &tp);
 	if (st) XSetWMIconName(Metadpy->dpy, Infowin->win, &tp);
 	return (0);
@@ -906,7 +901,7 @@ static errr Infowin_fill(void)
  * Pairs of values, first is texttual name, second is the string
  * holding the decimal value that the operation corresponds to.
  */
-static const char * opcode_pairs[] =
+static const char *opcode_pairs[] =
 {
 	"cpy", "3",
 	"xor", "6",
@@ -942,7 +937,7 @@ static const char * opcode_pairs[] =
  *	0-15: if 'str' is a valid Operation
  *	-1:   if 'str' could not be parsed
  */
-static int Infoclr_Opcode(const char * str)
+static int Infoclr_Opcode(const char *str)
 {
 	register int i;
 
@@ -977,7 +972,7 @@ static int Infoclr_Opcode(const char * str)
  * Valid forms for 'name':
  *	'fg', 'bg', 'zg', '<name>' and '#<code>'
  */
-static Pixell Infoclr_Pixell(const char * name)
+static Pixell Infoclr_Pixell(const char *name)
 {
 	XColor scrn;
 
@@ -1185,7 +1180,7 @@ static errr Infofnt_nuke(void)
 	if (ifnt->name)
 	{
 		/* Free the name */
-		string_free(ifnt->name);
+		string_free((void *) ifnt->name);
 	}
 
 	/* Nuke info if needed */
@@ -1220,13 +1215,6 @@ static errr Infofnt_prepare(XFontStruct *info)
 	ifnt->hgt = info->ascent + info->descent;
 	ifnt->wid = cs->width;
 
-#ifdef OBSOLETE_SIZING_METHOD
-	/* Extract default sizing info */
-	ifnt->asc = cs->ascent;
-	ifnt->hgt = (cs->ascent + cs->descent);
-	ifnt->wid = cs->width;
-#endif
-
 	/* Success */
 	return (0);
 }
@@ -1258,7 +1246,7 @@ static errr Infofnt_init_real(XFontStruct *info)
  * Inputs:
  *	name: The name of the requested Font
  */
-static errr Infofnt_init_data(const char * name)
+static errr Infofnt_init_data(const char *name)
 {
 	XFontStruct *info;
 
@@ -1304,7 +1292,7 @@ static errr Infofnt_init_data(const char * name)
 /*
  * Standard Text
  */
-static errr Infofnt_text_std(int x, int y, const char * str, int len)
+static errr Infofnt_text_std(int x, int y, const char *str, int len)
 {
 	int i;
 
@@ -1367,7 +1355,7 @@ static errr Infofnt_text_std(int x, int y, const char * str, int len)
 /*
  * Painting where text would be
  */
-static errr Infofnt_text_non(int x, int y, const char * str, int len)
+static errr Infofnt_text_non(int x, int y, const char *str, int len)
 {
 	int w, h;
 
@@ -1967,7 +1955,7 @@ static errr Term_wipe_x11(int x, int y, int n)
 /*
  * Draw some textual characters.
  */
-static errr Term_text_x11(int x, int y, int n, byte a, const char * s)
+static errr Term_text_x11(int x, int y, int n, byte a, const char *s)
 {
 	/* Draw the text */
 	Infoclr_set(clr[a]);
@@ -2152,9 +2140,9 @@ static errr term_data_init(term_data *td, int i)
 {
 	term *t = &td->t;
 
-	const char * name = angband_term_name[i];
+	const char *name = angband_term_name[i];
 
-	const char * font;
+	const char *font;
 
 	int x = 0;
 	int y = 0;
@@ -2167,7 +2155,7 @@ static errr term_data_init(term_data *td, int i)
 
 	int wid, hgt, num;
 
-	const char * str;
+	const char *str;
 
 	int val;
 
@@ -2272,7 +2260,7 @@ static errr term_data_init(term_data *td, int i)
 			if (buf[0] == '#') continue;
 
 			/* Window specific location (x) */
-			sprintf(cmd, "AT_X_%d", i);
+			strnfmt(cmd, sizeof(cmd), "AT_X_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2282,7 +2270,7 @@ static errr term_data_init(term_data *td, int i)
 			}
 
 			/* Window specific location (y) */
-			sprintf(cmd, "AT_Y_%d", i);
+			strnfmt(cmd, sizeof(cmd), "AT_Y_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2292,7 +2280,7 @@ static errr term_data_init(term_data *td, int i)
 			}
 
 			/* Window specific cols */
-			sprintf(cmd, "COLS_%d", i);
+			strnfmt(cmd, sizeof(cmd), "COLS_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2303,7 +2291,7 @@ static errr term_data_init(term_data *td, int i)
 			}
 
 			/* Window specific rows */
-			sprintf(cmd, "ROWS_%d", i);
+			strnfmt(cmd, sizeof(cmd), "ROWS_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2314,7 +2302,7 @@ static errr term_data_init(term_data *td, int i)
 			}
 
 			/* Window specific inner border offset (ox) */
-			sprintf(cmd, "IBOX_%d", i);
+			strnfmt(cmd, sizeof(cmd), "IBOX_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2325,7 +2313,7 @@ static errr term_data_init(term_data *td, int i)
 			}
 
 			/* Window specific inner border offset (oy) */
-			sprintf(cmd, "IBOY_%d", i);
+			strnfmt(cmd, sizeof(cmd), "IBOY_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2336,7 +2324,7 @@ static errr term_data_init(term_data *td, int i)
 			}
 
 			/* Window specific font name */
-			sprintf(cmd, "FONT_%d", i);
+			strnfmt(cmd, sizeof(cmd), "FONT_%d", i);
 
 			if (prefix(buf, cmd))
 			{
@@ -2359,43 +2347,43 @@ static errr term_data_init(term_data *td, int i)
 	 */
 
 	/* Window specific location (x) */
-	sprintf(buf, "ANGBAND_X11_AT_X_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_AT_X_%d", i);
 	str = getenv(buf);
 	val = (str != NULL) ? atoi(str) : -1;
 	if (val > 0) x = val;
 
 	/* Window specific location (y) */
-	sprintf(buf, "ANGBAND_X11_AT_Y_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_AT_Y_%d", i);
 	str = getenv(buf);
 	val = (str != NULL) ? atoi(str) : -1;
 	if (val > 0) y = val;
 
 	/* Window specific cols */
-	sprintf(buf, "ANGBAND_X11_COLS_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_COLS_%d", i);
 	str = getenv(buf);
 	val = (str != NULL) ? atoi(str) : -1;
 	if (val > 0) cols = val;
 
 	/* Window specific rows */
-	sprintf(buf, "ANGBAND_X11_ROWS_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_ROWS_%d", i);
 	str = getenv(buf);
 	val = (str != NULL) ? atoi(str) : -1;
 	if (val > 0) rows = val;
 
 	/* Window specific inner border offset (ox) */
-	sprintf(buf, "ANGBAND_X11_IBOX_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_IBOX_%d", i);
 	str = getenv(buf);
 	val = (str != NULL) ? atoi(str) : -1;
 	if (val > 0) ox = val;
 
 	/* Window specific inner border offset (oy) */
-	sprintf(buf, "ANGBAND_X11_IBOY_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_IBOY_%d", i);
 	str = getenv(buf);
 	val = (str != NULL) ? atoi(str) : -1;
 	if (val > 0) oy = val;
 
 	/* Window specific font name */
-	sprintf(buf, "ANGBAND_X11_FONT_%d", i);
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_FONT_%d", i);
 	str = getenv(buf);
 	if (str) font = str;
 
@@ -2407,7 +2395,7 @@ static errr term_data_init(term_data *td, int i)
 	}
 
 	/* Prepare the standard font */
-	MAKE(td->fnt, infofnt);
+	td->fnt = ZNEW(infofnt);
 	Infofnt_set(td->fnt);
 	if (Infofnt_init_data(font)) quit_fmt("Couldn't load the requested font. (%s)", font);
 
@@ -2419,7 +2407,7 @@ static errr term_data_init(term_data *td, int i)
 	hgt = rows * td->fnt->hgt + (oy + oy);
 
 	/* Create a top-window */
-	MAKE(td->win, infowin);
+	td->win = ZNEW(infowin);
 	Infowin_set(td->win);
 	Infowin_init_top(x, y, wid, hgt, 0,
 	                 Metadpy->fg, Metadpy->bg);
@@ -2439,11 +2427,11 @@ static errr term_data_init(term_data *td, int i)
 
 	if (ch == NULL) quit("XAllocClassHint failed");
 
-	strcpy(res_name, name);
+	my_strcpy(res_name, name, sizeof(res_name));
 	res_name[0] = tolower((unsigned char)res_name[0]);
 	ch->res_name = res_name;
 
-	strcpy(res_class, "Angband");
+	my_strcpy(res_class, "Angband", sizeof(res_class));
 	ch->res_class = res_class;
 
 	XSetClassHint(Metadpy->dpy, Infowin->win, ch);
@@ -2527,7 +2515,7 @@ static errr term_data_init(term_data *td, int i)
 }
 
 
-static void hook_quit(const char * str)
+static void hook_quit(const char *str)
 {
 	int i;
 
@@ -2578,21 +2566,22 @@ static void hook_quit(const char * str)
 	(void)Metadpy_nuke();
 }
 
+
 /*
  * Initialization function for an "X11" module to Angband
  */
-errr init_x11(int argc, char *argv[])
+errr init_x11(int argc, char **argv)
 {
 	int i;
 
-	const char * dpy_name = "";
+	const char *dpy_name = "";
 
 	int num_term = 1;
 
 	FILE *fff;
 
 	char buf[1024];
-	const char * str;
+	const char *str;
 	int val;
 	int line = 0;
 
@@ -2698,7 +2687,7 @@ errr init_x11(int argc, char *argv[])
 	{
 		Pixell pixel;
 
-		MAKE(clr[i], infoclr);
+		clr[i] = ZNEW(infoclr);
 
 		Infoclr_set(clr[i]);
 

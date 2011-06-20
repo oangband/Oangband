@@ -51,3 +51,4 @@ removed.
 - Clean ups in main-x11.c.
 - Nearly updated z-virt to Vanilla standard.
 - Moved a lot of filehandling to z-file.
+- Use z-quark package.

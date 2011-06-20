@@ -307,12 +307,6 @@
 #define MACRO_MAX	256
 
 /*
- * OPTION: Maximum number of "quarks" (see "io.c")
- * Default: assume at most 512 different inscriptions are used
- */
-#define QUARK_MAX	512
-
-/*
  * OPTION: Maximum number of messages to remember (see "io.c")
  * Default: assume maximal memorization of 2048 total messages
  */
@@ -3721,20 +3715,6 @@
 
 /*** Hack ***/
 
-
-/*
- * Hack -- attempt to reduce various values
- */
-#ifdef ANGBAND_LITE
-# undef MACRO_MAX
-# define MACRO_MAX	128
-# undef QUARK_MAX
-# define QUARK_MAX	128
-# undef MESSAGE_MAX
-# define MESSAGE_MAX	128
-# undef MESSAGE_BUF
-# define MESSAGE_BUF	4096
-#endif
 
 /*
  * Parse errors

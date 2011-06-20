@@ -4199,7 +4199,7 @@ static errr init_other(void)
 	(void)macro_init();
 
 	/* Initialize the "quark" package */
-	(void)quark_init();
+	(void)quarks_init();
 
 	/* Initialize the "message" package */
 	(void)message_init();

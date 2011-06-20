@@ -55,3 +55,4 @@ removed.
 - Nearly updated z-virt to Vanilla standard.
 - Moved a lot of filehandling to z-file.
 - Use z-quark package.
+- Use z-msg package.

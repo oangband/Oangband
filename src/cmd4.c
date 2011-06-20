@@ -287,7 +287,7 @@ void do_cmd_messages(void)
 	strcpy(shower, "");
 
 	/* Total messages */
-	n = message_num();
+	n = messages_num();
 
 	/* Start on first message */
 	i = 0;

@@ -13,17 +13,6 @@
 
 #include "h-basic.h"
 
-
-
-/* Set every byte in an array of type T[N], at location P, to V, and return P */
-#define C_BSET(P,V,N,T) \
-	(T*)(memset((char*)(P),(V), (N) * sizeof(T)))
-
-/* Set every byte in a thing of type T, at location P, to V, and return P */
-#define BSET(P,V,T) \
-	(T*)(memset((char*)(P),(V), sizeof(T)))
-
-
 /* Wipe an array of type T[N], at location P, and return P */
 #define C_WIPE(P, N, T) \
 	(memset((P), 0, (N) * sizeof(T)))

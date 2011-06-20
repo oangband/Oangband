@@ -199,48 +199,6 @@ const char * *macro__act;
 
 
 /*
- * The next "free" index to use
- */
-u16b message__next;
-
-/*
- * The index of the oldest message (none yet)
- */
-u16b message__last;
-
-/*
- * The next "free" offset
- */
-u16b message__head;
-
-/*
- * The offset to the oldest used char (none yet)
- */
-u16b message__tail;
-
-/*
- * The array[MESSAGE_MAX] of offsets, by index
- */
-u16b *message__ptr;
-
-/*
- * The array[MESSAGE_BUF] of chars, by offset
- */
-char *message__buf;
-
-/*
- * The array[MESSAGE_MAX] of u16b for the types of messages
- */
-u16b *message__type;
-
-
-/*
- * Table of colors associated to message-types
- */
-byte message__color[MSG_MAX];
-
-
-/*
  * The array[TERM_WIN_MAX] of window pointers
  */
 term *angband_term[TERM_WIN_MAX];

@@ -4202,7 +4202,7 @@ static errr init_other(void)
 	(void)quarks_init();
 
 	/* Initialize the "message" package */
-	(void)message_init();
+	(void)messages_init();
 
 
 	/*** Prepare grid arrays ***/

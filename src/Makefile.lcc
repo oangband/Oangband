@@ -71,7 +71,6 @@ Z-VIRT_C=\
 	z-virt.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 
 z-virt.obj: $(Z-VIRT_C) z-virt.c
@@ -82,7 +81,6 @@ Z-UTIL_C=\
 	z-util.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 
 z-util.obj: $(Z-UTIL_C) z-util.c
 	$(CC) -c $(CFLAGS) z-util.c
@@ -92,7 +90,6 @@ Z-TERM_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -111,7 +108,6 @@ Z-RAND_C=\
 	z-rand.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 
 z-rand.obj: $(Z-RAND_C) z-rand.c
 	$(CC) -c $(CFLAGS) z-rand.c
@@ -121,7 +117,6 @@ Z-FORM_C=\
 	z-form.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 
@@ -133,7 +128,6 @@ INFO_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -152,7 +146,6 @@ SQUELCH_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -171,7 +164,6 @@ XTRA2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -190,7 +182,6 @@ XTRA1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -209,7 +200,6 @@ WIZARD2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -228,7 +218,6 @@ WIZARD1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -247,7 +236,6 @@ VARIABLE_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -266,7 +254,6 @@ UTIL_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -285,7 +272,6 @@ TABLES_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -304,7 +290,6 @@ STORE_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -323,7 +308,6 @@ SPELLS2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -342,7 +326,6 @@ SPELLS1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -361,7 +344,6 @@ SAVE_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -387,7 +369,6 @@ OBJECT2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -406,7 +387,6 @@ OBJECT1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -425,7 +405,6 @@ MONSTER2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -444,7 +423,6 @@ MONSTER1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -463,7 +441,6 @@ MONATTK_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -482,7 +459,6 @@ MONMOVE_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -501,7 +477,6 @@ MAIN-WIN_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -521,7 +496,6 @@ LOAD2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -540,7 +514,6 @@ INIT2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -559,7 +532,6 @@ INIT1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -578,7 +550,6 @@ GENERATE_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -597,7 +568,6 @@ FILES_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -616,7 +586,6 @@ DUNGEON_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -635,7 +604,6 @@ CMD6_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -654,7 +622,6 @@ CMD5_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -673,7 +640,6 @@ CMD4_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -692,7 +658,6 @@ CMD3_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -711,7 +676,6 @@ CMD2_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -730,7 +694,6 @@ CMD1_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -749,7 +712,6 @@ CAVE_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -768,7 +730,6 @@ BIRTH_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -787,7 +748,6 @@ RANDART_C=\
 	angband.h\
 	h-basic.h\
 	h-config.h\
-	h-system.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\

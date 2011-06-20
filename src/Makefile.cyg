@@ -105,8 +105,7 @@ EXOBJS = \
 
 
 HDRS = \
-	h-basic.h \
-	h-system.h h-config.h
+	h-basic.h h-config.h
 
 
 INCS = \

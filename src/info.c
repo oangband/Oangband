@@ -626,7 +626,7 @@ const char * specialty_tips[TOTAL_SPECIALTIES]=
 	"Gives a good chance to avoid melee attacks and a great chance to avoid missile weapons when lightly armored.",
 	"Improves your saving throws.",
 	"Causes you to speed up after teleporting.  Gives resistance to hostile teleportation.",
-	"Increases AC and gives damage resistance in the dark.  Gives stealth and resist darkness.  Allows you to take actions (like reading) without light.  Reduces light radius.",
+	"Increases AC and gives damage resistance in the dark.  Gives stealth and resist darkness.  Allows you to take actions (like reading) without light.  Reduces light radius.  Increases infra-vision slightly.",
 	"","","","","","","","","","","","","",
 	"Grants extra critical hits with melee weapons.",
 	"Gives you extra melee attacks; better when you have more attacks to begin with.  Works armed and unarmed.",

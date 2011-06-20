@@ -8,6 +8,9 @@ Gameplay changes
 - Improved infravision to allow it to see walls and stuff but not take actions
 that require light.
 - Weak pseudo-id can now detect average items.
+- Fixed unlight bug, now grants +3 stealth in light and +6 in darkness
+as it is supposed to.
+- Unlight now grants +2 infra-vision range.
 
 User interface
 ==============

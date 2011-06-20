@@ -140,8 +140,8 @@ to Warriors and Rangers.
 
 Unlight: Increases stealth, provides resist darkness, but limits light radius.
 In dark areas provides protection from damage, and allows actions (such as
-reading) which normally require light.  Available to  Necromancers, Rogues,
-and Assassins.
+reading) which normally require light.  Grants limited increase in
+infra-vision.  Available to  Necromancers, Rogues, and Assassins.
 
 
 === Allowed Specialty Abilities for Each Class ===

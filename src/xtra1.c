@@ -3084,13 +3084,13 @@ static void calc_bonuses(void)
 	/* Unlight stealth boost */
 	if (check_ability(SP_UNLIGHT))
 	{
+		if ((p_ptr->cur_lite <= 0) &&
+		    !(cave_info[p_ptr->py][p_ptr->px] & CAVE_GLOW))
+			p_ptr->skill_stl += 6;
+		else p_ptr->skill_stl += 3;
 
-		p_ptr->skill_stl += 4;
-		/* Broken Code.  Fix for later release */
-		/*  1 - Incorrect check for light */
-		/*  2 - This function does not update with changes in lighting */
-		/* if (!player_can_see_bold(p_ptr->py, p_ptr->px)) p_ptr->skill_stl += 6; */
-		/* else p_ptr->skill_stl += 3; */
+		/* Add two to infravision */
+		p_ptr->see_infra += 2;
 	}
 
 	/* Speed Boost (Fury, Phasewalk) */

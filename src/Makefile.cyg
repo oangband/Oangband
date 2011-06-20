@@ -106,7 +106,6 @@ EXOBJS = \
 
 HDRS = \
 	h-basic.h \
-	h-define.h h-type.h \
 	h-system.h h-config.h
 
 

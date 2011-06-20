@@ -104,11 +104,6 @@
 #include <X11/keysymdef.h>
 
 
-/*
- * Include some helpful X11 code.
- */
-#include "maid-x11.c"
-
 
 #ifndef IsModifierKey
 
@@ -384,14 +379,6 @@ struct term_data
 	int tile_wid2; /* Tile-width with bigscreen */
 	int tile_hgt;
 
-#ifdef USE_GRAPHICS
-
-	XImage *tiles;
-
-	/* Tempory storage for overlaying tiles. */
-	XImage *TmpImage;
-
-#endif
 	/* Pointers to allocated data, needed to clear up memory */
 	XClassHint *classh;
 	XSizeHints *sizeh;
@@ -496,7 +483,7 @@ static infofnt *Infofnt = (infofnt*)(NULL);
 /*
  * Actual color table
  */
-static infoclr *clr[256];
+static infoclr *clr[MAX_COLORS];
 
 
 
@@ -542,9 +529,9 @@ static u32b create_pixel(Display *dpy, byte red, byte green, byte blue)
 
 	/* Build the color */
 
-	xcolour.red = red * 255;
-	xcolour.green = green * 255;
-	xcolour.blue = blue * 255;
+	xcolour.red = red * 257;
+	xcolour.green = green * 257;
+	xcolour.blue = blue * 257;
 	xcolour.flags = DoRed | DoGreen | DoBlue;
 
 	/* Attempt to Allocate the Parsed color */
@@ -852,19 +839,7 @@ static errr Infowin_init_data(Window dad, int x, int y, int w, int h,
 
 	/* If no parent given, depend on root */
 	if (dad == None)
-
-/* #ifdef USE_GRAPHICS
-
-		xid = XCreateWindow(Metadpy->dpy, Metadpy->root, x, y, w, h, b, 8, InputOutput, CopyFromParent, 0, 0);
-
-	else
-*/
-
-/* #else */
-
 		dad = Metadpy->root;
-
-/* #endif */
 
 	/* Create the Window XXX Error Check */
 	xid = XCreateSimpleWindow(Metadpy->dpy, dad, x, y, w, h, b, fg, bg);
@@ -1571,7 +1546,7 @@ static infoclr *xor;
 /*
  * Color info (unused, red, green, blue).
  */
-static byte color_table_x11[256][4];
+static byte color_table_x11[MAX_COLORS][4];
 
 /*
  * The number of term data structures
@@ -1969,7 +1944,7 @@ static errr Term_xtra_x11_react(void)
 	if (Metadpy->color)
 	{
 		/* Check the colors */
-		for (i = 0; i < 256; i++)
+		for (i = 0; i < MAX_COLORS; i++)
 		{
 			if ((color_table_x11[i][0] != angband_color_table[i][0]) ||
 			    (color_table_x11[i][1] != angband_color_table[i][1]) ||
@@ -2107,104 +2082,6 @@ static errr Term_text_x11(int x, int y, int n, byte a, const char *s)
 	/* Success */
 	return (0);
 }
-
-
-#ifdef USE_GRAPHICS
-
-/*
- * Draw some graphical characters.
- */
-static errr Term_pict_x11(int x, int y, int n, const byte *ap, const char *cp, const byte *tap, const char *tcp)
-{
-	int i, x1, y1;
-
-	byte a;
-	char c;
-
-	byte ta;
-	char tc;
-
-	int x2, y2;
-	int k,l;
-
-	unsigned long pixel, blank;
-
-	term_data *td = (term_data*)(Term->data);
-
-	y *= Infofnt->hgt;
-	x *= Infofnt->wid;
-
-	/* Add in affect of window boundaries */
-	y += Infowin->oy;
-	x += Infowin->ox;
-
-	for (i = 0; i < n; ++i)
-	{
-		a = *ap++;
-		c = *cp++;
-
-		/* For extra speed - cache these values */
-		x1 = (c&0x7F) * td->fnt->wid;
-		y1 = (a&0x7F) * td->fnt->hgt;
-
-		ta = *tap++;
-		tc = *tcp++;
-
-		/* For extra speed - cache these values */
-		x2 = (tc&0x7F) * td->fnt->wid;
-		y2 = (ta&0x7F) * td->fnt->hgt;
-
-		/* Optimise the common case */
-		if ((x1 == x2) && (y1 == y2))
-		{
-			/* Draw object / terrain */
-			XPutImage(Metadpy->dpy, td->win->win,
-		  	        clr[0]->gc,
-		  	        td->tiles,
-		  	        x1, y1,
-		  	        x, y,
-		  	        td->fnt->wid, td->fnt->hgt);
-		}
-		else
-		{
-
-			/* Mega Hack^2 - assume the top left corner is "black" */
-			blank = XGetPixel(td->tiles, 0, td->fnt->hgt * 6);
-
-			for (k = 0; k < td->fnt->wid; k++)
-			{
-				for (l = 0; l < td->fnt->hgt; l++)
-				{
-					/* If mask set... */
-					if ((pixel = XGetPixel(td->tiles, x1 + k, y1 + l)) == blank)
-					{
-						/* Output from the terrain */
-						pixel = XGetPixel(td->tiles, x2 + k, y2 + l);
-					}
-
-					/* Store into the temp storage. */
-					XPutPixel(td->TmpImage, k, l, pixel);
-				}
-			}
-
-
-			/* Draw to screen */
-
-			XPutImage(Metadpy->dpy, td->win->win,
-		    	      clr[0]->gc,
-		     	     td->TmpImage,
-		     	     0, 0, x, y,
-		     	     td->fnt->wid, td->fnt->hgt);
-		}
-
-		x += td->fnt->wid;
-	}
-
-	/* Success */
-	return (0);
-}
-
-#endif /* USE_GRAPHICS */
 
 
 static void save_prefs(void)
@@ -2731,7 +2608,7 @@ static void hook_quit(const char *str)
 	(void)Infoclr_nuke();
 	FREE(xor);
 
-	for (i = 0; i < 256; ++i)
+	for (i = 0; i < MAX_COLORS; ++i)
 	{
 		Infoclr_set(clr[i]);
 		(void)Infoclr_nuke();
@@ -2760,17 +2637,6 @@ errr init_x11(int argc, char **argv)
 	const char *str;
 	int val;
 	int line = 0;
-
-#ifdef USE_GRAPHICS
-
-	char filename[1024];
-
-	int pict_wid = 0;
-	int pict_hgt = 0;
-
-	char *TmpData;
-
-#endif /* USE_GRAPHICS */
 
 
 	/*
@@ -2825,14 +2691,6 @@ errr init_x11(int argc, char **argv)
 			dpy_name = &argv[i][2];
 			continue;
 		}
-
-#ifdef USE_GRAPHICS
-		if (prefix(argv[i], "-s"))
-		{
-			smoothRescaling = FALSE;
-			continue;
-		}
-#endif /* USE_GRAPHICS */
 
 		if (prefix(argv[i], "-n"))
 		{
@@ -2910,104 +2768,6 @@ errr init_x11(int argc, char **argv)
 	/* Activate the "Angband" window screen */
 	Term_activate(&data[0].t);
 
-
-#ifdef USE_GRAPHICS
-
-	/* Try graphics */
-	if (arg_graphics)
-	{
-		/* Try the "16x16.bmp" file */
-		path_build(filename, sizeof(filename), ANGBAND_DIR_XTRA, "graf/16x16.bmp");
-
-		/* Use the "16x16.bmp" file if it exists */
-		if (0 == fd_close(fd_open(filename, O_RDONLY)))
-		{
-			/* Use graphics */
-			use_graphics = TRUE;
-
-			use_transparency = TRUE;
-
-			pict_wid = pict_hgt = 16;
-
-			ANGBAND_GRAF = "new";
-		}
-		else
-		{
-			/* Try the "8x8.bmp" file */
-			path_build(filename, sizeof(filename), ANGBAND_DIR_XTRA, "graf/8x8.bmp");
-
-			/* Use the "8x8.bmp" file if it exists */
-			if (0 == fd_close(fd_open(filename, O_RDONLY)))
-			{
-				/* Use graphics */
-				use_graphics = TRUE;
-
-				pict_wid = pict_hgt = 8;
-
-				ANGBAND_GRAF = "old";
-			}
-		}
-	}
-
-	/* Load graphics */
-	if (use_graphics)
-	{
-		Display *dpy = Metadpy->dpy;
-
-		XImage *tiles_raw;
-
-		/* Load the graphical tiles */
-		tiles_raw = ReadBMP(dpy, filename);
-
-		/* Initialize the windows */
-		for (i = 0; i < num_term; i++)
-		{
-			term_data *td = &data[i];
-
-			term *t = &td->t;
-
-			/* Graphics hook */
-			t->pict_hook = Term_pict_x11;
-
-			/* Use graphics sometimes */
-			t->higher_pict = TRUE;
-
-			/* Resize tiles */
-			td->tiles =
-			ResizeImage(dpy, tiles_raw,
-			            pict_wid, pict_hgt,
-			            td->fnt->wid, td->fnt->hgt);
-		}
-
-		/* Initialize the transparency masks */
-		for (i = 0; i < num_term; i++)
-		{
-			term_data *td = &data[i];
-			int ii, jj;
-			int depth = DefaultDepth(dpy, DefaultScreen(dpy));
-			Visual *visual = DefaultVisual(dpy, DefaultScreen(dpy));
-			int total;
-
-
-			/* Determine total bytes needed for image */
-			ii = 1;
-			jj = (depth - 1) >> 2;
-			while (jj >>= 1) ii <<= 1;
-			total = td->fnt->wid * td->fnt->hgt * ii;
-
-
-			TmpData = (char *)malloc(total);
-
-			td->TmpImage = XCreateImage(dpy,visual,depth,
-				ZPixmap, 0, TmpData,
-				td->fnt->wid, td->fnt->hgt, 32, 0);
-
-		}
-
-		/* Free tiles_raw? XXX XXX */
-	}
-
-#endif /* USE_GRAPHICS */
 
 	/* Activate hook */
 	quit_aux = hook_quit;

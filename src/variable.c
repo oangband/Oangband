@@ -199,17 +199,6 @@ const char * *macro__act;
 
 
 /*
- * The number of quarks (first quark is NULL)
- */
-s16b quark__num = 1;
-
-/*
- * The array[QUARK_MAX] of pointers to the quarks
- */
-const char * *quark__str;
-
-
-/*
  * The next "free" index to use
  */
 u16b message__next;

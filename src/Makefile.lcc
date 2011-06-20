@@ -72,8 +72,6 @@ Z-VIRT_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 
 z-virt.obj: $(Z-VIRT_C) z-virt.c
@@ -85,8 +83,6 @@ Z-UTIL_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 
 z-util.obj: $(Z-UTIL_C) z-util.c
 	$(CC) -c $(CFLAGS) z-util.c
@@ -97,8 +93,6 @@ Z-TERM_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -118,8 +112,6 @@ Z-RAND_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 
 z-rand.obj: $(Z-RAND_C) z-rand.c
 	$(CC) -c $(CFLAGS) z-rand.c
@@ -130,8 +122,6 @@ Z-FORM_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 
@@ -144,8 +134,6 @@ INFO_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -165,8 +153,6 @@ SQUELCH_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -186,8 +172,6 @@ XTRA2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -207,8 +191,6 @@ XTRA1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -228,8 +210,6 @@ WIZARD2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -249,8 +229,6 @@ WIZARD1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -270,8 +248,6 @@ VARIABLE_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -291,8 +267,6 @@ UTIL_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -312,8 +286,6 @@ TABLES_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -333,8 +305,6 @@ STORE_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -354,8 +324,6 @@ SPELLS2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -375,8 +343,6 @@ SPELLS1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -396,8 +362,6 @@ SAVE_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -424,8 +388,6 @@ OBJECT2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -445,8 +407,6 @@ OBJECT1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -466,8 +426,6 @@ MONSTER2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -487,8 +445,6 @@ MONSTER1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -508,8 +464,6 @@ MONATTK_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -529,8 +483,6 @@ MONMOVE_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -550,8 +502,6 @@ MAIN-WIN_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -572,8 +522,6 @@ LOAD2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -593,8 +541,6 @@ INIT2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -614,8 +560,6 @@ INIT1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -635,8 +579,6 @@ GENERATE_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -656,8 +598,6 @@ FILES_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -677,8 +617,6 @@ DUNGEON_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -698,8 +636,6 @@ CMD6_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -719,8 +655,6 @@ CMD5_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -740,8 +674,6 @@ CMD4_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -761,8 +693,6 @@ CMD3_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -782,8 +712,6 @@ CMD2_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -803,8 +731,6 @@ CMD1_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -824,8 +750,6 @@ CAVE_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -845,8 +769,6 @@ BIRTH_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\
@@ -866,8 +788,6 @@ RANDART_C=\
 	h-basic.h\
 	h-config.h\
 	h-system.h\
-	h-type.h\
-	h-define.h\
 	z-util.h\
 	z-virt.h\
 	z-form.h\

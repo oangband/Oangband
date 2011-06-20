@@ -87,8 +87,6 @@ void safe_setuid_grab(void)
  * to assume that all filenames are "Unix" filenames, and explicitly "extract"
  * such filenames if needed (by "path_parse()", or perhaps "path_canon()").
  *
- * Note that "path_temp" should probably return a "canonical" filename.
- *
  * Note that "my_fopen()" and "my_open()" and "my_make()" and "my_kill()"
  * and "my_move()" and "my_copy()" should all take "canonical" filenames.
  *
@@ -192,29 +190,6 @@ errr path_parse(char *buf, int max, const char * file)
 
 
 #endif /* SET_UID */
-
-
-/*
- * Hack -- acquire a "temporary" file name if possible
- *
- * This filename is always in "system-specific" form.
- */
-errr path_temp(char *buf, int max)
-{
-	const char * s;
-
-	/* Temp file */
-	s = tmpnam(NULL);
-
-	/* Oops */
-	if (!s) return (-1);
-
-	/* Format to length */
-	strnfmt(buf, max, "%s", s);
-
-	/* Success */
-	return (0);
-}
 
 
 /*
@@ -406,7 +381,15 @@ errr my_fclose(FILE *fff)
  */
 void file_lock(ang_file *f)
 {
-
+#if defined(HAVE_FCNTL_H) && defined(SET_UID)
+	struct flock lock;
+	lock.l_type = (f->mode == MODE_READ ? F_RDLCK : F_WRLCK);
+	lock.l_whence = SEEK_SET;
+	lock.l_start = 0;
+	lock.l_len = 0;
+	lock.l_pid = 0;
+	fcntl(fileno(f->fh), F_SETLKW, &lock);
+#endif /* HAVE_FCNTL_H && SET_UID */
 }
 
 /*
@@ -414,7 +397,26 @@ void file_lock(ang_file *f)
  */
 void file_unlock(ang_file *f)
 {
+#if defined(HAVE_FCNTL_H) && defined(SET_UID)
+	struct flock lock;
+	lock.l_type = F_UNLCK;
+	lock.l_whence = SEEK_SET;
+	lock.l_start = 0;
+	lock.l_len = 0;
+	lock.l_pid = 0;
+	fcntl(fileno(f->fh), F_SETLK, &lock);
+#endif /* HAVE_FCNTL_H && SET_UID */
+}
 
+
+/** Byte-based IO and functions **/
+
+/*
+ * Seek to location 'pos' in file 'f'.
+ */
+bool file_seek(ang_file *f, u32b pos)
+{
+	return (fseek(f->fh, pos, SEEK_SET) == 0);
 }
 
 /*
@@ -440,6 +442,19 @@ bool file_writec(ang_file *f, byte b)
 }
 
 /*
+ * Read 'n' bytes from file 'f' into array 'buf'.
+ */
+int file_read(ang_file *f, char *buf, size_t n)
+{
+	size_t read = fread(buf, 1, n, f->fh);
+
+	if (read == 0 && ferror(f->fh))
+		return -1;
+	else
+		return read;
+}
+
+/*
  * Append 'n' bytes of array 'buf' to file 'f'.
  */
 bool file_write(ang_file *f, const char *buf, size_t n)
@@ -451,6 +466,9 @@ bool file_write(ang_file *f, const char *buf, size_t n)
 
 /*
  * Read a line of text from file 'f' into buffer 'buf' of size 'n' bytes.
+ *
+ * Support both \r\n and \n as line endings, but not the outdated \r that used
+ * to be used on Macs.  Replace non-printables with '?', and \ts with ' '.
  */
 #define TAB_COLUMNS 4
 
@@ -532,7 +550,7 @@ bool file_getl(ang_file *f, char *buf, size_t len)
 }
 
 /*
- * Append a line of text 'buf' to the end of file 'f', usign system-dependent
+ * Append a line of text 'buf' to the end of file 'f', using system-dependent
  * line ending.
  */
 bool file_put(ang_file *f, const char *buf)
@@ -540,6 +558,10 @@ bool file_put(ang_file *f, const char *buf)
 	return file_write(f, buf, strlen(buf));
 }
 
+/*
+ * The comp.lang.c FAQ recommends this pairing for varargs functions.
+ * See <http://c-faq.com/varargs/handoff.html>
+ */
 
 /**
  * Append a formatted line of text to the end of file 'f'.
@@ -577,39 +599,6 @@ bool file_vputf(ang_file *f, const char *fmt, va_list vp)
 	(void)vstrnfmt(buf, sizeof(buf), fmt, vp);
 	return file_put(f, buf);
 } 
-
-
-#ifdef HAVE_MKSTEMP
-
-FILE *my_fopen_temp(char *buf, size_t max)
-{
-	int fd;
-
-	/* Prepare the buffer for mkstemp */
-	my_strcpy(buf, "/tmp/anXXXXXX", max);
-
-	/* Secure creation of a temporary file */
-	fd = mkstemp(buf);
-
-	/* Check the file-descriptor */
-	if (fd < 0) return (NULL);
-
-	/* Return a file stream */
-	return (fdopen(fd, "w"));
-}
-
-#else /* HAVE_MKSTEMP */
-
-FILE *my_fopen_temp(char *buf, size_t max)
-{
-	/* Generate a temporary filename */
-	if (path_temp(buf, max)) return (NULL);
-
-	/* Open the file */
-	return (my_fopen(buf, "w"));
-}
-
-#endif /* HAVE_MKSTEMP */
 
 
 /*
@@ -700,29 +689,6 @@ errr my_fputs(FILE *fff, const char * buf, size_t n)
 # define O_BINARY 0
 #endif /* O_BINARY */
 
-
-#if 0   /* Broken! XXX XXX */
-/*
- * Hack -- attempt to copy a file
- */
-errr fd_copy(const char * file, const char * what)
-{
-	char buf[1024];
-	char aux[1024];
-
-	/* Hack -- Try to parse the path */
-	if (path_parse(buf, sizeof(buf), file)) return (-1);
-
-	/* Hack -- Try to parse the path */
-	if (path_parse(aux, sizeof(aux), what)) return (-1);
-
-	/* Copy XXX XXX XXX */
-	/* (void)rename(buf, aux); */
-
-	/* Assume success XXX XXX XXX */
-	return (1);
-}
-#endif
 
 /*
  * Hack -- attempt to open a file descriptor (create file)

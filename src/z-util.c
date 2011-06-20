@@ -89,8 +89,8 @@ int my_strnicmp(const char *a, const char *b, int n)
  */
 char *my_stristr(const char *string, const char *pattern)
 {
-        const char *pptr, *sptr;
-        char *start;
+	const char *pptr, *sptr;
+	char *start;
 
 	for (start = (char *)string; *start != 0; start++)
 	{
@@ -300,9 +300,9 @@ int mean(int *nums, int size)
 /* Variance of the first 'size' entries of the array 'nums'  */
 int variance(int *nums, int size)
 {
-       int i, avg, total = 0;
+	int i, avg, total = 0;
 
-       avg = mean(nums, size);
+	avg = mean(nums, size);
 
 	for(i = 0; i < size; i++)
 	{

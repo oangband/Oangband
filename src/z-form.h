@@ -1,13 +1,3 @@
-/* File z-form.h */
-
-/*
- * Copyright (c) 1997 Ben Harrison
- *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.
- */
-
 #ifndef INCLUDED_Z_FORM_H
 #define INCLUDED_Z_FORM_H
 
@@ -25,12 +15,13 @@
  */
 
 /* MSVC doesn't have va_copy (which is C99) or an alternative, so we'll just
- * copy the SRC pointer. In other case we'll use va_copy() as we should. */
+ * copy the SRC pointer. In other cases we'll use va_copy() as we should. */
 #ifdef _MSC_VER
 #define VA_COPY(DST, SRC) (DST) = (SRC)
 #else
 #define VA_COPY(DST, SRC) va_copy(DST, SRC)
 #endif
+
 
 /**** Available Functions ****/
 

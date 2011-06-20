@@ -1,17 +1,21 @@
-/* File: z-form.c */
-
 /*
  * File: z-form.c
  * Purpose: Low-level text formatting (snprintf() replacement)
  *
  * Copyright (c) 1997 Ben Harrison
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 
-/* Purpose: Low level text formatting -BEN- */
 
 #include "z-form.h"
 
@@ -132,7 +136,6 @@
  */
 
 
-
 /*
  * Basic "vararg" format function.
  *
@@ -190,8 +193,8 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 	/* The argument is "long" */
 	bool do_long;
 
-	/* The argument needs "processing" */
-	bool do_xtra;
+	/* The argument needs to be uppercased */
+	bool titlecase;
 
 	/* Bytes used in buffer */
 	size_t n;
@@ -281,7 +284,7 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 		do_long = FALSE;
 
 		/* Assume no "xtra" processing */
-		do_xtra = FALSE;
+		titlecase = FALSE;
 
 		/* Build the "aux" string */
 		while (TRUE)
@@ -319,16 +322,6 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 					do_long = TRUE;
 				}
 
-				/* Mega-Hack -- handle "extra-long" request */
-				else if (*s == 'L')
-				{
-					/* Error -- illegal format char */
-					buf[0] = '\0';
-
-					/* Return "error" */
-					return (0);
-				}
-
 				/* Handle normal end of format sequence */
 				else
 				{
@@ -364,8 +357,7 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 				/* Mega-Hack -- Handle 'caret' (for "uppercase" request) */
 				else if (*s == '^')
 				{
-					/* Note the "xtra" flag */
-					do_xtra = TRUE;
+					titlecase = TRUE;
 
 					/* Skip the "^" */
 					s++;
@@ -522,9 +514,8 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
 			}
 		}
 
-
 		/* Mega-Hack -- handle "capitilization" */
-		if (do_xtra)
+		if (titlecase)
 		{
 			/* Now append "tmp" to "buf" */
 			for (q = 0; tmp[q]; q++)
@@ -601,7 +592,8 @@ char *vformat(const char *fmt, va_list vp)
 	if (!format_buf)
 	{
 		format_len = 1024;
-		C_MAKE(format_buf, format_len, char);
+		format_buf = mem_zalloc(format_len);
+		format_buf[0] = 0;
 	}
 
 	/* Null format yields last result */
@@ -610,18 +602,20 @@ char *vformat(const char *fmt, va_list vp)
 	/* Keep going until successful */
 	while (1)
 	{
+		va_list args;
 		size_t len;
 
 		/* Build the string */
-		len = vstrnfmt(format_buf, format_len, fmt, vp);
+		VA_COPY(args, vp);
+		len = vstrnfmt(format_buf, format_len, fmt, args);
+		va_end(args);
 
 		/* Success */
 		if (len < format_len-1) break;
 
 		/* Grow the buffer */
-		FREE(format_buf);
 		format_len = format_len * 2;
-		C_MAKE(format_buf, format_len, char);
+		format_buf = mem_realloc(format_buf, format_len);
 	}
 
 	/* Return the new buffer */

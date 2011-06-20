@@ -4420,8 +4420,8 @@ void get_closest_los_monster(int n, int y0, int x0, int *ty, int *tx,
 	bool use_view = FALSE;
 
 	/* Allocate some arrays */
-	C_MAKE(monster_dist, m_max, int);
-	C_MAKE(monster_index, m_max, int);
+	monster_dist = C_ZNEW(m_max, int);
+	monster_index = C_ZNEW(m_max, int);
 
 	/* Note that we're looking from the character's grid */
 	if ((y0 == p_ptr->py) && (x0 == p_ptr->px)) use_view = TRUE;

@@ -626,7 +626,7 @@ void display_monlist(void)
 	u16b *race_counts;
 
 	/* Allocate the array */
-	C_MAKE(race_counts, MAX_R_IDX, u16b);
+	race_counts = C_ZNEW(MAX_R_IDX, u16b);
 
 	/* Iterate over m_list */
 	for (idx = 1; idx < m_max; idx++)

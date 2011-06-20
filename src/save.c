@@ -257,7 +257,7 @@ static errr wr_savefile(void)
 
 
 	/* Make array XXX XXX XXX */
-	C_MAKE(data_head, 65535, byte);
+	data_head = C_ZNEW(65535, byte);
 
 	/* Hack -- reset */
 	data_next = data_head;
@@ -558,7 +558,7 @@ static errr rd_savefile(void)
 
 
 	/* Make array XXX XXX XXX */
-	C_MAKE(data_head, 65535, byte);
+	data_head = C_ZNEW(65535, byte);
 
 	/* Hack -- reset */
 	data_next = data_head;

@@ -2960,7 +2960,7 @@ static void term_data_link(int i)
 	if (!td->mapped) return;
 
 	/* Allocate */
-	MAKE(td->t, term);
+	td->t = ZNEW(term);
 
 	/* Initialize the term */
 	term_init(td->t, td->cols, td->rows, td->keys);

@@ -589,10 +589,10 @@ errr macro_add(char *pat, char *act)
 errr macro_init(void)
 {
 	/* Macro patterns */
-	C_MAKE(macro__pat, MACRO_MAX, const char *);
+	macro__pat = C_ZNEW(MACRO_MAX, const char *);
 
 	/* Macro actions */
-	C_MAKE(macro__act, MACRO_MAX, const char *);
+	macro__act = C_ZNEW(MACRO_MAX, const char *);
 
 	/* Success */
 	return (0);

@@ -296,14 +296,14 @@ static errr init_f_info_raw(int fd)
 
 
 	/* Allocate the "f_info" array */
-	C_MAKE(f_info, f_head->info_num, feature_type);
+	f_info = C_ZNEW(f_head->info_num, feature_type);
 
 	/* Read the "f_info" array */
 	fd_read(fd, (char*)(f_info), f_head->info_size);
 
 
 	/* Allocate the "f_name" array */
-	C_MAKE(f_name, f_head->name_size, char);
+	f_name = C_ZNEW(f_head->name_size, char);
 
 	/* Read the "f_name" array */
 	fd_read(fd, (char*)(f_name), f_head->name_size);
@@ -312,7 +312,7 @@ static errr init_f_info_raw(int fd)
 #ifndef DELAY_LOAD_F_TEXT
 
 	/* Allocate the "f_text" array */
-	C_MAKE(f_text, f_head->text_size, char);
+	f_text = C_ZNEW(f_head->text_size, char);
 
 	/* Read the "f_text" array */
 	fd_read(fd, (char*)(f_text), f_head->text_size);
@@ -349,7 +349,7 @@ static errr init_f_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(f_head, header);
+	f_head = ZNEW(header);
 
 	/* Save the "version" */
 	f_head->v_major = O_VERSION_MAJOR;
@@ -404,11 +404,11 @@ static errr init_f_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "f_info" array */
-	C_MAKE(f_info, f_head->info_num, feature_type);
+	f_info = C_ZNEW(f_head->info_num, feature_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(f_name, FAKE_NAME_SIZE, char);
-	C_MAKE(f_text, FAKE_TEXT_SIZE, char);
+	f_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	f_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -548,14 +548,14 @@ static errr init_k_info_raw(int fd)
 
 
 	/* Allocate the "k_info" array */
-	C_MAKE(k_info, k_head->info_num, object_kind);
+	k_info = C_ZNEW(k_head->info_num, object_kind);
 
 	/* Read the "k_info" array */
 	fd_read(fd, (char*)(k_info), k_head->info_size);
 
 
 	/* Allocate the "k_name" array */
-	C_MAKE(k_name, k_head->name_size, char);
+	k_name = C_ZNEW(k_head->name_size, char);
 
 	/* Read the "k_name" array */
 	fd_read(fd, (char*)(k_name), k_head->name_size);
@@ -564,7 +564,7 @@ static errr init_k_info_raw(int fd)
 #ifndef DELAY_LOAD_K_TEXT
 
 	/* Allocate the "k_text" array */
-	C_MAKE(k_text, k_head->text_size, char);
+	k_text = C_ZNEW(k_head->text_size, char);
 
 	/* Read the "k_text" array */
 	fd_read(fd, (char*)(k_text), k_head->text_size);
@@ -601,7 +601,7 @@ static errr init_k_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(k_head, header);
+	k_head = ZNEW(header);
 
 	/* Save the "version" */
 	k_head->v_major = O_VERSION_MAJOR;
@@ -656,11 +656,11 @@ static errr init_k_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "k_info" array */
-	C_MAKE(k_info, k_head->info_num, object_kind);
+	k_info = C_ZNEW(k_head->info_num, object_kind);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(k_name, FAKE_NAME_SIZE, char);
-	C_MAKE(k_text, FAKE_TEXT_SIZE, char);
+	k_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	k_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -798,14 +798,14 @@ static errr init_h_info_raw(int fd)
 
 
 	/* Allocate the "h_info" array */
-	C_MAKE(h_info, h_head->info_num, hist_type);
+	h_info = C_ZNEW(h_head->info_num, hist_type);
 
 	/* Read the "h_info" array */
 	fd_read(fd, (char*)(h_info), h_head->info_size);
 
 
 	/* Allocate the "h_text" array */
-	C_MAKE(h_text, h_head->text_size, char);
+	h_text = C_ZNEW(h_head->text_size, char);
 
 	/* Read the "h_text" array */
 	fd_read(fd, (char*)(h_text), h_head->text_size);
@@ -837,7 +837,7 @@ static errr init_h_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(h_head, header);
+	h_head = ZNEW(header);
 
 	/* Save the "version" */
 	h_head->v_major = O_VERSION_MAJOR;
@@ -887,10 +887,10 @@ static errr init_h_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "h_info" array */
-	C_MAKE(h_info, h_head->info_num, hist_type);
+	h_info = C_ZNEW(h_head->info_num, hist_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(h_text, FAKE_TEXT_SIZE, char);
+	h_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -1025,14 +1025,14 @@ static errr init_b_info_raw(int fd)
 
 
 	/* Allocate the "b_info" array */
-	C_MAKE(b_info, b_head->info_num, owner_type);
+	b_info = C_ZNEW(b_head->info_num, owner_type);
 
 	/* Read the "b_info" array */
 	fd_read(fd, (char*)(b_info), b_head->info_size);
 
 
 	/* Allocate the "b_name" array */
-	C_MAKE(b_name, b_head->name_size, char);
+	b_name = C_ZNEW(b_head->name_size, char);
 
 	/* Read the "b_name" array */
 	fd_read(fd, (char*)(b_name), b_head->name_size);
@@ -1064,7 +1064,7 @@ static errr init_b_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(b_head, header);
+	b_head = ZNEW(header);
 
 	/* Save the "version" */
 	b_head->v_major = O_VERSION_MAJOR;
@@ -1115,10 +1115,10 @@ static errr init_b_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "b_info" array */
-	C_MAKE(b_info, b_head->info_num, owner_type);
+	b_info = C_ZNEW(b_head->info_num, owner_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(b_name, FAKE_NAME_SIZE, char);
+	b_name = C_ZNEW(FAKE_NAME_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -1253,7 +1253,7 @@ static errr init_g_info_raw(int fd)
 
 
 	/* Allocate the "g_info" array */
-	C_MAKE(g_info, g_head->info_num, byte);
+	g_info = C_ZNEW(g_head->info_num, byte);
 
 	/* Read the "g_info" array */
 	fd_read(fd, (char*)(g_info), g_head->info_size);
@@ -1286,7 +1286,7 @@ static errr init_g_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(g_head, header);
+	g_head = ZNEW(header);
 
 	/* Save the "version" */
 	g_head->v_major = O_VERSION_MAJOR;
@@ -1335,7 +1335,7 @@ static errr init_g_info(void)
 
 
 	/* Allocate the "g_info" array */
-	C_MAKE(g_info, g_head->info_num, byte);
+	g_info = C_ZNEW(g_head->info_num, byte);
 
 
 	/*** Load the ascii template file ***/
@@ -1512,8 +1512,8 @@ void init_artifacts(void)
 		/* Allocate the lists the first time through */
 		if (loop == 0)
 		{
-			C_MAKE(artifact_normal, artifact_normal_cnt, int);
-			C_MAKE(artifact_special, artifact_special_cnt, int);
+			artifact_normal = C_ZNEW(artifact_normal_cnt, int);
+			artifact_special = C_ZNEW(artifact_special_cnt, int);
 		}
 	}
 }
@@ -1548,14 +1548,14 @@ static errr init_a_info_raw(int fd)
 
 
 	/* Allocate the "a_info" array */
-	C_MAKE(a_info, a_head->info_num, artifact_type);
+	a_info = C_ZNEW(a_head->info_num, artifact_type);
 
 	/* Read the "a_info" array */
 	fd_read(fd, (char*)(a_info), a_head->info_size);
 
 
 	/* Allocate the "a_name" array */
-	C_MAKE(a_name, a_head->name_size, char);
+	a_name = C_ZNEW(a_head->name_size, char);
 
 	/* Read the "a_name" array */
 	fd_read(fd, (char*)(a_name), a_head->name_size);
@@ -1564,7 +1564,7 @@ static errr init_a_info_raw(int fd)
 #ifndef DELAY_LOAD_A_TEXT
 
 	/* Allocate the "a_text" array */
-	C_MAKE(a_text, a_head->text_size, char);
+	a_text = C_ZNEW(a_head->text_size, char);
 
 	/* Read the "a_text" array */
 	fd_read(fd, (char*)(a_text), a_head->text_size);
@@ -1601,7 +1601,7 @@ static errr init_a_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(a_head, header);
+	a_head = ZNEW(header);
 
 	/* Save the "version" */
 	a_head->v_major = O_VERSION_MAJOR;
@@ -1656,11 +1656,11 @@ static errr init_a_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "a_info" array */
-	C_MAKE(a_info, a_head->info_num, artifact_type);
+	a_info = C_ZNEW(a_head->info_num, artifact_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(a_name, FAKE_NAME_SIZE, char);
-	C_MAKE(a_text, FAKE_TEXT_SIZE, char);
+	a_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	a_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -1800,14 +1800,14 @@ static errr init_s_info_raw(int fd)
 
 
 	/* Allocate the "s_info" array */
-	C_MAKE(s_info, s_head->info_num, set_type);
+	s_info = C_ZNEW(s_head->info_num, set_type);
 
 	/* Read the "s_info" array */
 	fd_read(fd, (char*)(s_info), s_head->info_size);
 
 
 	/* Allocate the "s_name" array */
-	C_MAKE(s_name, s_head->name_size, char);
+	s_name = C_ZNEW(s_head->name_size, char);
 
 	/* Read the "s_name" array */
 	fd_read(fd, (char*)(s_name), s_head->name_size);
@@ -1816,7 +1816,7 @@ static errr init_s_info_raw(int fd)
 #ifndef DELAY_LOAD_S_TEXT
 
 	/* Allocate the "a_text" array */
-	C_MAKE(s_text, s_head->text_size, char);
+	s_text = C_ZNEW(s_head->text_size, char);
 
 	/* Read the "s_text" array */
 	fd_read(fd, (char*)(s_text), s_head->text_size);
@@ -1853,7 +1853,7 @@ static errr init_s_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(s_head, header);
+	s_head = ZNEW(header);
 
 	/* Save the "version" */
 	s_head->v_major = O_VERSION_MAJOR;
@@ -1908,11 +1908,11 @@ static errr init_s_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "a_info" array */
-	C_MAKE(s_info, s_head->info_num, set_type);
+	s_info = C_ZNEW(s_head->info_num, set_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(s_name, FAKE_NAME_SIZE, char);
-	C_MAKE(s_text, FAKE_TEXT_SIZE, char);
+	s_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	s_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -2052,14 +2052,14 @@ static errr init_e_info_raw(int fd)
 
 
 	/* Allocate the "e_info" array */
-	C_MAKE(e_info, e_head->info_num, ego_item_type);
+	e_info = C_ZNEW(e_head->info_num, ego_item_type);
 
 	/* Read the "e_info" array */
 	fd_read(fd, (char*)(e_info), e_head->info_size);
 
 
 	/* Allocate the "e_name" array */
-	C_MAKE(e_name, e_head->name_size, char);
+	e_name = C_ZNEW(e_head->name_size, char);
 
 	/* Read the "e_name" array */
 	fd_read(fd, (char*)(e_name), e_head->name_size);
@@ -2068,7 +2068,7 @@ static errr init_e_info_raw(int fd)
 #ifndef DELAY_LOAD_E_TEXT
 
 	/* Allocate the "e_text" array */
-	C_MAKE(e_text, e_head->text_size, char);
+	e_text = C_ZNEW(e_head->text_size, char);
 
 	/* Read the "e_text" array */
 	fd_read(fd, (char*)(e_text), e_head->text_size);
@@ -2105,7 +2105,7 @@ static errr init_e_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(e_head, header);
+	e_head = ZNEW(header);
 
 	/* Save the "version" */
 	e_head->v_major = O_VERSION_MAJOR;
@@ -2160,11 +2160,11 @@ static errr init_e_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "e_info" array */
-	C_MAKE(e_info, e_head->info_num, ego_item_type);
+	e_info = C_ZNEW(e_head->info_num, ego_item_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(e_name, FAKE_NAME_SIZE, char);
-	C_MAKE(e_text, FAKE_TEXT_SIZE, char);
+	e_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	e_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -2304,14 +2304,14 @@ static errr init_r_info_raw(int fd)
 
 
 	/* Allocate the "r_info" array */
-	C_MAKE(r_info, r_head->info_num, monster_race);
+	r_info = C_ZNEW(r_head->info_num, monster_race);
 
 	/* Read the "r_info" array */
 	fd_read(fd, (char*)(r_info), r_head->info_size);
 
 
 	/* Allocate the "r_name" array */
-	C_MAKE(r_name, r_head->name_size, char);
+	r_name = C_ZNEW(r_head->name_size, char);
 
 	/* Read the "r_name" array */
 	fd_read(fd, (char*)(r_name), r_head->name_size);
@@ -2320,7 +2320,7 @@ static errr init_r_info_raw(int fd)
 #ifndef DELAY_LOAD_R_TEXT
 
 	/* Allocate the "r_text" array */
-	C_MAKE(r_text, r_head->text_size, char);
+	r_text = C_ZNEW(r_head->text_size, char);
 
 	/* Read the "r_text" array */
 	fd_read(fd, (char*)(r_text), r_head->text_size);
@@ -2357,7 +2357,7 @@ static errr init_r_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(r_head, header);
+	r_head = ZNEW(header);
 
 	/* Save the "version" */
 	r_head->v_major = O_VERSION_MAJOR;
@@ -2412,11 +2412,11 @@ static errr init_r_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "r_info" array */
-	C_MAKE(r_info, r_head->info_num, monster_race);
+	r_info = C_ZNEW(r_head->info_num, monster_race);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(r_name, FAKE_NAME_SIZE, char);
-	C_MAKE(r_text, FAKE_TEXT_SIZE, char);
+	r_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	r_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -2556,14 +2556,14 @@ static errr init_v_info_raw(int fd)
 
 
 	/* Allocate the "v_info" array */
-	C_MAKE(v_info, v_head->info_num, vault_type);
+	v_info = C_ZNEW(v_head->info_num, vault_type);
 
 	/* Read the "v_info" array */
 	fd_read(fd, (char*)(v_info), v_head->info_size);
 
 
 	/* Allocate the "v_name" array */
-	C_MAKE(v_name, v_head->name_size, char);
+	v_name = C_ZNEW(v_head->name_size, char);
 
 	/* Read the "v_name" array */
 	fd_read(fd, (char*)(v_name), v_head->name_size);
@@ -2572,7 +2572,7 @@ static errr init_v_info_raw(int fd)
 #ifndef DELAY_LOAD_V_TEXT
 
 	/* Allocate the "v_text" array */
-	C_MAKE(v_text, v_head->text_size, char);
+	v_text = C_ZNEW(v_head->text_size, char);
 
 	/* Read the "v_text" array */
 	fd_read(fd, (char*)(v_text), v_head->text_size);
@@ -2608,7 +2608,7 @@ static errr init_v_info(void)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(v_head, header);
+	v_head = ZNEW(header);
 
 	/* Save the "version" */
 	v_head->v_major = O_VERSION_MAJOR;
@@ -2663,11 +2663,11 @@ static errr init_v_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "v_info" array */
-	C_MAKE(v_info, v_head->info_num, vault_type);
+	v_info = C_ZNEW(v_head->info_num, vault_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(v_name, FAKE_NAME_SIZE, char);
-	C_MAKE(v_text, FAKE_TEXT_SIZE, char);
+	v_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	v_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -2806,14 +2806,14 @@ static errr init_rp_info_raw(int fd)
 
 
 	/* Allocate the "rp_info" array */
-	C_MAKE(rp_info, rp_head->info_num, player_race);
+	rp_info = C_ZNEW(rp_head->info_num, player_race);
 
 	/* Read the "rp_info" array */
 	fd_read(fd, (char*)(rp_info), rp_head->info_size);
 
 
 	/* Allocate the "rp_name" array */
-	C_MAKE(rp_name, rp_head->name_size, char);
+	rp_name = C_ZNEW(rp_head->name_size, char);
 
 	/* Read the "rp_name" array */
 	fd_read(fd, (char*)(rp_name), rp_head->name_size);
@@ -2822,7 +2822,7 @@ static errr init_rp_info_raw(int fd)
 #ifndef DELAY_LOAD_P_TEXT
 
 	/* Allocate the "p_text" array */
-	C_MAKE(rp_text, rp_head->text_size, char);
+	rp_text = C_ZNEW(rp_head->text_size, char);
 
 	/* Read the "p_text" array */
 	fd_read(fd, (char*)(rp_text), rp_head->text_size);
@@ -2858,7 +2858,7 @@ static errr init_rp_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(rp_head, header);
+	rp_head = ZNEW(header);
 
 	/* Save the "version" */
 	rp_head->v_major = O_VERSION_MAJOR;
@@ -2909,11 +2909,11 @@ static errr init_rp_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "rp_info" array */
-	C_MAKE(rp_info, rp_head->info_num, player_race);
+	rp_info = C_ZNEW(rp_head->info_num, player_race);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(rp_name, FAKE_NAME_SIZE, char);
-	C_MAKE(rp_text, FAKE_TEXT_SIZE, char);
+	rp_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	rp_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -3053,14 +3053,14 @@ static errr init_cp_info_raw(int fd)
 
 
 	/* Allocate the "cp_info" array */
-	C_MAKE(cp_info, cp_head->info_num, player_class);
+	cp_info = C_ZNEW(cp_head->info_num, player_class);
 
 	/* Read the "cp_info" array */
 	fd_read(fd, (char*)(cp_info), cp_head->info_size);
 
 
 	/* Allocate the "cp_name" array */
-	C_MAKE(cp_name, cp_head->name_size, char);
+	cp_name = C_ZNEW(cp_head->name_size, char);
 
 	/* Read the "cp_name" array */
 	fd_read(fd, (char*)(cp_name), cp_head->name_size);
@@ -3069,7 +3069,7 @@ static errr init_cp_info_raw(int fd)
 #ifndef DELAY_LOAD_CP_TEXT
 
 	/* Allocate the "p_text" array */
-	C_MAKE(cp_text, cp_head->text_size, char);
+	cp_text = C_ZNEW(cp_head->text_size, char);
 
 	/* Read the "p_text" array */
 	fd_read(fd, (char*)(cp_text), cp_head->text_size);
@@ -3105,7 +3105,7 @@ static errr init_cp_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(cp_head, header);
+	cp_head = ZNEW(header);
 
 	/* Save the "version" */
 	cp_head->v_major = O_VERSION_MAJOR;
@@ -3156,11 +3156,11 @@ static errr init_cp_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "cp_info" array */
-	C_MAKE(cp_info, cp_head->info_num, player_class);
+	cp_info = C_ZNEW(cp_head->info_num, player_class);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(cp_name, FAKE_NAME_SIZE, char);
-	C_MAKE(cp_text, FAKE_TEXT_SIZE, char);
+	cp_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	cp_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -3301,7 +3301,7 @@ static errr init_ch_info_raw(int fd)
 
 
 	/* Allocate the "ch_info" array */
-	C_MAKE(ch_info, ch_head->info_num, chest_drops);
+	ch_info = C_ZNEW(ch_head->info_num, chest_drops);
 
 	/* Read the "ch_info" array */
 	fd_read(fd, (char*)(ch_info), ch_head->info_size);
@@ -3334,7 +3334,7 @@ static errr init_ch_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(ch_head, header);
+	ch_head = ZNEW(header);
 
 	/* Save the "version" */
 	ch_head->v_major = O_VERSION_MAJOR;
@@ -3385,7 +3385,7 @@ static errr init_ch_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "ch_info" array */
-	C_MAKE(ch_info, ch_head->info_num, chest_drops);
+	ch_info = C_ZNEW(ch_head->info_num, chest_drops);
 
 	/*** Load the ascii template file ***/
 
@@ -3514,7 +3514,7 @@ static errr init_mp_info_raw(int fd)
 
 
 	/* Allocate the "mp_info" array */
-	C_MAKE(mp_info, mp_head->info_num, player_magic);
+	mp_info = C_ZNEW(mp_head->info_num, player_magic);
 
 	/* Read the "mp_info" array */
 	fd_read(fd, (char*)(mp_info), mp_head->info_size);
@@ -3547,7 +3547,7 @@ static errr init_mp_info(void)
 	/*** Make the "header" ***/
 
 	/* Allocate the "header" */
-	MAKE(mp_head, header);
+	mp_head = ZNEW(header);
 
 	/* Save the "version" */
 	mp_head->v_major = O_VERSION_MAJOR;
@@ -3598,7 +3598,7 @@ static errr init_mp_info(void)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "mp_info" array */
-	C_MAKE(mp_info, mp_head->info_num, player_magic);
+	mp_info = C_ZNEW(mp_head->info_num, player_magic);
 
 	/*** Load the ascii template file ***/
 
@@ -3722,7 +3722,7 @@ errr init_t_info(byte chosen_level)
 	/*** Make the header ***/
 
 	/* Allocate the "header" */
-	MAKE(t_head, header);
+	t_head = ZNEW(header);
 
 	/* Save the "version" */
 	t_head->v_major = O_VERSION_MAJOR;
@@ -3742,11 +3742,11 @@ errr init_t_info(byte chosen_level)
 	/*** Make the fake arrays ***/
 
 	/* Allocate the "t_info" array */
-	C_MAKE(t_info, t_head->info_num, vault_type);
+	t_info = C_ZNEW(t_head->info_num, vault_type);
 
 	/* Hack -- make "fake" arrays */
-	C_MAKE(t_name, FAKE_NAME_SIZE, char);
-	C_MAKE(t_text, FAKE_TEXT_SIZE, char);
+	t_name = C_ZNEW(FAKE_NAME_SIZE, char);
+	t_text = C_ZNEW(FAKE_TEXT_SIZE, char);
 
 
 	/*** Load the ascii template file ***/
@@ -4208,10 +4208,10 @@ static errr init_other(void)
 	/*** Prepare grid arrays ***/
 
 	/* Array of grids */
-	C_MAKE(view_g, VIEW_MAX, u16b);
+	view_g = C_ZNEW(VIEW_MAX, u16b);
 
 	/* Array of grids */
-	C_MAKE(temp_g, TEMP_MAX, u16b);
+	temp_g = C_ZNEW(TEMP_MAX, u16b);
 
 	/* Hack -- use some memory twice */
 	temp_y = ((byte*)(temp_g)) + 0;
@@ -4221,21 +4221,21 @@ static errr init_other(void)
 	/*** Prepare dungeon arrays ***/
 
 	/* Padded into array */
-	C_MAKE(cave_info, DUNGEON_HGT, byte_256);
+	cave_info = C_ZNEW(DUNGEON_HGT, byte_256);
 
 	/* Feature array */
-	C_MAKE(cave_feat, DUNGEON_HGT, byte_wid);
+	cave_feat = C_ZNEW(DUNGEON_HGT, byte_wid);
 
 	/* Entity arrays */
-	C_MAKE(cave_o_idx, DUNGEON_HGT, s16b_wid);
-	C_MAKE(cave_m_idx, DUNGEON_HGT, s16b_wid);
+	cave_o_idx = C_ZNEW(DUNGEON_HGT, s16b_wid);
+	cave_m_idx = C_ZNEW(DUNGEON_HGT, s16b_wid);
 
 	/* Lore */
-	C_MAKE(l_list, MAX_R_IDX, monster_lore);
+	l_list = C_ZNEW(MAX_R_IDX, monster_lore);
 
 	/* Flow arrays */
-	C_MAKE(cave_cost, DUNGEON_HGT, byte_wid);
-	C_MAKE(cave_when, DUNGEON_HGT, byte_wid);
+	cave_cost = C_ZNEW(DUNGEON_HGT, byte_wid);
+	cave_when = C_ZNEW(DUNGEON_HGT, byte_wid);
 
 
 	/*** Prepare "vinfo" array ***/
@@ -4247,27 +4247,27 @@ static errr init_other(void)
 	/*** Prepare entity arrays ***/
 
 	/* Objects */
-	C_MAKE(o_list, MAX_O_IDX, object_type);
+	o_list = C_ZNEW(MAX_O_IDX, object_type);
 
 	/* Monsters */
-	C_MAKE(m_list, MAX_M_IDX, monster_type);
+	m_list = C_ZNEW(MAX_M_IDX, monster_type);
 
 	/*** Prepare quest array ***/
 
 	/* Quests */
-	C_MAKE(q_list, MAX_Q_IDX, quest);
+	q_list = C_ZNEW(MAX_Q_IDX, quest);
 
 
 	/*** Prepare the inventory ***/
 
 	/* Allocate it */
-	C_MAKE(inventory, INVEN_TOTAL, object_type);
+	inventory = C_ZNEW(INVEN_TOTAL, object_type);
 
 
 	/*** Prepare the stores ***/
 
 	/* Allocate the stores */
-	C_MAKE(store, MAX_STORES, store_type);
+	store = C_ZNEW(MAX_STORES, store_type);
 
 	/* Fill in each store */
 	for (i = 0; i < MAX_STORES; i++)
@@ -4279,7 +4279,7 @@ static errr init_other(void)
 		st_ptr->stock_size = STORE_INVEN_MAX;
 
 		/* Allocate the stock */
-		C_MAKE(st_ptr->stock, st_ptr->stock_size, object_type);
+		st_ptr->stock = C_ZNEW(st_ptr->stock_size, object_type);
 
 		/* No table for the black market or home */
 		if ((i == 6) || (i == 7)) continue;
@@ -4288,7 +4288,7 @@ static errr init_other(void)
 		st_ptr->table_size = STORE_CHOICES;
 
 		/* Allocate the stock */
-		C_MAKE(st_ptr->table, st_ptr->table_size, s16b);
+		st_ptr->table = C_ZNEW(st_ptr->table_size, s16b);
 
 		/* Scan the choices */
 		for (k = 0; k < STORE_CHOICES; k++)
@@ -4419,7 +4419,7 @@ static errr init_alloc(void)
 	/*** Initialize object allocation info ***/
 
 	/* Allocate the alloc_kind_table */
-	C_MAKE(alloc_kind_table, alloc_kind_size, alloc_entry);
+	alloc_kind_table = C_ZNEW(alloc_kind_size, alloc_entry);
 
 	/* Access the table entry */
 	table = alloc_kind_table;
@@ -4505,7 +4505,7 @@ static errr init_alloc(void)
 	/*** Initialize monster allocation info ***/
 
 	/* Allocate the alloc_race_table */
-	C_MAKE(alloc_race_table, alloc_race_size, alloc_entry);
+	alloc_race_table = C_ZNEW(alloc_race_size, alloc_entry);
 
 	/* Access the table entry */
 	table = alloc_race_table;
@@ -4584,7 +4584,7 @@ static errr init_alloc(void)
 	/*** Initialize ego-item allocation info ***/
 
 	/* Allocate the alloc_ego_table */
-	C_MAKE(alloc_ego_table, alloc_ego_size, alloc_entry);
+	alloc_ego_table = C_ZNEW(alloc_ego_size, alloc_entry);
 
 	/* Get the table entry */
 	table = alloc_ego_table;

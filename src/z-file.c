@@ -31,25 +31,25 @@ int player_egid;
 
 
 
+
 /*
  * Drop permissions
  */
 void safe_setuid_drop(void)
 {
-
 #ifdef SET_UID
+# if defined(HAVE_SETRESGID)
 
-	if (setuid(getuid()) != 0)
-	{
-		quit("setuid(): cannot set permissions correctly!");
-	}
-	if (setgid(getgid()) != 0)
-	{
-		quit("setgid(): cannot set permissions correctly!");
-	}
+	if (setresgid(-1, getgid(), -1) != 0)
+		quit("setegid(): cannot drop permissions correctly!");
 
-#endif
+# else
 
+	if (setegid(getgid()) != 0)
+		quit("setegid(): cannot drop permissions correctly!");
+
+# endif
+#endif /* SET_UID */
 }
 
 
@@ -58,20 +58,19 @@ void safe_setuid_drop(void)
  */
 void safe_setuid_grab(void)
 {
-
 #ifdef SET_UID
+# if defined(HAVE_SETRESGID)
 
-	if (setuid(player_euid) != 0)
-	{
-		quit("setuid(): cannot set permissions correctly!");
-	}
-	if (setgid(player_egid) != 0)
-	{
-		quit("setgid(): cannot set permissions correctly!");
-	}
+	if (setresgid(-1, player_egid, -1) != 0)
+		quit("setegid(): cannot grab permissions correctly!");
 
-#endif
+# elif defined(HAVE_SETEGID)
 
+	if (setegid(player_egid) != 0)
+		quit("setegid(): cannot grab permissions correctly!");
+
+# endif
+#endif /* SET_UID */
 }
 
 /*
@@ -190,6 +189,70 @@ errr path_parse(char *buf, int max, const char * file)
 
 
 #endif /* SET_UID */
+
+static void path_process(char *buf, size_t len, size_t *cur_len, const char *path)
+{
+#if defined(SET_UID) || defined(USE_PRIVATE_PATHS)
+
+	/* Home directory on Unixes */
+	if (path[0] == '~')
+	{
+		const char *s;
+		const char *username = path + 1;
+
+		struct passwd *pw;
+		char user[128];
+
+		/* Look for non-user portion of the file */
+		s = strstr(username, PATH_SEP);
+
+		if (s)
+		{
+			int i;
+
+			/* Keep username a decent length */
+			if (s >= username + sizeof(user)) return;
+
+			for (i = 0; username < s; ++i) user[i] = *username++;
+			user[i] = '\0';
+			username = user;
+		}
+
+#ifndef MACH_O_CARBON
+
+		/* Look up a user (or "current" user) */
+		pw = username[0] ? getpwnam(username) : getpwuid(getuid());
+
+#else /* MACH_O_CARBON */
+
+		{
+			/* On Macs getlogin() can incorrectly return root, so get the username via system frameowrks */
+			CFStringRef cfusername = CSCopyUserName(TRUE);
+			CFIndex cfbufferlength = CFStringGetMaximumSizeForEncoding(CFStringGetLength(cfusername), kCFStringEndcodingUTF8) + 1;
+			char *macusername = mem_alloc(cfbufferlength);
+			CFStringGetCString(cfusername, macusername, cfbufferlength, kCFStringEncodingUTF8);
+			CFRelese(cfusername);
+
+			/* Look up the user */
+			pw = getpwnam(macusername);
+			mem_free(macusername);
+#endif /* !MACH_O_CARBON */
+
+		if (!pw) return;
+
+		/* Copy across */
+		strnfcat(buf, len, cur_len, "%s%s", pw->pw_dir, PATH_SEP);
+		if (s) strnfcat(buf, len, cur_len, "%s", s);
+	}
+	else
+
+#endif
+
+	{
+		strnfcat(buf, len, cur_len, "%s", path);
+	}
+}
+
 
 
 /*

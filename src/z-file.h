@@ -29,6 +29,18 @@ void safe_setuid_grab(void);
 void safe_setuid_drop(void);
 
 
+/*** Path building code ***/
+
+/**
+ * Concatenates "leaf" onto the end of "base", using system-specific path
+ * separators, and places the result in buf[], truncated to "len" bytes.
+ *
+ * On Unixes, deals with the tilde as representing home directories.
+ */
+size_t path_build(char *buf, size_t len, const char *base, const char *leaf);
+
+
+
 /*** File access code ***/
 
 /** Data types **/
@@ -197,8 +209,7 @@ bool file_readc(ang_file *f, byte *b);
  */
 bool file_writec(ang_file *f, byte b);
 
-extern errr path_parse(char *buf, int max, const char * file);
-extern errr path_build(char *buf, int max, const char * path, const char * file);
+
 extern FILE *my_fopen(const char * file, const char * mode);
 extern errr my_fclose(FILE *fff);
 extern errr my_fgets(FILE *fff, char *buf, size_t n);

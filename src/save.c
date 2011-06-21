@@ -2161,7 +2161,7 @@ static int load_savefile_names(void)
 #endif /* SAVEFILE_USE_UID */
 
 	/* Attempt to load the savefile record */
-	if (path_build(buf, sizeof(buf), ANGBAND_DIR_SAVE, tmp)) return (0);
+	path_build(buf, sizeof(buf), ANGBAND_DIR_SAVE, tmp);
 
 	/* File type is "TEXT" */
 	FILE_TYPE(FILE_TYPE_TEXT);

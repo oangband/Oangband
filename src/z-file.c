@@ -101,122 +101,19 @@ void safe_setuid_grab(void)
 #endif /* SET_UID */
 }
 
-/*
- * The concept of the "file" routines below (and elsewhere) is that all
- * file handling should be done using as few routines as possible, since
- * every machine is slightly different, but these routines always have the
- * same semantics.
- *
- * In fact, perhaps we should use the "path_parse()" routine below to convert
- * from "canonical" filenames (optional leading tilde's, internal wildcards,
- * slash as the path seperator, etc) to "system" filenames (no special symbols,
- * system-specific path seperator, etc).  This would allow the program itself
- * to assume that all filenames are "Unix" filenames, and explicitly "extract"
- * such filenames if needed (by "path_parse()", or perhaps "path_canon()").
- *
- * Note that "my_fopen()" and "my_open()" and "my_make()" and "my_kill()"
- * and "my_move()" and "my_copy()" should all take "canonical" filenames.
- *
- * Note that "canonical" filenames use a leading "slash" to indicate an absolute
- * path, and a leading "tilde" to indicate a special directory, and default to a
- * relative path, but MSDOS uses a leading "drivename plus colon" to indicate the
- * use of a "special drive", and then the rest of the path is parsed "normally",
- * and MACINTOSH uses a leading colon to indicate a relative path, and an embedded
- * colon to indicate a "drive plus absolute path", and finally defaults to a file
- * in the current working directory, which may or may not be defined.
- *
- * We should probably parse a leading "~~/" as referring to "ANGBAND_DIR". (?)
- */
 
-
-#ifdef SET_UID
-
-/*
- * Extract a "parsed" path from an initial filename
- * Normally, we simply copy the filename into the buffer
- * But leading tilde symbols must be handled in a special way
- * Replace "~user/" by the home directory of the user named "user"
- * Replace "~/" by the home directory of the current user
- */
-errr path_parse(char *buf, int max, const char * file)
-{
-	const char * u, *s;
-	struct passwd	*pw;
-	char user[128];
-
-
-	/* Assume no result */
-	buf[0] = '\0';
-
-	/* No file? */
-	if (!file) return (-1);
-
-	/* File needs no parsing */
-	if (file[0] != '~')
-	{
-		strcpy(buf, file);
-		return (0);
-	}
-
-	/* Point at the user */
-	u = file+1;
-
-	/* Look for non-user portion of the file */
-	s = strstr(u, PATH_SEP);
-
-	/* Hack -- no long user names */
-	if (s && (s >= u + sizeof(user))) return (1);
-
-	/* Extract a user name */
-	if (s)
-	{
-		int i;
-		for (i = 0; u < s; ++i) user[i] = *u++;
-		user[i] = '\0';
-		u = user;
-	}
-
-	/* Look up the "current" user */
-	if (u[0] == '\0') u = getlogin();
-
-	/* Look up a user (or "current" user) */
-	if (u) pw = getpwnam(u);
-	else pw = getpwuid(getuid());
-
-	/* Nothing found? */
-	if (!pw) return (1);
-
-	/* Make use of the info */
-	strcpy(buf, pw->pw_dir);
-
-	/* Append the rest of the filename, if any */
-	if (s) strcat(buf, s);
-
-	/* Success */
-	return (0);
-}
-
-
-#else /* SET_UID */
 
 
 /*
- * Extract a "parsed" path from an initial filename
- *
- * This requires no special processing on simple machines,
- * except for verifying the size of the filename.
+ * Apply special system-specific processing before dealing with a filename.
  */
-errr path_parse(char *buf, int max, const char * file)
+static void path_parse(char *buf, size_t max, const char *file)
 {
 	/* Accept the filename */
-	strnfmt(buf, max, "%s", file);
-
-	/* Success */
-	return (0);
+	my_strcpy(buf, file, max);
 }
 
 
-#endif /* SET_UID */
 
 static void path_process(char *buf, size_t len, size_t *cur_len, const char *path)
 {
@@ -285,51 +182,52 @@ static void path_process(char *buf, size_t len, size_t *cur_len, const char *pat
 
 
 /*
- * Create a new path by appending a file (or directory) to a path
+ * Create a new path string by appending a 'leaf' to 'base'.
  *
- * This requires no special processing on simple machines, except
- * for verifying the size of the filename, but note the ability to
- * bypass the given "path" with certain special file-names.
+ * On Unixes, we convert a tilde at the beginning of a basename to mean the
+ * directory, complicating things a little, but better now than later.
  *
- * Note that the "file" may actually be a "sub-path", including
- * a path and a file.
- *
- * Note that this function yields a path which must be "parsed"
- * using the "parse" function above.
+ * Remember to free the return value.
  */
-errr path_build(char *buf, int max, const char * path, const char * file)
+size_t path_build(char *buf, size_t len, const char *base, const char *leaf)
 {
-	/* Special file */
-	if (file[0] == '~')
+	size_t cur_len = 0;
+	buf[0] = '\0';
+
+	if (!leaf || !leaf[0])
 	{
-		/* Use the file itself */
-		strnfmt(buf, max, "%s", file);
+		if (base && base[0])
+			path_process(buf, len, &cur_len, base);
+
+		return cur_len;
 	}
 
-	/* Absolute file, on "normal" systems */
-	else if (prefix(file, PATH_SEP) && !streq(PATH_SEP, ""))
+
+	/*
+	 * If the leafname starts with the separator,
+	 *   or with the tilde (on Unix),
+	 *   or there's no base path,
+	 * We use the leafname only.
+	 */
+#if defined(SET_UID) || defined(USE_PRIVATE_PATHS)
+	if ((!base || !base[0]) || prefix(leaf, PATH_SEP) || leaf[0] == '~')
+#else
+	if ((!base || !base[0]) || prefix(leaf, PATH_SEP))
+#endif
 	{
-		/* Use the file itself */
-		strnfmt(buf, max, "%s", file);
+		path_process(buf, len, &cur_len, leaf);
+		return cur_len;
 	}
 
-	/* No path given */
-	else if (!path[0])
-	{
-		/* Use the file itself */
-		strnfmt(buf, max, "%s", file);
-	}
 
-	/* Path and File */
-	else
-	{
-		/* Build the new path */
-		strnfmt(buf, max, "%s%s%s", path, PATH_SEP, file);
-	}
+	/* There is both a relative leafname and a base path from which it is relative */
+	path_process(buf, len, &cur_len, base);
+	strnfcat(buf, len, &cur_len, "%s", PATH_SEP);
+	path_process(buf, len, &cur_len, leaf);
 
-	/* Success */
-	return (0);
+	return cur_len;
 }
+
 
 
 /*** File-handling API ***/
@@ -498,7 +396,7 @@ FILE *my_fopen(const char * file, const char * mode)
 	FILE *fff;
 
 	/* Hack -- Try to parse the path */
-	if (path_parse(buf, sizeof(buf), file)) return (NULL);
+	path_build(buf, sizeof(buf), file, "");
 
 	/* Attempt to fopen the file anyway */
 	fff = fopen(buf, mode);
@@ -873,7 +771,7 @@ int fd_make(const char * file, int mode)
 	int fd;
 
 	/* Hack -- Try to parse the path */
-	if (path_parse(buf, sizeof(buf), file)) return (-1);
+	path_build(buf, sizeof(buf), file, "");
 
 #if defined(MACINTOSH)
 
@@ -909,7 +807,7 @@ int fd_open(const char * file, int flags)
 	char buf[1024];
 
 	/* Hack -- Try to parse the path */
-	if (path_parse(buf, sizeof(buf), file)) return (-1);
+	path_build(buf, sizeof(buf), file, "");
 
 #if defined(MACINTOSH) || defined(WINDOWS)
 

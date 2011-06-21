@@ -28,7 +28,7 @@ void create_user_dirs(void)
 
 
 	/* Get an absolute path from the filename */
-	path_parse(dirpath, sizeof(dirpath), PRIVATE_USER_PATH);
+	path_build(dirpath, sizeof(dirpath), PRIVATE_USER_PATH, "");
 
 	/* Create the ~/.angband/ directory */
 	mkdir(dirpath, 0700);

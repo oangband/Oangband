@@ -369,7 +369,7 @@ ang_file *file_open(const char *fname, file_mode mode, file_type ftype)
 		case MODE_READ:   f->fh = fopen(buf, "rb"); break;
 		case MODE_APPEND: f->fh = fopen(buf, "a+"); break;
 		default:          f->fh = fopen(buf, "__");
-       	}
+	}
 
 	if (f->fh == NULL)
 	{
@@ -598,14 +598,15 @@ bool file_getl(ang_file *f, char *buf, size_t len)
 
 		/* Ignore non-printables */
 		/* else if (my_isprint((unsigned char)c)) */
-		/* { */
-		/* 	buf[i++] = c; */
+		else if (isprint((unsigned char)c))
+		{
+			buf[i++] = c;
 
 		/* 	/\* Notice possible encode *\/ */
 		/* 	if (c == '[') check_encodes = TRUE; */
 
-		/* 	continue; */
-		/* } */
+			continue;
+		}
 		else
 		{
 			buf[i++] = '?';

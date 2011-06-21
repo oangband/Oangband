@@ -822,7 +822,7 @@ extern void store_maint(int which);
 extern void store_init(int which);
 
 /* util.c */
-extern errr check_modification_date(int fd, const char * template_file);
+extern errr check_modification_date(const char *raw_file, const char * emplate_file);
 extern void text_to_ascii(char *buf, const char * str);
 extern void ascii_to_text(char *buf, const char * str);
 extern int macro_find_exact(const char * pat);

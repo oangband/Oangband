@@ -142,44 +142,20 @@ void user_name(char *buf, int id)
 
 
 #ifdef CHECK_MODIFICATION_TIME
-# ifdef MACINTOSH
-#  include <stat.h>
-# else
-#  include <sys/types.h>
-#  include <sys/stat.h>
-# endif /* MACINTOSH */
 
-
-errr check_modification_date(int fd, const char * template_file)
+errr check_modification_date(const char *raw_file, const char *template_file)
 {
 	char buf[1024];
-
-	struct stat txt_stat, raw_stat;
 
 	/* Build the filename */
 	path_build(buf, sizeof(buf), ANGBAND_DIR_EDIT, template_file);
 
-	/* Access stats on text file */
-	if (stat(buf, &txt_stat))
-	{
-		/* No text file - continue */
-	}
-
-	/* Access stats on raw file */
-	else if (fstat(fd, &raw_stat))
-	{
-		/* Error */
+	/* If text file is newer than raw, force reprocessing */
+	if(file_newer(buf, raw_file))
 		return (-1);
-	}
-
-	/* Ensure text file is not newer than raw file */
-	else if (txt_stat.st_mtime > raw_stat.st_mtime)
-	{
-		/* Reprocess text file */
-		return (-1);
-	}
-
-	return (0);
+	/* Otherwise do nothing */
+	else
+		return 0;
 }
 
 #endif /* CHECK_MODIFICATION_TIME */

@@ -371,7 +371,7 @@ static errr init_f_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "terrain.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "terrain.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -381,7 +381,7 @@ static errr init_f_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "terrain.txt");
+		err = check_modification_date(buf, "terrain.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -623,7 +623,7 @@ static errr init_k_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "object.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "object.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -633,7 +633,7 @@ static errr init_k_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "object.txt");
+		err = check_modification_date(buf, "object.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -858,7 +858,7 @@ static errr init_h_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_hist.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "p_hist.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -868,7 +868,7 @@ static errr init_h_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "p_hist.txt");
+	      err = check_modification_date(buf, "p_hist.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -1086,7 +1086,7 @@ static errr init_b_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "cost_adj.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "cost_adj.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -1096,7 +1096,7 @@ static errr init_b_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "shop_own.txt");
+	      err = check_modification_date(buf, "shop_own.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -1308,7 +1308,7 @@ static errr init_g_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "shop_own.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "shop_own.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -1318,7 +1318,7 @@ static errr init_g_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "cost_adj.txt");
+	      err = check_modification_date(buf, "cost_adj.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -1623,7 +1623,7 @@ static errr init_a_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "artifact.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "artifact.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -1633,7 +1633,7 @@ static errr init_a_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "artifact.txt");
+		err = check_modification_date(buf, "artifact.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -1875,7 +1875,7 @@ static errr init_s_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "set_item.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "set_item.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -1885,7 +1885,7 @@ static errr init_s_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "set_item.txt");
+		err = check_modification_date(buf, "set_item.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -2127,7 +2127,7 @@ static errr init_e_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "ego_item.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "ego_item.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -2137,7 +2137,7 @@ static errr init_e_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "ego_item.txt");
+		err = check_modification_date(buf, "ego_item.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -2379,7 +2379,7 @@ static errr init_r_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "monster.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "monster.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -2389,7 +2389,7 @@ static errr init_r_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "monster.txt");
+		err = check_modification_date(buf, "monster.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -2630,7 +2630,7 @@ static errr init_v_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "vault.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "vault.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -2640,7 +2640,7 @@ static errr init_v_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-		err = check_modification_date(fd, "vault.txt");
+		err = check_modification_date(buf, "vault.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -2880,7 +2880,7 @@ static errr init_rp_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_race.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "p_race.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -2890,7 +2890,7 @@ static errr init_rp_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "p_race.txt");
+	      err = check_modification_date(buf, "p_race.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -3127,7 +3127,7 @@ static errr init_cp_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_class.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "p_class.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -3137,7 +3137,7 @@ static errr init_cp_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "p_class.txt");
+	      err = check_modification_date(buf, "p_class.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -3356,7 +3356,7 @@ static errr init_ch_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_chest.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "p_chest.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -3366,7 +3366,7 @@ static errr init_ch_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "p_chest.txt");
+	      err = check_modification_date(buf, "p_chest.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 
@@ -3569,7 +3569,7 @@ static errr init_mp_info(void)
 	/*** Load the binary image file ***/
 
 	/* Build the filename */
-	path_build(buf, 1024, ANGBAND_DIR_DATA, "p_magic.raw");
+	path_build(buf, sizeof(buf), ANGBAND_DIR_DATA, "p_magic.raw");
 
 	/* Attempt to open the "raw" file */
 	fd = fd_open(buf, O_RDONLY);
@@ -3579,7 +3579,7 @@ static errr init_mp_info(void)
 	{
 #ifdef CHECK_MODIFICATION_TIME
 
-	      err = check_modification_date(fd, "p_magic.txt");
+	      err = check_modification_date(buf, "p_magic.txt");
 
 #endif /* CHECK_MODIFICATION_TIME */
 

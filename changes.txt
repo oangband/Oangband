@@ -31,6 +31,7 @@ confusion and fear), to encourage their use.
 - Removed X11 Athena widgets port.
 - Removed MS/DOS ports.
 - Transparency is turned on permanently.
+- Removed extra main-mac-carbon file.
 
 Coding changes
 ==============

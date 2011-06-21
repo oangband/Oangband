@@ -3,6 +3,17 @@
  * Purpose: Low-level file (and directory) handling
  *
  * Copyright (c) 1997-2007 Ben Harrison, pelpel, Andrew Sidwell, Matthew Jones
+ *
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 #include "angband.h"
 
@@ -22,6 +33,23 @@
 # include <fcntl.h>
 #endif
 
+#ifdef HAVE_DIRENT_H
+# include <sys/types.h>
+# include <dirent.h>
+#endif
+
+#ifdef HAVE_STAT
+# include <sys/stat.h>
+# include <sys/types.h>
+#endif
+
+#ifdef WINDOWS
+# define my_mkdir(path, perms) mkdir(path)
+#elif defined(HAVE_MKDIR) || defined(MACH_O_CARBON)
+# define my_mkdir(path, perms) mkdir(path, perms)
+#else
+# define my_mkdir(path, perms) FALSE
+#endif
 
 /*
  * Player info
@@ -226,16 +254,17 @@ static void path_process(char *buf, size_t len, size_t *cur_len, const char *pat
 #else /* MACH_O_CARBON */
 
 		{
-			/* On Macs getlogin() can incorrectly return root, so get the username via system frameowrks */
+			/* On Macs getlogin() can incorrectly return root, so get the username via system frameworks */
 			CFStringRef cfusername = CSCopyUserName(TRUE);
-			CFIndex cfbufferlength = CFStringGetMaximumSizeForEncoding(CFStringGetLength(cfusername), kCFStringEndcodingUTF8) + 1;
+			CFIndex cfbufferlength = CFStringGetMaximumSizeForEncoding(CFStringGetLength(cfusername), kCFStringEncodingUTF8) + 1;
 			char *macusername = mem_alloc(cfbufferlength);
 			CFStringGetCString(cfusername, macusername, cfbufferlength, kCFStringEncodingUTF8);
-			CFRelese(cfusername);
+			CFRelease(cfusername);
 
 			/* Look up the user */
 			pw = getpwnam(macusername);
 			mem_free(macusername);
+		}
 #endif /* !MACH_O_CARBON */
 
 		if (!pw) return;
@@ -305,6 +334,13 @@ errr path_build(char *buf, int max, const char * path, const char * file)
 
 /*** File-handling API ***/
 
+/* On Windows, fwrite() and fread() are broken. */
+#if defined(WINDOWS) || defined(SET_UID)
+# define HAVE_WRITE
+# define HAVE_READ
+#endif
+
+
 /* Private structure to hold file pointers and useful info. */
 struct ang_file
 {
@@ -331,7 +367,7 @@ bool file_delete(const char *fname)
 }
 
 /*
- * Hack -- attempt to move a file
+ * Move file 'fname' to 'newname'.
  */
 bool file_move(const char *fname, const char *newname)
 {
@@ -345,7 +381,75 @@ bool file_move(const char *fname, const char *newname)
 	return (rename(buf, aux) == 0);
 }
 
+
+/*
+ * Decide whether a file exists or not.
+ */
+
+#if defined(HAVE_STAT)
+
+bool file_exists(const char *fname)
+{
+	struct stat st;
+	return (stat(fname, &st) == 0);
+}
+
+#elif defined(WINDOWS)
+
+bool file_exists(const char *fname)
+{
+	char path[MAX_PATH];
+	DWORD attrib;
+
+	/* API says we mustn't pass anything larger than MAX_PATH */
+	my_strcpy(path, s, sizeof(path));
+
+	attrib = GetFileAttributes(path);
+	if (attrib == INVALID_FILE_NAME) return FALSE;
+	if (attrib & FILE_ATTRIBUTE_DIRECTORY) return FALSE;
+
+	return TRUE;
+}
+
+#else
+
+bool file_exists(const char *fname)
+{
+	ang_file *f = file_open(fname, MODE_READ, 0);
+
+	if (f) file_close(f);
+	return (f ? TRUE : FALSE);
+}
+
+#endif
+
+/*
+ * Return TRUE if first is newer than second, FALSE otherwise.
+ */
+bool file_newer(const char *first, const char *second)
+{
+#ifdef HAVE_STAT
+	struct stat stat1, stat2;
+
+	/* If the first doesn't exist, the first is not newer. */
+	if (stat(first, &stat1) != 0) return FALSE;
+
+	/* If the second doesn't exist, the first is always newer. */
+	if (stat(second, &stat2) != 0) return TRUE;
+
+	/* Compare modification times. */
+	return stat1.st_mtime > stat2.st_mtime ? TRUE : FALSE;
+#else /* HAVE_STAT */
+	return FALSE;
+#endif /* !HAVE_STAT */
+}
+
+
+
+
 /** File-handle functions **/
+
+void (*file_open_hook)(const char *path, file_type ftype);
 
 /*
  * Open file 'fname', in mode 'mode', with filetype 'ftype'.
@@ -377,6 +481,9 @@ ang_file *file_open(const char *fname, file_mode mode, file_type ftype)
 
 	f->fname = string_make(buf);
 	f->mode = mode;
+
+	if (mode != MODE_READ && file_open_hook)
+		file_open_hook(buf, ftype);
 
 	return f;
 }

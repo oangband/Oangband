@@ -8,7 +8,12 @@ h-basic.h header:
 - h-system.h merged, still have to include fcntl.h, some problem in save.c.
 
 z-file:
-- Some progress, old functions still in use
+- Most new functions are in.
+- Directory code missing.
+- Old functions still existing.
+- x_file_putf missing.
+- path_build code not updated.
+- xchar stuff missing.
 
 z-form:
 - Nearly complete, some issues:

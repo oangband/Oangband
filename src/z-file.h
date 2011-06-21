@@ -63,6 +63,11 @@ typedef enum
 /** Utility functions **/
 
 /**
+ * Returns TRUE if `fname` exists (and is a file), FALSE otherwise.
+ */
+bool file_exists(const char *fname);
+
+/**
  * Tries to delete `fname`.
  *
  * Returns TRUE if successful, FALSE otherwise.
@@ -76,12 +81,37 @@ bool file_delete(const char *fname);
  */
 bool file_move(const char *fname, const char *newname);
 
+/**
+ * Returns TRUE if the file `first` is newer than `second`.
+ */
+bool file_newer(const char *first, const char *second);
+
+
 /** File handle creation **/
 
 /**
  * Open file `buf`, returning a file handler representing that file.
+ *
+ * The file mode specifies what kind of access is required to the file:
+ *  - MODE_WRITE will overwrite the current contents of the file
+ *  - MODE_READ will allow read-only access to the file
+ *  - MODE_APPEND will allow write-only access, but will not overwrite the
+ *    current contents of the file.
+ *
+ * The file type is specified to allow systems which don't use file extensions
+ * to set the type of the file appropriately.  When reading, pass -1 as ftype;
+ * when writing, use whichever filetype seems most appropriate.
+ *
+ * On any kind of error, this function returns NULL.
  */
-ang_file *file_open(const char *fname, file_mode mode, file_type ftype);
+ang_file *file_open(const char *buf, file_mode mode, file_type ftype);
+
+
+/**
+ * Platform hook for file_open.  Used to set filetypes.
+ */
+extern void (*file_open_hook)(const char *path, file_type ftype);
+
 
 /**
  * Attempt to close the file handle `f`.

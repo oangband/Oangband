@@ -211,6 +211,50 @@ extern errr fd_read(int fd, char *buf, size_t n);
 extern errr fd_write(int fd, const char * buf, size_t n);
 extern errr fd_close(int fd);
 
+/*** Directory code ***/
 
+/**
+ * Return whether or not a directory exists.
+ */
+bool dir_exists(const char *dirname);
+
+/**
+ * Create's the given directory, creating intermediate directories if
+ * needed and possible. Returns whether or not the directory was created
+ * successfully.
+ */
+bool dir_create(const char *dirname);
+
+/**
+ * An opaque file handle for Angband directory handling.
+ */
+typedef struct ang_dir ang_dir;
+
+
+/**
+ * Opens a directory handle.
+ *
+ * `dirname` must be a system-specific pathname to the directory
+ * you want scanned.
+ *
+ * Returns a valid directory handle on success, NULL otherwise.
+ */
+ang_dir *my_dopen(const char *dirname);
+
+/**
+ * Reads a directory entry.
+ *
+ * `dir` must point to a directory handle previously returned by my_dopen().
+ * `fname` must be a pointer to a writeable chunk of memory `len` long.
+ *
+ * Returns TRUE on successful reading, FALSE otherwise.
+ * (FALSE generally indicates that there are no more files to be read.)
+ */
+bool my_dread(ang_dir *dir, char *fname, size_t len);
+
+/**
+ * Close a directory handle.
+ */
+void my_dclose(ang_dir *dir);
 
 #endif /* INCLUDED_Z_FILE_H */

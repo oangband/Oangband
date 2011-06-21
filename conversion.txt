@@ -9,7 +9,6 @@ h-basic.h header:
 
 z-file:
 - Most new functions are in.
-- Directory code missing.
 - Old functions still existing.
 - x_file_putf missing.
 - path_build code not updated.

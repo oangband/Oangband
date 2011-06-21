@@ -1072,5 +1072,238 @@ errr fd_close(int fd)
 }
 
 
+bool dir_exists(const char *path)
+{
+	#ifdef HAVE_STAT
+	struct stat buf;
+	if (stat(path, &buf) != 0)
+		return FALSE;
+	else if (buf.st_mode & S_IFDIR)
+		return TRUE;
+	else
+		return FALSE;
+	#else
+	return TRUE;
+	#endif
+}
 
+#ifdef HAVE_STAT
+bool dir_create(const char *path)
+{
+	const char *ptr;
+	char buf[512];
+
+	/* If the directory already exists then we're done */
+	if (dir_exists(path)) return TRUE;
+
+	#ifdef WINDOWS
+	/* If we're on windows, we need to skip past the "C:" part. */
+	if (isalpha(path[0]) && path[1] == ':') path += 2;
+	#endif
+
+	/* Iterate through the path looking for path segments. At each step,
+	 * create the path segment if it doesn't already exist. */
+	for (ptr = path; *ptr; ptr++)
+	{
+		if (*ptr == PATH_SEPC)
+		{
+			/* Find the length of the parent path string */
+			size_t len = (size_t)(ptr - path);
+
+			/* Skip the initial slash */
+			if (len == 0) continue;
+
+			/* If this is a duplicate path separator, continue */
+			if (*(ptr - 1) == PATH_SEPC) continue;
+
+			/* We can't handle really big filenames */
+			if (len - 1 > 512) return FALSE;
+
+			/* Create the parent path string, plus null-padding */
+			my_strcpy(buf, path, len + 1);
+
+			/* Skip if the parent exists */
+			if (dir_exists(buf)) continue;
+
+			/* The parent doesn't exist, so create it or fail */
+			if (my_mkdir(buf, 0755) != 0) return FALSE;
+		}
+	}
+	return my_mkdir(path, 0755) == 0 ? TRUE : FALSE;
+}
+
+#else /* HAVE_STAT */
+bool dir_create(const char *path) { return FALSE; }
+#endif /* !HAVE_STAT */
+
+/*** Directory scanning API ***/
+
+/*
+ * For information on what these are meant to do, please read the header file.
+ */
+
+#ifdef WINDOWS
+
+
+/* System-specific struct */
+struct ang_dir
+{
+	HANDLE h;
+	char *first_file;
+};
+
+ang_dir *my_dopen(const char *dirname)
+{
+	WIN32_FIND_DATA fd;
+	HANDLE h;
+	ang_dir *dir;
+
+	/* Try to open it */
+	h = FindFirstFile(format("%s\\*", dirname), &fd);
+
+	/* Abort */
+	if (h == INVALID_HANDLE_VALUE)
+		return NULL;
+
+	/* Set up the handle */
+	dir = ZNEW(ang_dir);
+	dir->h = h;
+	dir->first_file = string_make(fd.cFileName);
+
+	/* Success */
+	return dir;
+}
+
+bool my_dread(ang_dir *dir, char *fname, size_t len)
+{
+	WIN32_FIND_DATA fd;
+	BOOL ok;
+
+	/* Try the first file */
+	if (dir->first_file)
+	{
+		/* Copy the string across, then free it */
+		my_strcpy(fname, dir->first_file, len);
+		FREE(dir->first_file);
+
+		/* Wild success */
+		return TRUE;
+	}
+
+	/* Try the next file */
+	while (1)
+	{
+		ok = FindNextFile(dir->h, &fd);
+		if (!ok) return FALSE;
+
+		/* Skip directories */
+		if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ||
+		    strcmp(fd.cFileName, ".") == 0 ||
+		    strcmp(fd.cFileName, "..") == 0)
+			continue;
+
+		/* Take this one */
+		break;
+	}
+
+	/* Copy name */
+	my_strcpy(fname, fd.cFileName, len);
+
+	return TRUE;
+}
+
+void my_dclose(ang_dir *dir)
+{
+	/* Close directory */
+	if (dir->h)
+		FindClose(dir->h);
+
+	/* Free memory */
+	FREE(dir->first_file);
+	FREE(dir);
+}
+
+#endif /* WINDOWS */
+
+
+#ifdef HAVE_DIRENT_H
+
+/* Define our ang_dir type */
+struct ang_dir
+{
+	DIR *d;
+	char *dirname;
+};
+
+ang_dir *my_dopen(const char *dirname)
+{
+	ang_dir *dir;
+	DIR *d;
+
+	/* Try to open the directory */
+	d = opendir(dirname);
+	if (!d) return NULL;
+
+	/* Allocate memory for the handle */
+	dir = ZNEW(ang_dir);
+	if (!dir)
+	{
+		closedir(d);
+		return NULL;
+	}
+
+	/* Set up the handle */
+	dir->d = d;
+	dir->dirname = string_make(dirname);
+
+	/* Success */
+	return dir;
+}
+
+bool my_dread(ang_dir *dir, char *fname, size_t len)
+{
+	struct dirent *entry;
+	struct stat filedata;
+	char path[1024];
+
+	assert(dir != NULL);
+
+	/* Try reading another entry */
+	while (1)
+	{
+		entry = readdir(dir->d);
+		if (!entry) return FALSE;
+
+		path_build(path, sizeof(path), dir->dirname, entry->d_name);
+
+		/* Check to see if it exists */
+		if (stat(path, &filedata) != 0)
+			continue;
+
+		/* Check to see if it's a directory */
+		if (S_ISDIR(filedata.st_mode))
+			continue;
+
+		/* We've found something worth returning */
+		break;
+	}
+
+	/* Copy the filename */
+	my_strcpy(fname, entry->d_name, len);
+
+	return TRUE;
+}
+
+void my_dclose(ang_dir *dir)
+{
+	/* Close directory */
+	if (dir->d)
+		closedir(dir->d);
+
+	/* Free memory */
+	FREE(dir->dirname);
+	FREE(dir);
+}
+
+#endif /* HAVE_DIRENT_H */
 

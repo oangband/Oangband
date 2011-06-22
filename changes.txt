@@ -32,6 +32,7 @@ confusion and fear), to encourage their use.
 - Removed MS/DOS ports.
 - Transparency is turned on permanently.
 - Removed extra main-mac-carbon file.
+- Added more basic colors, to get the same number a V.
 
 Coding changes
 ==============

@@ -180,7 +180,7 @@ extern const char * *macro__pat;
 extern const char * *macro__act;
 extern term *angband_term[TERM_WIN_MAX];
 extern char angband_term_name[TERM_WIN_MAX][16];
-extern byte angband_color_table[256][4];
+extern byte angband_color_table[MAX_COLORS][4];
 extern char angband_sound_name[SOUND_MAX][16];
 extern int view_n;
 extern u16b *view_g;

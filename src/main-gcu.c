@@ -113,7 +113,6 @@ static struct termios  game_termios;
 
 #endif
 
-static bool           split_window=TRUE;
 
 /*
  * Information about a term
@@ -126,10 +125,6 @@ typedef struct term_data
 
 /* Max number of windows on screen */
 #define MAX_TERM_DATA 4
-
-/* minimum dimensions to split into multiple windows */
-#define MIN_ROWS_SPLIT 30
-#define MIN_COLS_SPLIT 105
 
 /* Information about our windows */
 static term_data data[MAX_TERM_DATA];
@@ -164,6 +159,8 @@ static int can_fix_color = FALSE;
  */
 static int colortable[BASIC_COLORS];
 
+/* Screen info: use one big Term 0, or other subwindows? */
+static bool use_big_screen = FALSE;
 static bool bold_extended = FALSE;
 
 /*
@@ -195,14 +192,11 @@ static bool use_blocks = FALSE;
  */
 static void keymap_norm(void)
 {
-
 #ifdef USE_TPOSIX
 
 	/* restore the saved values of the special chars */
 	(void)tcsetattr(0, TCSAFLUSH, &norm_termios);
-
 #endif
-
 }
 
 
@@ -211,14 +205,10 @@ static void keymap_norm(void)
  */
 static void keymap_game(void)
 {
-
 #ifdef USE_TPOSIX
-
 	/* Set the game's termios settings */
 	(void)tcsetattr(0, TCSAFLUSH, &game_termios);
-
 #endif
-
 }
 
 
@@ -227,14 +217,10 @@ static void keymap_game(void)
  */
 static void keymap_norm_prepare(void)
 {
-
 #ifdef USE_TPOSIX
-
 	/* Restore the normal termios settings */
 	tcgetattr(0, &norm_termios);
-
 #endif
-
 }
 
 
@@ -243,9 +229,7 @@ static void keymap_norm_prepare(void)
  */
 static void keymap_game_prepare(void)
 {
-
 #ifdef USE_TPOSIX
-
 	/* Save the current termios settings */
 	tcgetattr(0, &game_termios);
 
@@ -271,7 +255,6 @@ static void keymap_game_prepare(void)
 	/* Turn off flow control (enable ^S) */
 	game_termios.c_iflag &= ~IXON;
 #endif
-
 }
 
 
@@ -407,7 +390,55 @@ static void Term_nuke_gcu(term *t)
 }
 
 
-
+/*
+ * For a given term number (i) set the upper left corner (x, y) and the
+ * correct dimensions. Terminal layout: 0|2
+ *                                      1|3
+ */
+void get_gcu_term_size(int i, int *rows, int *cols, int *y, int *x)
+{
+	if (use_big_screen && i == 0)
+	{
+		*rows = LINES;
+		*cols = COLS;
+		*y = *x = 0;
+	}
+	else if (use_big_screen)
+	{
+		*rows = *cols = *y = *x = 0;
+	}
+	else if (i == 0)
+	{
+		*rows = 24;
+		*cols = 80;
+		*y = *x = 0;
+	}
+	else if (i == 1)
+	{
+		*rows = LINES - 25;
+		*cols = 80;
+		*y = 25;
+		*x = 0;
+	}
+	else if (i == 2)
+	{
+		*rows = 24;
+		*cols = COLS - 81;
+		*y = 0;
+		*x = 81;
+	}
+	else if (i == 3)
+	{
+		*rows = LINES - 25;
+		*cols = COLS - 81;
+		*y = 25;
+		*x = 81;
+	}
+	else
+	{
+		*rows = *cols = *y = *x = 0;
+	}
+}
 
 /*
  * Process events, with optional wait
@@ -591,9 +622,7 @@ static errr Term_xtra_gcu(int n, int v)
 static errr Term_curs_gcu(int x, int y)
 {
 	term_data *td = (term_data *)(Term->data);
-
 	wmove(td->win, y, x);
-
 	return 0;
 }
 
@@ -606,12 +635,11 @@ static errr Term_wipe_gcu(int x, int y, int n)
 {
 	term_data *td = (term_data *)(Term->data);
 
-	/* Place cursor */
 	wmove(td->win, y, x);
 
-	/* Clear to end of line */
 	if (x + n >= td->t.wid)
 	{
+		/* Clear to end of line */
 		wclrtoeol(td->win);
 	}
 
@@ -687,13 +715,12 @@ static errr Term_text_gcu(int x, int y, int n, byte a, const char *s)
 
 /*
  * Create a window for the given "term_data" argument.
+ *
+ * Assumes legal arguments.
  */
-static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x, int i)
+static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x)
 {
 	term *t = &td->t;
-
-	/* Check window size */
-	if (rows <= 0 || cols <= 0) return (0);
 
 	/* Create new window */
 	td->win = newwin(rows, cols, y, x);
@@ -728,19 +755,6 @@ static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x, 
 	/* Activate it */
 	Term_activate(t);
 
-	/* Reset map size if required */
-	if (i == 0)
-	{
-		/* Mega-Hack -- no panel yet */
-		panel_row_min = 0;
-		panel_row_max = 0;
-		panel_col_min = 0;
-		panel_col_max = 0;
-
-		/* Reset the panels */
-		map_panel_size();
-	}
-
 	/* Success */
 	return (0);
 }
@@ -762,18 +776,16 @@ errr init_gcu(int argc, char **argv)
 {
 	int i;
 
+	int rows, cols, y, x;
 	int num_term = MAX_TERM_DATA, next_win = 0;
 
 	/* Parse args */
 	for (i = 1; i < argc; i++)
 	{
-		if (prefix(argv[i], "-x"))
-		{
-		        split_window=FALSE;
-			continue;
-		}
-
-		plog_fmt("Ignoring option: %s", argv[i]);
+		if (prefix(argv[i], "-b"))
+			use_big_screen = TRUE;
+		else
+			plog_fmt("Ignoring option: %s", argv[i]);
 	}
 
 
@@ -880,7 +892,6 @@ errr init_gcu(int argc, char **argv)
 		colortable[TERM_BLUE_SLATE]  = (COLOR_PAIR(PAIR_BLUE));
 		colortable[TERM_DEEP_L_BLUE] = (COLOR_PAIR(PAIR_BLUE));
 	}
-
 #endif
 
 
@@ -900,72 +911,20 @@ errr init_gcu(int argc, char **argv)
 
 	/*** Now prepare the term(s) ***/
 
-	if (!split_window) num_term=1;
-
-	/* Create one or several terms */
 	for (i = 0; i < num_term; i++)
 	{
-		int rows, cols, y, x;
+		if (use_big_screen && i > 0) break;
 
-		if (split_window)
-		{
-		        /* Hack - the main window is huge */
-		        /* Sub windows require a width of at least 25 and a height
-			 * if at least 6.  Furth excess height is split between the
-			 * main window and the others.
-			 */
-		        if (COLS > MIN_COLS_SPLIT) cols = 80 + (COLS - MIN_COLS_SPLIT) / 2;
-			else cols = COLS;
-			if (LINES > MIN_ROWS_SPLIT) rows = 24 + (LINES - MIN_ROWS_SPLIT) / 2;
-			else rows = LINES;
-		}
-		else
-		{
-		        cols=COLS;
-			rows=LINES;
-		}
-
-		/* Decide on size and position */
-		switch (i)
-		{
-			/* Upper left */
-			case 0:
-				y = x = 0;
-				break;
-
-			/* Lower left */
-			case 1:
-				y = rows + 1;
-				x = 0;
-				rows = LINES - (rows + 1);
-				break;
-
-			/* Upper right */
-			case 2:
-				y = 0;
-				x = cols + 1;
-				cols = COLS - (cols + 1);
-				break;
-
-			/* Lower right */
-			case 3:
-				y = rows + 1;
-				x = cols + 1;
-				rows = LINES - (rows + 1);
-				cols = COLS - (cols + 1);
-				break;
-
-			/* XXX */
-			default:
-				rows = cols = y = x = 0;
-				break;
-		}
+		/* Get the terminal dimensions; if the user asked for a big screen
+		 * then we'll put the whole screen in term 0; otherwise we'll divide
+		 * it amongst the available terms */
+		get_gcu_term_size(i, &rows, &cols, &y, &x);
 
 		/* Skip non-existant windows */
 		if (rows <= 0 || cols <= 0) continue;
 
 		/* Create a term */
-		term_data_init_gcu(&data[next_win], rows, cols, y, x, i);
+		term_data_init_gcu(&data[next_win], rows, cols, y, x);
 
 		/* Remember the term */
 		angband_term[next_win] = &data[next_win].t;
@@ -985,5 +944,3 @@ errr init_gcu(int argc, char **argv)
 }
 
 #endif /* USE_GCU */
-
-

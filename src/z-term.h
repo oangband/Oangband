@@ -214,6 +214,8 @@ struct term
 
 	errr (*curs_hook)(int x, int y);
 
+	errr (*bigcurs_hook)(int x, int y);
+
 	errr (*wipe_hook)(int x, int y, int n);
 
 	errr (*text_hook)(int x, int y, int n, byte a, const char *s);
@@ -315,7 +317,10 @@ struct term
 /**** Available Variables ****/
 
 extern term *Term;
-
+extern byte tile_width;
+extern byte tile_height;
+extern bool bigcurs;
+extern bool smlcurs;
 
 /**** Available Functions ****/
 
@@ -333,6 +338,7 @@ extern errr Term_draw(int x, int y, byte a, char c);
 extern errr Term_addch(byte a, char c);
 extern errr Term_addstr(int n, byte a, const char *s);
 extern errr Term_putch(int x, int y, byte a, char c);
+extern void Term_big_putch(int x, int y, byte a, char c);
 extern errr Term_putstr(int x, int y, int n, byte a, const char *s);
 extern errr Term_erase(int x, int y, int n);
 extern errr Term_clear(void);

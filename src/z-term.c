@@ -466,34 +466,41 @@ static errr Term_pict_hack(int x, int y, int n, const byte *ap, const char *cp, 
  *
  * Assumes given location and values are valid.
  */
-void Term_queue_char(int x, int y, byte a, char c, byte ta, char tc)
+void Term_queue_char(term *t, int x, int y, byte a, char c, byte ta, char tc)
 {
-	term_win *scrn = Term->scr;
+	byte *scr_aa = t->scr->a[y];
+	char *scr_cc = t->scr->c[y];
 
-	byte *scr_aa = &scrn->a[y][x];
-	char *scr_cc = &scrn->c[y][x];
+	byte oa = scr_aa[x];
+	char oc = scr_cc[x];
 
-	byte *scr_taa = &scrn->ta[y][x];
-	char *scr_tcc = &scrn->tc[y][x];
+	byte *scr_taa = t->scr->ta[y];
+	char *scr_tcc = t->scr->tc[y];
+
+	byte ota = scr_taa[x];
+	char otc = scr_tcc[x];
+
+	/* Don't change is the terrain value is 0 */
+	if (!ta) ta = ota;
+	if (!tc) tc = otc;
 
 	/* Hack -- Ignore non-changes */
-	if ((*scr_aa == a) && (*scr_cc == c) &&
-		 (*scr_taa == ta) && (*scr_tcc == tc)) return;
+	if ((oa == a) && (oc == c) && (ota == ta) && (otc == tc)) return;
 
 	/* Save the "literal" information */
-	*scr_aa = a;
-	*scr_cc = c;
+	scr_aa[x] = a;
+	scr_cc[x] = c;
 
-	*scr_taa = ta;
-	*scr_tcc = tc;
+	scr_taa[x] = ta;
+	scr_tcc[x] = tc;
 
 	/* Check for new min/max row info */
-	if (y < Term->y1) Term->y1 = y;
-	if (y > Term->y2) Term->y2 = y;
+	if (y < t->y1) t->y1 = y;
+	if (y > t->y2) t->y2 = y;
 
 	/* Check for new min/max col info for this row */
-	if (x < Term->x1[y]) Term->x1[y] = x;
-	if (x > Term->x2[y]) Term->x2[y] = x;
+	if (x < t->x1[y]) t->x1[y] = x;
+	if (x > t->x2[y]) t->x2[y] = x;
 }
 
 
@@ -1487,7 +1494,7 @@ errr Term_draw(int x, int y, byte a, char c)
 	if (!c) return (-2);
 
 	/* Queue it for later */
-	Term_queue_char(x, y, a, c, 0, 0);
+	Term_queue_char(Term, x, y, a, c, 0, 0);
 
 	/* Success */
 	return (0);
@@ -1521,7 +1528,7 @@ errr Term_addch(byte a, char c)
 	if (!c) return (-2);
 
 	/* Queue the given character for display */
-	Term_queue_char(Term->scr->cx, Term->scr->cy, a, c, 0, 0);
+	Term_queue_char(Term, Term->scr->cx, Term->scr->cy, a, c, 0, 0);
 
 	/* Advance the cursor */
 	Term->scr->cx++;

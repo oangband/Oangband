@@ -13,17 +13,6 @@
 
 #include "h-basic.h"
 
-
-
-/* Set every byte in an array of type T[N], at location P, to V, and return P */
-#define C_BSET(P,V,N,T) \
-	(T*)(memset((char*)(P),(V), (N) * sizeof(T)))
-
-/* Set every byte in a thing of type T, at location P, to V, and return P */
-#define BSET(P,V,T) \
-	(T*)(memset((char*)(P),(V), sizeof(T)))
-
-
 /* Wipe an array of type T[N], at location P, and return P */
 #define C_WIPE(P, N, T) \
 	(memset((P), 0, (N) * sizeof(T)))
@@ -59,14 +48,6 @@
 #define ZNEW(T) \
 	(T*)(WIPE(RNEW(T), T))
 
-
-/* Allocate a wiped array of type T[N], assign to pointer P */
-#define C_MAKE(P,N,T) \
-	((P)=C_ZNEW(N,T))
-
-/* Allocate a wiped thing of type T, assign to pointer P */
-#define MAKE(P,T) \
-	((P)=ZNEW(T))
 
 /* Free one thing at P, return NULL */
 #define FREE(P) (mem_free(P), P = NULL)

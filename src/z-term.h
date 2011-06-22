@@ -214,6 +214,8 @@ struct term
 
 	errr (*curs_hook)(int x, int y);
 
+	errr (*bigcurs_hook)(int x, int y);
+
 	errr (*wipe_hook)(int x, int y, int n);
 
 	errr (*text_hook)(int x, int y, int n, byte a, const char *s);
@@ -284,12 +286,25 @@ struct term
 #define TERM_UMBER    7  /* u */    /* 2 1 0 */
 #define TERM_L_DARK   8  /* D */    /* 1 1 1 */
 #define TERM_L_WHITE  9  /* W */    /* 3 3 3 */
-#define TERM_VIOLET		10	/* 'v' */	/* 4,0,4 */
+#define TERM_L_PURPLE 10 /* P */    /* ? ? ? */
 #define TERM_YELLOW   11 /* y */    /* 4 4 0 */
 #define TERM_L_RED    12 /* R */    /* 4 0 0 */
 #define TERM_L_GREEN  13 /* G */    /* 0 4 0 */
 #define TERM_L_BLUE   14 /* B */    /* 0 4 4 */
 #define TERM_L_UMBER  15 /* U */    /* 3 2 1 */
+
+#define TERM_PURPLE      16    /* p */
+#define TERM_VIOLET      17    /* v */
+#define TERM_TEAL        18    /* t */
+#define TERM_MUD         19    /* m */
+#define TERM_L_YELLOW    20    /* Y */
+#define TERM_MAGENTA     21    /* i */
+#define TERM_L_TEAL      22    /* T */
+#define TERM_L_VIOLET    23    /* V */
+#define TERM_L_PINK      24    /* I */
+#define TERM_MUSTARD     25    /* M */
+#define TERM_BLUE_SLATE  26    /* z */
+#define TERM_DEEP_L_BLUE 27    /* Z */
 
 /*
  * Maximum number of colours, and number of "basic" Angband colours
@@ -298,10 +313,14 @@ struct term
 #define BASIC_COLORS    28
 
 
+
 /**** Available Variables ****/
 
 extern term *Term;
-
+extern byte tile_width;
+extern byte tile_height;
+extern bool bigcurs;
+extern bool smlcurs;
 
 /**** Available Functions ****/
 
@@ -319,6 +338,7 @@ extern errr Term_draw(int x, int y, byte a, char c);
 extern errr Term_addch(byte a, char c);
 extern errr Term_addstr(int n, byte a, const char *s);
 extern errr Term_putch(int x, int y, byte a, char c);
+extern void Term_big_putch(int x, int y, byte a, char c);
 extern errr Term_putstr(int x, int y, int n, byte a, const char *s);
 extern errr Term_erase(int x, int y, int n);
 extern errr Term_clear(void);

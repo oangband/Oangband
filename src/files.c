@@ -477,7 +477,7 @@ errr process_pref_file_command(char *buf)
 			if (type >= MSG_MAX) return (1);
 
 			/* Store the color */
-			message__color[type] = (byte)color;
+			message_color_define(type, color);
 
 			/* Success */
 			return (0);
@@ -2281,7 +2281,7 @@ errr file_character(const char * name, bool full)
 	/* If dead, dump last messages -- Prfnoff */
 	if (p_ptr->is_dead)
 	{
-		i = message_num();
+		i = messages_num();
 		if (i > 15) i = 15;
 		fprintf(fff, "  [Last Messages]\n\n");
 		while (i-- > 0)

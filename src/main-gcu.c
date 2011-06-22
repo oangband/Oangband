@@ -109,7 +109,6 @@
 #ifdef USE_TPOSIX
 
 static struct termios  norm_termios;
-
 static struct termios  game_termios;
 
 #endif
@@ -163,7 +162,24 @@ static int can_fix_color = FALSE;
 /*
  * Simple Angband to Curses color conversion table
  */
-static int colortable[16];
+static int colortable[BASIC_COLORS];
+
+static bool bold_extended = FALSE;
+
+/*
+ * Background color we should draw with; either BLACK or DEFAULT
+ */
+static int bg_color = COLOR_BLACK;
+
+
+#define PAIR_WHITE 0
+#define PAIR_RED 1
+#define PAIR_GREEN 2
+#define PAIR_YELLOW 3
+#define PAIR_BLUE 4
+#define PAIR_MAGENTA 5
+#define PAIR_CYAN 6
+#define PAIR_BLACK 7
 
 #endif
 
@@ -281,7 +297,7 @@ static errr Term_xtra_gcu_alive(int v)
 		Term_xtra(TERM_XTRA_SHAPE, 1);
 
 		/* Flush the curses buffer */
-		(void)refresh();
+		refresh();
 
 		/* Get current cursor position */
 		getyx(stdscr, y, x);
@@ -293,7 +309,7 @@ static errr Term_xtra_gcu_alive(int v)
 		endwin();
 
 		/* Flush the output */
-		(void)fflush(stdout);
+		fflush(stdout);
 	}
 
 	/* Resume */
@@ -313,7 +329,7 @@ static errr Term_xtra_gcu_alive(int v)
 	}
 
 	/* Success */
-	return (0);
+	return 0;
 }
 
 
@@ -336,13 +352,13 @@ static void Term_init_gcu(term *t)
 	if (active++ != 0) return;
 
 	/* Erase the window */
-	(void)wclear(td->win);
+	wclear(td->win);
 
 	/* Reset the cursor */
-	(void)wmove(td->win, 0, 0);
+	wmove(td->win, 0, 0);
 
 	/* Flush changes */
-	(void)wrefresh(td->win);
+	wrefresh(td->win);
 
 	/* Game keymap */
 	keymap_game();
@@ -378,13 +394,13 @@ static void Term_nuke_gcu(term *t)
 	mvcur(y, x, LINES - 1, 0);
 
 	/* Flush the curses buffer */
-	(void)refresh();
+	refresh();
 
 	/* Exit curses */
 	endwin();
 
 	/* Flush the output */
-	(void)fflush(stdout);
+	fflush(stdout);
 
 	/* Normal keymap */
 	keymap_norm();
@@ -441,6 +457,28 @@ static errr Term_xtra_gcu_event(int v)
 	return (0);
 }
 
+int scale_color(int i, int j, int scale)
+{
+	return (angband_color_table[i][j] * (scale - 1) + 127) / 255;
+}
+
+int create_color(int i, int scale)
+{
+	int r = scale_color(i, 1, scale);
+	int g = scale_color(i, 2, scale);
+	int b = scale_color(i, 3, scale);
+	int rgb = 16 + scale * scale * r + scale * g + b;
+
+	/* In the case of white and black we need to use the ANSI colors */
+	if (r == g && g == b)
+	{
+		if (b == 0) rgb = 0;
+		if (b == scale) rgb = 15;
+	}
+
+	return rgb;
+}
+
 
 /*
  * React to changes
@@ -449,24 +487,37 @@ static errr Term_xtra_gcu_react(void)
 {
 #ifdef A_COLOR
 
-	int i;
-
 	/* Cannot handle color redefinition */
 	if (!can_fix_color) return (0);
 
-	/* Set the colors */
-	for (i = 0; i < 16; i++)
+	if (COLORS == 256 || COLORS == 88)
 	{
-		/* Set one color (note scaling) */
-		init_color(i, angband_color_table[i][1] * 1000 / 255,
-		              angband_color_table[i][2] * 1000 / 255,
-		              angband_color_table[i][3] * 1000 / 255);
-	}
+		/* If we have more than 16 colors, find the best matches. These numbers
+		 * correspond to xterm/rxvt's builtin color numbers--they do not
+		 * correspond to curses' constants OR with curses' color pairs.
+		 *
+		 * XTerm has 216 (6*6*6) RGB colors, with each RGB setting 0-5.
+		 * RXVT has 64 (4*4*4) RGB colors, with each RGB setting 0-3.
+		 *
+		 * Both also have the basic 16 ANSI colors, plus some extra grayscale
+		 * colors which we do not use.
+		 */
+		int i;
+		int scale = COLORS == 256 ? 6 : 4;
 
+		for (i = 0; i < BASIC_COLORS; i++)
+		{
+			int fg = create_color(i, scale);
+			init_pair(i + 1, fg, bg_color);
+			if (bold_extended)
+				colortable[i] = COLOR_PAIR(i + 1) | A_BRIGHT;
+			else
+				colortable[i] = COLOR_PAIR(i + 1);
+		}
+	}
 #endif
 
-	/* Success */
-	return (0);
+	return 0;
 }
 
 
@@ -529,8 +580,8 @@ static errr Term_xtra_gcu(int n, int v)
 		return (0);
 	}
 
-	/* Unknown */
-	return (1);
+	/* Unknown event */
+	return 1;
 }
 
 
@@ -541,11 +592,9 @@ static errr Term_curs_gcu(int x, int y)
 {
 	term_data *td = (term_data *)(Term->data);
 
-	/* Literally move the cursor */
 	wmove(td->win, y, x);
 
-	/* Success */
-	return (0);
+	return 0;
 }
 
 
@@ -572,15 +621,14 @@ static errr Term_wipe_gcu(int x, int y, int n)
 		while (n-- > 0) waddch(td->win, ' ');
 	}
 
-	/* Success */
-	return (0);
+	return 0;
 }
 
 
 /*
  * Place some text on the screen using an attribute
  */
-static errr Term_text_gcu(int x, int y, int n, byte a, const char * s)
+static errr Term_text_gcu(int x, int y, int n, byte a, const char *s)
 {
 	term_data *td = (term_data *)(Term->data);
 
@@ -652,10 +700,7 @@ static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x, 
 
 	/* Check for failure */
 	if (!td->win)
-	{
-		/* Error */
 		quit("Failed to setup curses window.");
-	}
 
 	/* Initialize the term */
 	term_init(t, cols, rows, 256);
@@ -700,6 +745,10 @@ static errr term_data_init_gcu(term_data *td, int rows, int cols, int y, int x, 
 	return (0);
 }
 
+static void hook_quit(const char *str)
+{
+	endwin();
+}
 
 /*
  * Prepare "curses" for use by the file "z-term.c"
@@ -735,10 +784,12 @@ errr init_gcu(int argc, char **argv)
 	/* Initialize */
 	if (initscr() == NULL) return (-1);
 
+	/* Activate hooks */
+	quit_aux = hook_quit;
 
-	/* Hack -- Require large screen, or Quit with message */
-	i = ((LINES < 24) || (COLS < 80));
-	if (i) quit("Angband needs an 80x24 'curses' screen");
+	/* Require standard size screen */
+	if (LINES < 24 || COLS < 80)
+		quit("Angband needs at least an 80x24 'curses' screen");
 
 #ifdef USE_GRAPHICS
 	/* Set graphics flag */
@@ -786,36 +837,48 @@ errr init_gcu(int argc, char **argv)
 	}
 
 	/* Attempt to use colors */
-	else if (can_use_color)
+	if (can_use_color)
 	{
-		/* Color-pair 0 is *always* WHITE on BLACK */
-
 		/* Prepare the color pairs */
-		init_pair(1, COLOR_RED,     COLOR_BLACK);
-		init_pair(2, COLOR_GREEN,   COLOR_BLACK);
-		init_pair(3, COLOR_YELLOW,  COLOR_BLACK);
-		init_pair(4, COLOR_BLUE,    COLOR_BLACK);
-		init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-		init_pair(6, COLOR_CYAN,    COLOR_BLACK);
-		init_pair(7, COLOR_BLACK,   COLOR_BLACK);
+		/* PAIR_WHITE (pair 0) is *always* WHITE on BLACK */
+		init_pair(PAIR_RED, COLOR_RED, bg_color);
+		init_pair(PAIR_GREEN, COLOR_GREEN, bg_color);
+		init_pair(PAIR_YELLOW, COLOR_YELLOW, bg_color);
+		init_pair(PAIR_BLUE, COLOR_BLUE, bg_color);
+		init_pair(PAIR_MAGENTA, COLOR_MAGENTA, bg_color);
+		init_pair(PAIR_CYAN, COLOR_CYAN, bg_color);
+		init_pair(PAIR_BLACK, COLOR_BLACK, bg_color);
 
-		/* Prepare the "Angband Colors" -- Bright white is too bright */
-		colortable[0] = (COLOR_PAIR(7) | A_NORMAL);	/* Black */
-		colortable[1] = (COLOR_PAIR(0) | A_NORMAL);	/* White */
-		colortable[2] = (COLOR_PAIR(6) | A_NORMAL);	/* Grey XXX */
-		colortable[3] = (COLOR_PAIR(1) | A_BRIGHT);	/* Orange XXX */
-		colortable[4] = (COLOR_PAIR(1) | A_NORMAL);	/* Red */
-		colortable[5] = (COLOR_PAIR(2) | A_NORMAL);	/* Green */
-		colortable[6] = (COLOR_PAIR(4) | A_NORMAL);	/* Blue */
-		colortable[7] = (COLOR_PAIR(3) | A_NORMAL);	/* Umber */
-		colortable[8] = (COLOR_PAIR(7) | A_BRIGHT);	/* Dark-grey XXX */
-		colortable[9] = (COLOR_PAIR(6) | A_BRIGHT);	/* Light-grey XXX */
-		colortable[10] = (COLOR_PAIR(5) | A_NORMAL);	/* Purple */
-		colortable[11] = (COLOR_PAIR(3) | A_BRIGHT);	/* Yellow */
-		colortable[12] = (COLOR_PAIR(5) | A_BRIGHT);	/* Light Red XXX */
-		colortable[13] = (COLOR_PAIR(2) | A_BRIGHT);	/* Light Green */
-		colortable[14] = (COLOR_PAIR(4) | A_BRIGHT);	/* Light Blue */
-		colortable[15] = (COLOR_PAIR(3) | A_NORMAL);	/* Light Umber XXX */
+		/* Prepare the colors */
+		colortable[TERM_DARK]     = (COLOR_PAIR(PAIR_BLACK));
+		colortable[TERM_WHITE]    = (COLOR_PAIR(PAIR_WHITE) | A_BRIGHT);
+		colortable[TERM_SLATE]    = (COLOR_PAIR(PAIR_WHITE));
+		colortable[TERM_ORANGE]   = (COLOR_PAIR(PAIR_YELLOW) | A_BRIGHT);
+		colortable[TERM_RED]      = (COLOR_PAIR(PAIR_RED));
+		colortable[TERM_GREEN]    = (COLOR_PAIR(PAIR_GREEN));
+		colortable[TERM_BLUE]     = (COLOR_PAIR(PAIR_BLUE));
+		colortable[TERM_UMBER]    = (COLOR_PAIR(PAIR_YELLOW));
+		colortable[TERM_L_DARK]   = (COLOR_PAIR(PAIR_BLACK) | A_BRIGHT);
+		colortable[TERM_L_WHITE]  = (COLOR_PAIR(PAIR_WHITE));
+		colortable[TERM_L_PURPLE] = (COLOR_PAIR(PAIR_MAGENTA));
+		colortable[TERM_YELLOW]   = (COLOR_PAIR(PAIR_YELLOW) | A_BRIGHT);
+		colortable[TERM_L_RED]    = (COLOR_PAIR(PAIR_MAGENTA) | A_BRIGHT);
+		colortable[TERM_L_GREEN]  = (COLOR_PAIR(PAIR_GREEN) | A_BRIGHT);
+		colortable[TERM_L_BLUE]   = (COLOR_PAIR(PAIR_BLUE) | A_BRIGHT);
+		colortable[TERM_L_UMBER]  = (COLOR_PAIR(PAIR_YELLOW));
+
+		colortable[TERM_PURPLE]      = (COLOR_PAIR(PAIR_MAGENTA));
+		colortable[TERM_VIOLET]      = (COLOR_PAIR(PAIR_MAGENTA));
+		colortable[TERM_TEAL]        = (COLOR_PAIR(PAIR_CYAN));
+		colortable[TERM_MUD]         = (COLOR_PAIR(PAIR_YELLOW));
+		colortable[TERM_L_YELLOW]    = (COLOR_PAIR(PAIR_YELLOW | A_BRIGHT));
+		colortable[TERM_MAGENTA]     = (COLOR_PAIR(PAIR_MAGENTA | A_BRIGHT));
+		colortable[TERM_L_TEAL]      = (COLOR_PAIR(PAIR_CYAN | A_BRIGHT));
+		colortable[TERM_L_VIOLET]    = (COLOR_PAIR(PAIR_MAGENTA | A_BRIGHT));
+		colortable[TERM_L_PINK]      = (COLOR_PAIR(PAIR_MAGENTA | A_BRIGHT));
+		colortable[TERM_MUSTARD]     = (COLOR_PAIR(PAIR_YELLOW));
+		colortable[TERM_BLUE_SLATE]  = (COLOR_PAIR(PAIR_BLUE));
+		colortable[TERM_DEEP_L_BLUE] = (COLOR_PAIR(PAIR_BLUE));
 	}
 
 #endif
@@ -920,7 +983,6 @@ errr init_gcu(int argc, char **argv)
 	/* Success */
 	return (0);
 }
-
 
 #endif /* USE_GCU */
 

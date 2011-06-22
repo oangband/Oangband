@@ -29,6 +29,18 @@ void safe_setuid_grab(void);
 void safe_setuid_drop(void);
 
 
+/*** Path building code ***/
+
+/**
+ * Concatenates "leaf" onto the end of "base", using system-specific path
+ * separators, and places the result in buf[], truncated to "len" bytes.
+ *
+ * On Unixes, deals with the tilde as representing home directories.
+ */
+size_t path_build(char *buf, size_t len, const char *base, const char *leaf);
+
+
+
 /*** File access code ***/
 
 /** Data types **/
@@ -63,6 +75,11 @@ typedef enum
 /** Utility functions **/
 
 /**
+ * Returns TRUE if `fname` exists (and is a file), FALSE otherwise.
+ */
+bool file_exists(const char *fname);
+
+/**
  * Tries to delete `fname`.
  *
  * Returns TRUE if successful, FALSE otherwise.
@@ -76,12 +93,37 @@ bool file_delete(const char *fname);
  */
 bool file_move(const char *fname, const char *newname);
 
+/**
+ * Returns TRUE if the file `first` is newer than `second`.
+ */
+bool file_newer(const char *first, const char *second);
+
+
 /** File handle creation **/
 
 /**
  * Open file `buf`, returning a file handler representing that file.
+ *
+ * The file mode specifies what kind of access is required to the file:
+ *  - MODE_WRITE will overwrite the current contents of the file
+ *  - MODE_READ will allow read-only access to the file
+ *  - MODE_APPEND will allow write-only access, but will not overwrite the
+ *    current contents of the file.
+ *
+ * The file type is specified to allow systems which don't use file extensions
+ * to set the type of the file appropriately.  When reading, pass -1 as ftype;
+ * when writing, use whichever filetype seems most appropriate.
+ *
+ * On any kind of error, this function returns NULL.
  */
-ang_file *file_open(const char *fname, file_mode mode, file_type ftype);
+ang_file *file_open(const char *buf, file_mode mode, file_type ftype);
+
+
+/**
+ * Platform hook for file_open.  Used to set filetypes.
+ */
+extern void (*file_open_hook)(const char *path, file_type ftype);
+
 
 /**
  * Attempt to close the file handle `f`.
@@ -167,8 +209,7 @@ bool file_readc(ang_file *f, byte *b);
  */
 bool file_writec(ang_file *f, byte b);
 
-extern errr path_parse(char *buf, int max, const char * file);
-extern errr path_build(char *buf, int max, const char * path, const char * file);
+
 extern FILE *my_fopen(const char * file, const char * mode);
 extern errr my_fclose(FILE *fff);
 extern errr my_fgets(FILE *fff, char *buf, size_t n);
@@ -181,6 +222,50 @@ extern errr fd_read(int fd, char *buf, size_t n);
 extern errr fd_write(int fd, const char * buf, size_t n);
 extern errr fd_close(int fd);
 
+/*** Directory code ***/
 
+/**
+ * Return whether or not a directory exists.
+ */
+bool dir_exists(const char *dirname);
+
+/**
+ * Create's the given directory, creating intermediate directories if
+ * needed and possible. Returns whether or not the directory was created
+ * successfully.
+ */
+bool dir_create(const char *dirname);
+
+/**
+ * An opaque file handle for Angband directory handling.
+ */
+typedef struct ang_dir ang_dir;
+
+
+/**
+ * Opens a directory handle.
+ *
+ * `dirname` must be a system-specific pathname to the directory
+ * you want scanned.
+ *
+ * Returns a valid directory handle on success, NULL otherwise.
+ */
+ang_dir *my_dopen(const char *dirname);
+
+/**
+ * Reads a directory entry.
+ *
+ * `dir` must point to a directory handle previously returned by my_dopen().
+ * `fname` must be a pointer to a writeable chunk of memory `len` long.
+ *
+ * Returns TRUE on successful reading, FALSE otherwise.
+ * (FALSE generally indicates that there are no more files to be read.)
+ */
+bool my_dread(ang_dir *dir, char *fname, size_t len);
+
+/**
+ * Close a directory handle.
+ */
+void my_dclose(ang_dir *dir);
 
 #endif /* INCLUDED_Z_FILE_H */

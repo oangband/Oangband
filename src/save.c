@@ -257,7 +257,7 @@ static errr wr_savefile(void)
 
 
 	/* Make array XXX XXX XXX */
-	C_MAKE(data_head, 65535, byte);
+	data_head = C_ZNEW(65535, byte);
 
 	/* Hack -- reset */
 	data_next = data_head;
@@ -308,7 +308,7 @@ static errr wr_savefile(void)
 	/* Dump the "messages" */
 
 	/* Dump the number of "messages" */
-	tmp16u = message_num();
+	tmp16u = messages_num();
 	if (compress_savefile && (tmp16u > 40)) tmp16u = 40;
 	wr_u16b(tmp16u);
 
@@ -558,7 +558,7 @@ static errr rd_savefile(void)
 
 
 	/* Make array XXX XXX XXX */
-	C_MAKE(data_head, 65535, byte);
+	data_head = C_ZNEW(65535, byte);
 
 	/* Hack -- reset */
 	data_next = data_head;
@@ -1417,7 +1417,7 @@ static bool wr_savefile_new(void)
 
 
 	/* Dump the number of "messages" */
-	tmp16u = message_num();
+	tmp16u = messages_num();
 	if (compress_savefile && (tmp16u > 40)) tmp16u = 40;
 	wr_u16b(tmp16u);
 
@@ -2161,7 +2161,7 @@ static int load_savefile_names(void)
 #endif /* SAVEFILE_USE_UID */
 
 	/* Attempt to load the savefile record */
-	if (path_build(buf, sizeof(buf), ANGBAND_DIR_SAVE, tmp)) return (0);
+	path_build(buf, sizeof(buf), ANGBAND_DIR_SAVE, tmp);
 
 	/* File type is "TEXT" */
 	FILE_TYPE(FILE_TYPE_TEXT);

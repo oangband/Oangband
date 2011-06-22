@@ -1624,17 +1624,17 @@ void display_map(int *cy, int *cx)
 	view_granite_lite = FALSE;
 
 	/* Allocate the maps */
-	C_MAKE(ma, (hgt + 2), byte *);
-	C_MAKE(mc, (hgt + 2), char *);
-	C_MAKE(mp, (hgt + 2), byte *);
+	ma = C_ZNEW((hgt + 2), byte *);
+	mc = C_ZNEW((hgt + 2), char *);
+	mp = C_ZNEW((hgt + 2), byte *);
 
 	/* Allocate and wipe each line map */
 	for (i = 0; i < (hgt + 2); i++)
 	{
 		/* Allocate one row each array */
-		C_MAKE(ma[i], (wid + 2), byte);
-		C_MAKE(mc[i], (wid + 2), char);
-		C_MAKE(mp[i], (wid + 2), byte);
+		ma[i] = C_ZNEW((wid + 2), byte);
+		mc[i] = C_ZNEW((wid + 2), char);
+		mp[i] = C_ZNEW((wid + 2), byte);
 	}
 
 	/* Clear the chars and attributes */
@@ -2466,7 +2466,7 @@ errr vinfo_init(void)
 
 
 	/* Make hack */
-	MAKE(hack, vinfo_hack);
+	hack = ZNEW(vinfo_hack);
 
 
 	/* Analyze grids */

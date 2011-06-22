@@ -287,7 +287,7 @@ void do_cmd_messages(void)
 	strcpy(shower, "");
 
 	/* Total messages */
-	n = message_num();
+	n = messages_num();
 
 	/* Start on first message */
 	i = 0;
@@ -3143,7 +3143,7 @@ static int collect_artifacts(int grp_cur, int object_idx[])
 
 	/* make a list of artifacts not found */
 	/* Allocate the "object_idx" array */
-	C_MAKE(okay, MAX_A_IDX, bool);
+	okay = C_ZNEW(MAX_A_IDX, bool);
 
 	/* Default first,  */
 	for (i = 0; i < MAX_A_IDX; i++)
@@ -3363,7 +3363,7 @@ static void do_cmd_knowledge_artifacts(void)
 	bool redraw;
 
 	/* Allocate the "artifact_idx" array */
-	C_MAKE(artifact_idx, MAX_A_IDX, int);
+	artifact_idx = C_ZNEW(MAX_A_IDX, int);
 
 	max = 0;
 	grp_cnt = 0;
@@ -3819,7 +3819,7 @@ static void do_cmd_knowledge_monsters(void)
 	bool redraw;
 
 	/* Allocate the "mon_idx" array */
-	C_MAKE(mon_idx, MAX_R_IDX, monster_list_entry);
+	mon_idx = C_ZNEW(MAX_R_IDX, monster_list_entry);
 
 	max = 0;
 	grp_cnt = 0;
@@ -4085,7 +4085,7 @@ static void do_cmd_knowledge_objects(void)
 	bool redraw;
 
 	/* Allocate the "object_idx" array */
-	C_MAKE(object_idx, MAX_K_IDX, int);
+	object_idx = C_ZNEW(MAX_K_IDX, int);
 
 	max = 0;
 	grp_cnt = 0;

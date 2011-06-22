@@ -1,14 +1,19 @@
-/* File: main-x11.c */
-
 /*
  * File: main-x11.c
  * Purpose: Provide support for the X Windowing System
  *
  * Copyright (c) 1997 Ben Harrison, and others
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 
 #include "angband.h"
@@ -529,9 +534,9 @@ static u32b create_pixel(Display *dpy, byte red, byte green, byte blue)
 
 	/* Build the color */
 
-	xcolour.red = red * 257;
+	xcolour.red   = red * 257;
 	xcolour.green = green * 257;
-	xcolour.blue = blue * 257;
+	xcolour.blue  = blue * 257;
 	xcolour.flags = DoRed | DoGreen | DoBlue;
 
 	/* Attempt to Allocate the Parsed color */
@@ -545,6 +550,47 @@ static u32b create_pixel(Display *dpy, byte red, byte green, byte blue)
 }
 
 
+/*
+ * Get the name of the default font to use for the term.
+ */
+static const char *get_default_font(int term_num)
+{
+	const char *font;
+	char buf[80];
+
+	/* Window specific font name */
+	strnfmt(buf, sizeof(buf), "ANGBAND_X11_FONT_%d", term_num);
+
+	/* Check environment for that font */
+	font = getenv(buf);
+	if (font) return font;
+
+	/* Check environment for "base" font */
+	font = getenv("ANGBAND_X11_FONT");
+	if (font) return font;
+
+	switch (term_num)
+	{
+		case 0:
+			return DEFAULT_X11_FONT_0;
+		case 1:
+			return DEFAULT_X11_FONT_1;
+		case 2:
+			return DEFAULT_X11_FONT_2;
+		case 3:
+			return DEFAULT_X11_FONT_3;
+		case 4:
+			return DEFAULT_X11_FONT_4;
+		case 5:
+			return DEFAULT_X11_FONT_5;
+		case 6:
+			return DEFAULT_X11_FONT_6;
+		case 7:
+			return DEFAULT_X11_FONT_7;
+	}
+
+	return DEFAULT_X11_FONT;
+}
 
 
 
@@ -1548,6 +1594,7 @@ static infoclr *xor;
  */
 static byte color_table_x11[MAX_COLORS][4];
 
+
 /*
  * The number of term data structures
  */
@@ -1576,19 +1623,22 @@ static int term_windows_open;
 /*
  * Process a keypress event
  */
-static void react_keypress(XKeyEvent *xev)
+static void react_keypress(XKeyEvent *ev)
 {
-	int i, n, mc, ms, mo, mx;
+	int i, n;
 
 	unsigned int ks1;
-
-	XKeyEvent *ev = (XKeyEvent*)(xev);
 
 	KeySym ks;
 
 	char buf[128];
 	char msg[128];
 
+	/* Extract four "modifier flags" */
+	int mc = (ev->state & ControlMask) ? TRUE : FALSE;
+	int ms = (ev->state & ShiftMask) ? TRUE : FALSE;
+	int mo = (ev->state & Mod1Mask) ? TRUE : FALSE;
+	int mx = (ev->state & Mod2Mask) ? TRUE : FALSE;
 
 	/* Check for "normal" keypresses */
 	n = XLookupString(ev, buf, 125, &ks, NULL);
@@ -1596,19 +1646,12 @@ static void react_keypress(XKeyEvent *xev)
 	/* Terminate */
 	buf[n] = '\0';
 
-
-	/* Hack -- Ignore "modifier keys" */
+	/* Ignore modifier keys by themselves */
 	if (IsModifierKey(ks)) return;
 
 
 	/* Hack -- convert into an unsigned int */
 	ks1 = (unsigned int)(ks);
-
-	/* Extract four "modifier flags" */
-	mc = (ev->state & ControlMask) ? TRUE : FALSE;
-	ms = (ev->state & ShiftMask) ? TRUE : FALSE;
-	mo = (ev->state & Mod1Mask) ? TRUE : FALSE;
-	mx = (ev->state & Mod2Mask) ? TRUE : FALSE;
 
 
 	/* Normal keys with no modifiers */
@@ -1683,6 +1726,19 @@ static void react_keypress(XKeyEvent *xev)
 }
 
 
+/*
+ * Find the square a particular pixel is part of.
+ */
+static void pixel_to_square(int * const x, int * const y,
+			    const int ox, const int oy)
+{
+	term_data *td = (term_data*)(Term->data);
+
+	(*x) = (ox - Infowin->ox) / td->tile_wid;
+	(*y) = (oy - Infowin->oy) / td->tile_hgt;
+}
+
+
 
 
 /*
@@ -1697,11 +1753,20 @@ static errr CheckEvent(bool wait)
 	term_data *td = NULL;
 	infowin *iwin = NULL;
 
-	int i, x, y;
+	int i;
 	int window = 0;
 
 	/* Do not wait unless requested */
 	if (!wait && !XPending(Metadpy->dpy)) return (1);
+
+	/* Wait in 0.02s increments while updating animations every 0.2s */
+	i = 0;
+	while (!XPending(Metadpy->dpy))
+	{
+		/* if (i == 0) idle_update(); */
+		usleep(20000);
+		i = (i + 1) % 10;
+	}
 
 	/* Load the Event */
 	XNextEvent(Metadpy->dpy, xev);
@@ -1745,9 +1810,14 @@ static errr CheckEvent(bool wait)
 #if 0
 
 		case ButtonPress:
-		case ButtonRelease:
 		{
+			bool press = (xev->type == ButtonPress);
+
 			int z = 0;
+
+			/* Where is the mouse */
+			int x = xev->xbutton.x;
+			int y = xev->xbutton.y;
 
 			/* Which button is involved */
 			if (xev->xbutton.button == Button1) z = 1;
@@ -1755,42 +1825,12 @@ static errr CheckEvent(bool wait)
 			else if (xev->xbutton.button == Button3) z = 3;
 			else if (xev->xbutton.button == Button4) z = 4;
 			else if (xev->xbutton.button == Button5) z = 5;
+			else z = 0;
 
-			/* Where is the mouse */
-			x = xev->xbutton.x;
-			y = xev->xbutton.y;
+			/* The co-ordinates are only used in Angband format. */
+			pixel_to_square(&x, &y, x, y);
+			if (press) Term_mousepress(x, y, z);
 
-			/* XXX Handle */
-
-			break;
-		}
-
-		case EnterNotify:
-		case LeaveNotify:
-		{
-			/* Where is the mouse */
-			x = xev->xcrossing.x;
-			y = xev->xcrossing.y;
-
-			/* XXX Handle */
-
-			break;
-		}
-
-		case MotionNotify:
-		{
-			/* Where is the mouse */
-			x = xev->xmotion.x;
-			y = xev->xmotion.y;
-
-			/* XXX Handle */
-
-			break;
-		}
-
-		case KeyRelease:
-		{
-			/* Nothing */
 			break;
 		}
 
@@ -1798,10 +1838,6 @@ static errr CheckEvent(bool wait)
 
 		case KeyPress:
 		{
-			/* Save the mouse location */
-			x = xev->xkey.x;
-			y = xev->xkey.y;
-
 			/* Hack -- use "old" term */
 			Term_activate(&old_td->t);
 
@@ -1815,24 +1851,13 @@ static errr CheckEvent(bool wait)
 		{
 			int x1, x2, y1, y2;
 
-			/* Ignore "extra" exposes */
-			/*if (xev->xexpose.count) break;*/
+			x1 = (xev->xexpose.x - Infowin->ox) / td->tile_wid;
+			x2 = (xev->xexpose.x + xev->xexpose.width - Infowin->ox) / td->tile_wid;
 
-			/* Clear the window */
-			/*Infowin_wipe();*/
-
-			x1 = (xev->xexpose.x - Infowin->ox)/Infofnt->wid;
-			x2 = (xev->xexpose.x + xev->xexpose.width -
-				 Infowin->ox)/Infofnt->wid;
-
-			y1 = (xev->xexpose.y - Infowin->oy)/Infofnt->hgt;
-			y2 = (xev->xexpose.y + xev->xexpose.height -
-				 Infowin->oy)/Infofnt->hgt;
+			y1 = (xev->xexpose.y - Infowin->oy) / td->tile_hgt;
+			y2 = (xev->xexpose.y + xev->xexpose.height - Infowin->oy) / td->tile_hgt;
 
 			Term_redraw_section(x1, y1, x2, y2);
-
-			/* Redraw */
-			/*Term_redraw();*/
 
 			break;
 		}
@@ -1884,9 +1909,6 @@ static errr CheckEvent(bool wait)
 			wid = cols * td->tile_wid + (ox + ox);
 			hgt = rows * td->tile_hgt + (oy + oy);
 
-			/* Resize the Term (if needed) */
-			(void) Term_resize(cols, rows);
-
 			/* Resize the windows if any "change" is needed */
 			if ((Infowin->w != wid) || (Infowin->h != hgt))
 			{
@@ -1894,6 +1916,9 @@ static errr CheckEvent(bool wait)
 				Infowin_set(td->win);
 				Infowin_resize(wid, hgt);
 			}
+
+			/* Resize the Term (if needed) */
+			(void)Term_resize(cols, rows);
 
 			break;
 		}
@@ -1961,9 +1986,9 @@ static errr Term_xtra_x11_react(void)
 
 				/* Create pixel */
 				pixel = create_pixel(Metadpy->dpy,
-				                     color_table_x11[i][1],
-				                     color_table_x11[i][2],
-				                     color_table_x11[i][3]);
+						     color_table_x11[i][1],
+						     color_table_x11[i][2],
+						     color_table_x11[i][3]);
 
 				/* Change the foreground */
 				Infoclr_set(clr[i]);
@@ -2007,7 +2032,9 @@ static errr Term_xtra_x11(int n, int v)
 		case TERM_XTRA_CLEAR: Infowin_wipe(); return (0);
 
 		/* Delay for some milliseconds */
-		case TERM_XTRA_DELAY: usleep(1000 * v); return (0);
+		case TERM_XTRA_DELAY:
+			if (v > 0) usleep(1000 * v);
+			return (0);
 
 		/* React to changes */
 		case TERM_XTRA_REACT: return (Term_xtra_x11_react());
@@ -2198,66 +2225,8 @@ static errr term_data_init(term_data *td, int i)
 
 	int line = 0;
 
-	/* Window specific font name */
-	sprintf(buf, "ANGBAND_X11_FONT_%d", i);
-
-	/* Check environment for that font */
-	font = getenv(buf);
-
-	/* Check environment for "base" font */
-	if (!font) font = getenv("ANGBAND_X11_FONT");
-
-	/* No environment variables, use default font */
-	if (!font)
-	{
-		switch (i)
-		{
-			case 0:
-			{
-				font = DEFAULT_X11_FONT_0;
-			}
-			break;
-			case 1:
-			{
-				font = DEFAULT_X11_FONT_1;
-			}
-			break;
-			case 2:
-			{
-				font = DEFAULT_X11_FONT_2;
-			}
-			break;
-			case 3:
-			{
-				font = DEFAULT_X11_FONT_3;
-			}
-			break;
-			case 4:
-			{
-				font = DEFAULT_X11_FONT_4;
-			}
-			break;
-			case 5:
-			{
-				font = DEFAULT_X11_FONT_5;
-			}
-			break;
-			case 6:
-			{
-				font = DEFAULT_X11_FONT_6;
-			}
-			break;
-			case 7:
-			{
-				font = DEFAULT_X11_FONT_7;
-			}
-			break;
-			default:
-			{
-				font = DEFAULT_X11_FONT;
-			}
-		}
-	}
+	/* Get default font for this term */
+	font = get_default_font(i);
 
 	/* Build the filename */
 	path_build(settings, sizeof(settings), ANGBAND_DIR_USER, "x11-settings.prf");
@@ -2466,7 +2435,8 @@ static errr term_data_init(term_data *td, int i)
 	                 Metadpy->fg, Metadpy->bg);
 
 	/* Ask for certain events */
-	Infowin_set_mask(ExposureMask | StructureNotifyMask | KeyPressMask);
+	Infowin_set_mask(ExposureMask | StructureNotifyMask | KeyPressMask
+			 | ButtonPressMask);
 
 	/* Set the window name */
 	Infowin_set_name(name);
@@ -2495,11 +2465,16 @@ static errr term_data_init(term_data *td, int i)
 	/* Oops */
 	if (sh == NULL) quit("XAllocSizeHints failed");
 
+	if (x || y)
+		sh->flags = USPosition;
+	else
+		sh->flags = 0;
+
 	/* Main window has a differing minimum size */
 	if (i == 0)
 	{
 		/* Main window min size is 80x24 */
-		sh->flags = PMinSize | PMaxSize;
+		sh->flags |= (PMinSize | PMaxSize);
 		sh->min_width = 80 * td->tile_wid + (ox + ox);
 		sh->min_height = 24 * td->tile_hgt + (oy + oy);
 		sh->max_width = 255 * td->tile_wid + (ox + ox);
@@ -2510,7 +2485,7 @@ static errr term_data_init(term_data *td, int i)
 	else
 	{
 		/* Other windows */
-		sh->flags = PMinSize | PMaxSize;
+		sh->flags |= (PMinSize | PMaxSize);
 		sh->min_width = td->tile_wid + (ox + ox);
 		sh->min_height = td->tile_hgt + (oy + oy);
 		sh->max_width = 255 * td->tile_wid + (ox + ox);
@@ -2739,9 +2714,9 @@ errr init_x11(int argc, char **argv)
 		{
 			/* Create pixel */
 			pixel = create_pixel(Metadpy->dpy,
-			                     color_table_x11[i][1],
-			                     color_table_x11[i][2],
-			                     color_table_x11[i][3]);
+					     color_table_x11[i][1],
+					     color_table_x11[i][2],
+					     color_table_x11[i][3]);
 		}
 
 		/* Initialize the color */

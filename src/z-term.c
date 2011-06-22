@@ -4,9 +4,16 @@
  *
  * Copyright (c) 1997 Ben Harrison
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 
 #include "angband.h"
@@ -185,6 +192,7 @@
  *   Term->nuke_hook = Nuke the term
  *   Term->xtra_hook = Perform extra actions
  *   Term->curs_hook = Draw (or Move) the cursor
+ *   Term->bigcurs_hook = Draw (or Move) the big cursor (bigtile mode)
  *   Term->wipe_hook = Draw some blank spaces
  *   Term->text_hook = Draw some text in the window
  *   Term->pict_hook = Draw some attr/chars in the window
@@ -807,12 +815,11 @@ static void Term_fresh_row_both(int y, int x1, int x2)
 		/* Save new contents */
 		old_aa[x] = na;
 		old_cc[x] = nc;
-
 		old_taa[x] = nta;
 		old_tcc[x] = ntc;
 
 		/* Handle high-bit attr/chars */
-		if (na & 0x80)
+		if ((na & 0x80) && (nc & 0x80))
 		{
 			/* Flush */
 			if (fn)
@@ -832,6 +839,9 @@ static void Term_fresh_row_both(int y, int x1, int x2)
 				/* Forget */
 				fn = 0;
 			}
+
+			/* 2nd byte of bigtile */
+			if ((na == 255) && (nc == (char) -1)) continue;
 
 			/* Hack -- Draw the special attr/char pair */
 			(void)((*Term->pict_hook)(x, y, 1, &na, &nc, &nta, &ntc));
@@ -1010,8 +1020,12 @@ static void Term_fresh_row_text(int y, int x1, int x2)
 	}
 }
 
+byte tile_width = 1;            /* Tile width in units of font width */
+byte tile_height = 1;           /* Tile height in units of font height */
 
-
+/* Helper variables for large cursor */
+bool bigcurs = FALSE;
+bool smlcurs = TRUE;
 
 
 /*
@@ -1159,6 +1173,7 @@ errr Term_fresh(void)
 
 	/* Paranoia -- use "fake" hooks to prevent core dumps */
 	if (!Term->curs_hook) Term->curs_hook = Term_curs_hack;
+	if (!Term->bigcurs_hook) Term->bigcurs_hook = Term->curs_hook;
 	if (!Term->wipe_hook) Term->wipe_hook = Term_wipe_hack;
 	if (!Term->text_hook) Term->text_hook = Term_text_hack;
 	if (!Term->pict_hook) Term->pict_hook = Term_pict_hack;
@@ -1182,7 +1197,6 @@ errr Term_fresh(void)
 		{
 			byte *aa = old->a[y];
 			char *cc = old->c[y];
-
 			byte *taa = old->ta[y];
 			char *tcc = old->tc[y];
 
@@ -1242,7 +1256,7 @@ errr Term_fresh(void)
 			}
 
 			/* Hack -- use "Term_pict()" sometimes */
-			else if (Term->higher_pict && (oa & 0x80))
+			else if (Term->higher_pict && (oa & 0x80) && (oc & 0x80))
 			{
 				(void)((*Term->pict_hook)(tx, ty, 1, &oa, &oc, &ota, &otc));
 			}
@@ -1343,8 +1357,18 @@ errr Term_fresh(void)
 		/* Draw the cursor */
 		if (!scr->cu && scr->cv)
 		{
-			/* Call the cursor display routine */
-			(void)((*Term->curs_hook)(scr->cx, scr->cy));
+			if ((((tile_width > 1)||(tile_height > 1)) &&
+			     (!smlcurs) && (Term->saved == 0) && (scr->cy > 0))
+			    || bigcurs)
+			{
+				/* Double width cursor for the Bigtile mode */
+				(void)((*Term->bigcurs_hook)(scr->cx, scr->cy));
+			}
+			else
+			{
+				/* Call the cursor display routine */
+				(void)((*Term->curs_hook)(scr->cx, scr->cy));
+			}
 		}
 	}
 
@@ -1585,11 +1609,65 @@ errr Term_putch(int x, int y, byte a, char c)
 
 
 /*
+ * Move to a location and, using an attr, add a big tile
+ */
+void Term_big_putch(int x, int y, byte a, char c)
+{
+	int hor, vert;
+
+	/* Avoid warning */
+	(void)c;
+
+	/* No tall skinny tiles */
+	if (tile_width > 1)
+	{
+		/* Horizontal first */
+		for (hor = 0; hor <= tile_width; hor++)
+		{
+			/* Queue dummy character */
+			if (hor != 0)
+			{
+				if (a & 0x80)
+					Term_putch(x + hor, y, 255, -1);
+				else
+					Term_putch(x + hor, y, TERM_WHITE, ' ');
+			}
+
+			/* Now vertical */
+			for (vert = 1; vert <= tile_height; vert++)
+			{
+				/* Queue dummy character */
+				if (a & 0x80)
+					Term_putch(x + hor, y + vert, 255, -1);
+				else
+					Term_putch(x + hor, y + vert, TERM_WHITE, ' ');
+			}
+		}
+	}
+	else
+	{
+		/* Only vertical */
+		for (vert = 1; vert <= tile_height; vert++)
+		{
+			/* Queue dummy character */
+			if (a & 0x80)
+				Term_putch(x, y + vert, 255, -1);
+			else
+				Term_putch(x, y + vert, TERM_WHITE, ' ');
+		}
+	}
+}
+
+
+/*
  * Move to a location and, using an attr, add a string
  */
 errr Term_putstr(int x, int y, int n, byte a, const char *s)
 {
 	errr res;
+
+	if (!Term)
+		return 0;
 
 	/* Move first */
 	if ((res = Term_gotoxy(x, y)) != 0) return (res);
@@ -1637,6 +1715,12 @@ errr Term_erase(int x, int y, int n)
 
 	scr_taa = Term->scr->ta[y];
 	scr_tcc = Term->scr->tc[y];
+
+	if ((n > 0) && (scr_cc[x] == (char) -1) && (scr_aa[x] == 255))
+	{
+		x--;
+		n++;
+	}
 
 	/* Scan every column */
 	for (i = 0; i < n; i++, x++)
@@ -1704,7 +1788,6 @@ errr Term_clear(void)
 	{
 		byte *scr_aa = Term->scr->a[y];
 		char *scr_cc = Term->scr->c[y];
-
 		byte *scr_taa = Term->scr->ta[y];
 		char *scr_tcc = Term->scr->tc[y];
 
@@ -1769,6 +1852,7 @@ errr Term_redraw_section(int x1, int y1, int x2, int y2)
 	if (y1 < 0) y1 = 0;
 	if (x1 < 0) x1 = 0;
 
+
 	/* Set y limits */
 	Term->y1 = y1;
 	Term->y2 = y2;
@@ -1776,6 +1860,9 @@ errr Term_redraw_section(int x1, int y1, int x2, int y2)
 	/* Set the x limits */
 	for (i = Term->y1; i <= Term->y2; i++)
 	{
+		if ((x1 > 0) && (Term->old->a[i][x1] == 255))
+			x1--;
+
 		Term->x1[i] = x1;
 		Term->x2[i] = x2;
 
@@ -1795,6 +1882,8 @@ errr Term_redraw_section(int x1, int y1, int x2, int y2)
 	/* Success */
 	return (0);
 }
+
+
 
 
 
@@ -1819,12 +1908,9 @@ errr Term_get_cursor(bool *v)
  */
 errr Term_get_size(int *w, int *h)
 {
-	/* Access the cursor */
-	(*w) = Term->wid;
-	(*h) = Term->hgt;
-
-	/* Success */
-	return (0);
+	*w = Term ? Term->wid : 80;
+	*h = Term ? Term->hgt : 24;
+	return 0;
 }
 
 
@@ -1877,6 +1963,9 @@ errr Term_what(int x, int y, byte *a, char *c)
  */
 errr Term_flush(void)
 {
+	if (!Term)
+		return 0;
+
 	/* Hack -- Flush all events */
 	Term_xtra(TERM_XTRA_FLUSH, 0);
 
@@ -1886,7 +1975,6 @@ errr Term_flush(void)
 	/* Success */
 	return (0);
 }
-
 
 
 /*

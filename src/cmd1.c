@@ -413,7 +413,7 @@ byte py_pickup(int pickup)
 
 
 	/* Allocate and wipe an array of ordinary gold objects */
-	C_MAKE(treasure, MONEY_TYPES, byte);
+	treasure = C_ZNEW(MONEY_TYPES, byte);
 	C_WIPE(treasure, MONEY_TYPES, byte);
 
 	/* Pick up all the ordinary gold objects */

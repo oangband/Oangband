@@ -31,6 +31,8 @@ confusion and fear), to encourage their use.
 - Removed X11 Athena widgets port.
 - Removed MS/DOS ports.
 - Transparency is turned on permanently.
+- Removed extra main-mac-carbon file.
+- Added more basic colors, to get the same number a V.
 
 Coding changes
 ==============
@@ -42,8 +44,7 @@ Coding changes
 - Slight clean ups in main-x11.c.
 - Started cleaning up the h-xxx.h files.
 - Cleaned up terminal handling, use POSIX instead of old methods.
-- Cleaned up z-virt, z-form and z-util a bit. Core and panic functions
-removed.
+- Cleaned up z-form and z-util a bit. Core  function removed.
 - Trimming down a number of compile-time options.
 - Cleaned up setuid code a bit, started on z-file.
 - Removed support for savefiles older than Angband 2.7.0.
@@ -52,6 +53,10 @@ removed.
 - Removed unused Term_user.
 - Started upgrading z-form to Vanilla standard.
 - Clean ups in main-x11.c.
-- Nearly updated z-virt to Vanilla standard.
+- Updated z-virt to Vanilla standard.
 - Moved a lot of filehandling to z-file.
 - Use z-quark package.
+- Use z-msg package.
+- Merged h-system.h into h-basic.h.
+- check_modification_date now uses file_newer.
+

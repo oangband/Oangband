@@ -1572,7 +1572,7 @@ static void spoil_mon_desc(const char * fname)
 
 
 	/* Allocate the "who" array */
-	C_MAKE(who, MAX_R_IDX, u16b);
+	who = C_ZNEW(MAX_R_IDX, u16b);
 
 	/* Scan the monsters */
 	for (i = 1; i < MAX_R_IDX; i++)

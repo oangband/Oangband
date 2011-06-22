@@ -199,48 +199,6 @@ const char * *macro__act;
 
 
 /*
- * The next "free" index to use
- */
-u16b message__next;
-
-/*
- * The index of the oldest message (none yet)
- */
-u16b message__last;
-
-/*
- * The next "free" offset
- */
-u16b message__head;
-
-/*
- * The offset to the oldest used char (none yet)
- */
-u16b message__tail;
-
-/*
- * The array[MESSAGE_MAX] of offsets, by index
- */
-u16b *message__ptr;
-
-/*
- * The array[MESSAGE_BUF] of chars, by offset
- */
-char *message__buf;
-
-/*
- * The array[MESSAGE_MAX] of u16b for the types of messages
- */
-u16b *message__type;
-
-
-/*
- * Table of colors associated to message-types
- */
-byte message__color[MSG_MAX];
-
-
-/*
  * The array[TERM_WIN_MAX] of window pointers
  */
 term *angband_term[TERM_WIN_MAX];
@@ -265,7 +223,7 @@ char angband_term_name[TERM_WIN_MAX][16] =
 /*
  * Global table of color definitions (mostly zeros)
  */
-byte angband_color_table[256][4] =
+byte angband_color_table[MAX_COLORS][4] =
 {
 	{0x00, 0x00, 0x00, 0x00},	/* TERM_DARK */
 	{0x00, 0xFF, 0xFF, 0xFF},	/* TERM_WHITE */
@@ -277,12 +235,24 @@ byte angband_color_table[256][4] =
 	{0x00, 0x80, 0x40, 0x00},	/* TERM_UMBER */
 	{0x00, 0x60, 0x60, 0x60},	/* TERM_L_DARK */
 	{0x00, 0xC0, 0xC0, 0xC0},	/* TERM_L_WHITE */
-	{0x00, 0xFF, 0x00, 0xFF},	/* TERM_VIOLET */
+	{0x00, 0xFF, 0x00, 0xFF},	/* TERM_L_PURPLE */
 	{0x00, 0xFF, 0xFF, 0x00},	/* TERM_YELLOW */
 	{0x00, 0xFF, 0x00, 0x00},	/* TERM_L_RED */
 	{0x00, 0x00, 0xFF, 0x00},	/* TERM_L_GREEN */
 	{0x00, 0x00, 0xFF, 0xFF},	/* TERM_L_BLUE */
-	{0x00, 0xC0, 0x80, 0x40}	/* TERM_L_UMBER */
+	{0x00, 0xC0, 0x80, 0x40},	/* TERM_L_UMBER */
+	{0x00, 0x90, 0x00, 0x90}, /* 16 TERM_PURPLE */
+	{0x00, 0x90, 0x20, 0xff}, /* 17 TERM_VIOLET */
+	{0x00, 0x00, 0xa0, 0xa0}, /* 18 TERM_TEAL */
+	{0x00, 0x6c, 0x6c, 0x30}, /* 19 TERM_MUD */
+	{0x00, 0xff, 0xff, 0x90}, /* 20 TERM_L_YELLOW */
+	{0x00, 0xff, 0x00, 0xa0}, /* 21 TERM_MAGENTA */
+	{0x00, 0x20, 0xff, 0xdc}, /* 22 TERM_L_TEAL */
+	{0x00, 0xb8, 0xa8, 0xff}, /* 23 TERM_L_VIOLET */
+	{0x00, 0xff, 0x80, 0x80}, /* 24 TERM__PINK */
+	{0x00, 0xb4, 0xb4, 0x00}, /* 25 TERM_MUSTARD */
+	{0x00, 0xa0, 0xc0, 0xd0}, /* 26 TERM_BLUE_SLATE */
+	{0x00, 0x00, 0xb0, 0xff}, /* 27 TERM_DEEP_L_BLUE */
 };
 
 

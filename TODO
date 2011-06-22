@@ -1,0 +1,15 @@
+
+TODO list:
+- Upgrade and sync code with Vanilla, focusing on the main-xxx and z-xxxx files.
+
+- Study how pseudo-id works in Vanilla and if it is appropriate to adopt it.
+
+- Remove amnesia attacks.
+
+- No sell option.
+
+- Look over the build system and consider possible replacements for
+  GNU autohell.
+
+- Change the way dungeon lit up under infra-vision - red instead of
+  yellow.

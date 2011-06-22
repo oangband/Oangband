@@ -12,13 +12,52 @@
 /* Autoconf Support */
 #ifdef HAVE_CONFIG_H
 #include "autoconf.h"
+
+#else /* HAVE_CONFIG_H */
+
+/*
+ * Everyone except RISC OS has fcntl.h and sys/stat.h
+ */
+#define HAVE_FCNTL_H
+#define HAVE_STAT
+
 #endif /* HAVE_CONFIG_H */
 
 /* System Configuration */
 #include "h-config.h"
 
-/* System includes/externs */
-#include "h-system.h"
+/*** Include the library header files ***/
+
+/* Use various POSIX functions if available */
+#undef _GNU_SOURCE
+#define _GNU_SOURCE
+
+/** ANSI C headers **/
+#include <ctype.h>
+#include <errno.h>
+#include <limits.h>
+#include <assert.h>
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
+#include <time.h>
+
+/** POSIX headers **/
+
+#if defined(SET_UID) || defined(MACH_O_CARBON)
+# include <pwd.h>
+# include <sys/stat.h>
+# include <unistd.h>
+#endif /* SET_UID */
+
+
+
+/** Other headers **/
+
+#include <fcntl.h>
 
 /*** Define the basic game types ***/
 
@@ -106,6 +145,13 @@ typedef int errr;
 #endif /* HAVE_STDINT_H */
 
 
+/** Debugging macros ***/
+
+#define DSTRINGIFY(x) #x
+#define DSTRING(x)    DSTRINGIFY(x)
+#define DHERE         __FILE__ ":" DSTRING(__LINE__) ": "
+
+
 /*** Basic math macros ***/
 
 #undef MIN
@@ -128,6 +174,10 @@ typedef int errr;
  */
 #define N_ELEMENTS(a) (sizeof(a) / sizeof((a)[0]))
 
+/*
+ * Return "s" (or not) depending on whether n is singular.
+ */
+#define PLURAL(n)		((n) == 1 ? "" : "s")
 
 
 /*** Some hackish character manipulation ***/

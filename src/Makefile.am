@@ -12,6 +12,7 @@ angband.res: angband.rc
 
 oangband_SOURCES = \
   z-util.c z-virt.c z-form.c z-rand.c z-term.c z-file.c z-quark.c \
+  z-msg.c \
   variable.c tables.c util.c cave.c \
   object1.c object2.c monster1.c monster2.c \
   xtra1.c xtra2.c spells1.c spells2.c \
@@ -24,9 +25,9 @@ oangband_SOURCES = \
   generate.c dungeon.c init1.c init2.c randart.c \
   squelch.c info.c attack.c \
   angband.h config.h defines.h externs.h h-basic.h \
-  h-config.h h-system.h init.h \
+  h-config.h init.h \
   types.h z-form.h z-rand.h z-term.h z-util.h z-quark.h \
-  z-virt.h z-file.h main.h 
+  z-virt.h z-file.h z-msg.h main.h 
 
 EXTRA_oangband_SOURCES = \
   main-sla.c \

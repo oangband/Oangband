@@ -7265,10 +7265,10 @@ void map_panel_size(void)
 	/* Make the new lines */
 
 	/* String of terrain characters along one row of the map */
-	C_MAKE(mp_ta, wid, byte);
-	C_MAKE(mp_tc, wid, char);
+	mp_ta = C_ZNEW(wid, byte);
+	mp_tc = C_ZNEW(wid, char);
 
 	/* String of characters along one row of the map */
-	C_MAKE(mp_a, wid, byte);
-	C_MAKE(mp_c, wid, char);
+	mp_a = C_ZNEW(wid, byte);
+	mp_c = C_ZNEW(wid, char);
 }

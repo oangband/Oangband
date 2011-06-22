@@ -1,49 +1,20 @@
-/* File: main-gcu.c */
-
 /*
  * File: main-gcu.c
  * Purpose: Support for "curses" systems
  *
  * Copyright (c) 1997 Ben Harrison, and others
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-/*
- * This file helps Angband run on Unix/Curses machines.
- *
- *
- * To use this file, you must define "USE_GCU" in the Makefile.
- *
- *
- * Hack -- note that "angband.h" is included AFTER the #ifdef test.
- * This was necessary because of annoying "curses.h" silliness.
- *
- * Note that this file is not "intended" to support non-Unix machines,
- * nor is it intended to support VMS or other bizarre setups.
- *
- * Also, this package assumes that the underlying "curses" handles both
- * the "nonl()" and "cbreak()" commands correctly, see the "OPTION" below.
- *
- * This code should work with most versions of "curses" or "ncurses",
- * and the "main-ncu.c" file (and USE_NCU define) are no longer used.
- *
- * This file provides up to 4 term windows.
- *
- * This file will attempt to redefine the screen colors to conform to
- * standard Angband colors.  It will only do so if the terminal type
- * indicates that it can do so.  See the page:
- *
- *     http://www.umr.edu/~keldon/ang-patch/ncurses_color.html
- *
- * for information on this.
- *
- * Consider the use of "savetty()" and "resetty()".  XXX XXX XXX
- */
-
 
 #include "angband.h"
 
@@ -63,10 +34,6 @@
 # include <curses.h>
 #endif
 
-/*
- * Try redefining the colors at startup.
- */
-#define REDEFINE_COLORS
 
 
 /*
@@ -129,7 +96,6 @@ typedef struct term_data
 /* Information about our windows */
 static term_data data[MAX_TERM_DATA];
 
-
 /* Number of initialized "term" structures */
 static int active = 0;
 
@@ -148,11 +114,6 @@ static int active = 0;
  * Software flag -- we are allowed to use color
  */
 static int can_use_color = FALSE;
-
-/*
- * Software flag -- we are allowed to change the colors
- */
-static int can_fix_color = FALSE;
 
 /*
  * Simple Angband to Curses color conversion table
@@ -516,11 +477,8 @@ int create_color(int i, int scale)
  */
 static errr Term_xtra_gcu_react(void)
 {
+
 #ifdef A_COLOR
-
-	/* Cannot handle color redefinition */
-	if (!can_fix_color) return (0);
-
 	if (COLORS == 256 || COLORS == 88)
 	{
 		/* If we have more than 16 colors, find the best matches. These numbers
@@ -642,10 +600,9 @@ static errr Term_wipe_gcu(int x, int y, int n)
 		/* Clear to end of line */
 		wclrtoeol(td->win);
 	}
-
-	/* Clear some characters */
 	else
 	{
+		/* Clear some characters */
 		while (n-- > 0) waddch(td->win, ' ');
 	}
 
@@ -819,35 +776,6 @@ errr init_gcu(int argc, char **argv)
 	can_use_color = ((start_color() != ERR) && has_colors() &&
 	                 (COLORS >= 8) && (COLOR_PAIRS >= 8));
 
-#ifdef REDEFINE_COLORS
-	/* Can we change colors? */
-	can_fix_color = (can_use_color && can_change_color() &&
-	                 (COLORS >= 16) && (COLOR_PAIRS > 8));
-#endif
-
-	/* Attempt to use customized colors */
-	if (can_fix_color)
-	{
-		/* Prepare the color pairs */
-		for (i = 1; i <= 8; i++)
-		{
-			/* Reset the color */
-			if (init_pair(i, i - 1, 0) == ERR)
-			{
-				quit("Color pair init failed");
-			}
-
-			/* Set up the colormap */
-			colortable[i - 1] = (COLOR_PAIR(i) | A_NORMAL);
-			colortable[i + 7] = (COLOR_PAIR(i) | A_BRIGHT);
-		}
-
-		/* XXX XXX XXX Take account of "gamma correction" */
-
-		/* Prepare the "Angband Colors" */
-		Term_xtra_gcu_react();
-	}
-
 	/* Attempt to use colors */
 	if (can_use_color)
 	{
@@ -894,9 +822,6 @@ errr init_gcu(int argc, char **argv)
 	}
 #endif
 
-
-	/*** Low level preparation ***/
-
 	/* Paranoia -- Assume no waiting */
 	nodelay(stdscr, FALSE);
 
@@ -908,9 +833,7 @@ errr init_gcu(int argc, char **argv)
 	/* Extract the game keymap */
 	keymap_game_prepare();
 
-
 	/*** Now prepare the term(s) ***/
-
 	for (i = 0; i < num_term; i++)
 	{
 		if (use_big_screen && i > 0) break;

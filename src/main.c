@@ -100,115 +100,13 @@ static void init_stuff(void)
  * The "<path>" can be any legal path for the given system, and should
  * not end in any special path separator (i.e. "/tmp" or "~/.ang-info").
  */
-static void change_path(const char * info)
+static void change_path(const char *info)
 {
-	const char * s;
+	if (!info || !info[0])
+		quit_fmt("Try '-d<path>'.", info);
 
-	/* Find equal sign */
-	s = strchr(info, '=');
-
-	/* Verify equal sign */
-	if (!s) quit_fmt("Try '-d<what>=<path>' not '-d%s'", info);
-
-	/* Analyze */
-	switch (tolower(info[0]))
-	{
-		case 'a':
-		{
-			string_free(ANGBAND_DIR_APEX);
-			ANGBAND_DIR_APEX = string_make(s+1);
-			break;
-		}
-
-		case 'f':
-		{
-			string_free(ANGBAND_DIR_FILE);
-			ANGBAND_DIR_FILE = string_make(s+1);
-			break;
-		}
-
-		case 'h':
-		{
-			string_free(ANGBAND_DIR_HELP);
-			ANGBAND_DIR_HELP = string_make(s+1);
-			break;
-		}
-
-		case 'i':
-		{
-			string_free(ANGBAND_DIR_INFO);
-			ANGBAND_DIR_INFO = string_make(s+1);
-			break;
-		}
-
-		case 'u':
-		{
-			string_free(ANGBAND_DIR_USER);
-			ANGBAND_DIR_USER = string_make(s+1);
-			break;
-		}
-
-		case 'x':
-		{
-			string_free(ANGBAND_DIR_XTRA);
-			ANGBAND_DIR_XTRA = string_make(s+1);
-			break;
-		}
-
-#ifdef VERIFY_SAVEFILE
-
-		case 'b':
-		case 'd':
-		case 'e':
-		case 's':
-		{
-			quit_fmt("Restricted option '-d%s'", info);
-		}
-
-#else /* VERIFY_SAVEFILE */
-
-		case 'b':
-		{
-			string_free(ANGBAND_DIR_BONE);
-			ANGBAND_DIR_BONE = string_make(s+1);
-			break;
-		}
-
-		case 'd':
-		{
-			string_free(ANGBAND_DIR_DATA);
-			ANGBAND_DIR_DATA = string_make(s+1);
-			break;
-		}
-
-		case 'e':
-		{
-			string_free(ANGBAND_DIR_EDIT);
-			ANGBAND_DIR_EDIT = string_make(s+1);
-			break;
-		}
-
-		case 's':
-		{
-			string_free(ANGBAND_DIR_SAVE);
-			ANGBAND_DIR_SAVE = string_make(s+1);
-			break;
-		}
-
-		case 'z':
-		{
-			string_free(ANGBAND_DIR_SCRIPT);
-			ANGBAND_DIR_SCRIPT = string_make(s+1);
-			break;
-		}
-
-#endif /* VERIFY_SAVEFILE */
-
-		default:
-		{
-			quit_fmt("Bad semantics in '-d%s'", info);
-		}
-	}
+	string_free(ANGBAND_DIR_USER);
+	ANGBAND_DIR_USER = string_make(info);
 }
 
 
@@ -251,21 +149,11 @@ int main(int argc, char *argv[])
 
 #ifdef SET_UID
 
-	/* Get the user id (?) */
+	/* Get the user id */
 	player_uid = getuid();
 
-#ifdef VMS
-	/* Mega-Hack -- Factor group id */
-	player_uid += (getgid() * 1000);
-#endif
-
-#  ifdef _POSIX_SAVED_IDS
-
-	/* Save some info for later */
-	player_euid = geteuid();
+	/* Save the effective GID for later recall */
 	player_egid = getegid();
-
-#  endif
 
 #  if 0	/* XXX XXX XXX */
 
@@ -297,11 +185,7 @@ int main(int argc, char *argv[])
 #endif /* PRIVATE_USER_PATH */
 
 	/* Acquire the "user name" as a default player name */
-#ifdef ANGBAND_2_8_1
-	user_name(player_name, player_uid);
-#else /* ANGBAND_2_8_1 */
 	user_name(op_ptr->full_name, player_uid);
-#endif /* ANGBAND_2_8_1 */
 
 #endif /* SET_UID */
 
@@ -369,13 +253,8 @@ int main(int argc, char *argv[])
 			case 'U':
 			{
 				if (!argv[i][2]) goto usage;
-#ifdef ANGBAND_2_8_1
-				strncpy(player_name, &argv[i][2], 32);
-				player_name[31] = '\0';
-#else /* ANGBAND_2_8_1 */
 				strncpy(op_ptr->base_name, &argv[i][2], 32);
 				op_ptr->base_name[31] = '\0';
-#endif /* ANGBAND_2_8_1 */
 				break;
 			}
 
@@ -413,34 +292,34 @@ int main(int argc, char *argv[])
 			{
 				/* Dump usage information */
 				puts("Usage: angband [options] [-- subopts]");
-				puts("  -n       Start a new character");
-				puts("  -f       Request fiddle mode");
-				puts("  -w       Request wizard mode");
-				puts("  -v       Request sound mode");
-				puts("  -g       Request graphics mode");
-				puts("  -o       Request original keyset");
-				puts("  -r       Request rogue-like keyset");
-				puts("  -M       Request monochrome mode");
-				puts("  -s<num>  Show <num> high scores");
-				puts("  -u<who>  Use your <who> savefile");
-				puts("  -d<def>  Define a 'lib' dir sub-path");
+				puts("  -n        Start a new character");
+				puts("  -f        Request fiddle mode");
+				puts("  -w        Request wizard mode");
+				puts("  -v        Request sound mode");
+				puts("  -g        Request graphics mode");
+				puts("  -o        Request original keyset");
+				puts("  -r        Request rogue-like keyset");
+				puts("  -M        Request monochrome mode");
+				puts("  -s<num>   Show <num> high scores");
+				puts("  -u<who>   Use your <who> savefile");
+				puts("  -d<path>  Store pref files and screendumps in <path>");
 
 #ifdef USE_X11
-				puts("  -mx11    To use X11");
-				puts("  --       Sub options");
-				puts("  -- -d    Set display name");
-				puts("  -- -s    Turn off smoothscaling graphics");
-				puts("  -- -n#   Number of terms to use");
+				puts("  -mx11     To use X11");
+				puts("  --        Sub options");
+				puts("  -- -d     Set display name");
+				puts("  -- -s     Turn off smoothscaling graphics");
+				puts("  -- -n#    Number of terms to use");
 #endif /* USE_X11 */
 
 #ifdef USE_GCU
-				puts("  -mgcu    To use GCU (GNU Curses)");
-				puts("  --       Sub options");
-				puts("  -- -x    No extra sub-windows");
+				puts("  -mgcu     To use GCU (GNU Curses)");
+				puts("  --        Sub options");
+				puts("  -- -x     No extra sub-windows");
 #endif /* USE_GCU */
 
 #ifdef USE_SLA
-				puts("  -msla    To use SLA (SLANG)");
+				puts("  -msla     To use SLA (SLANG)");
 #endif /* USE_SLA */
 
 				/* Actually abort the process */

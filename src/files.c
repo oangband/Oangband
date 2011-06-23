@@ -16,11 +16,6 @@
 
 #include "angband.h"
 
-/*
- * You may or may not want to use the following "#undef".
- */
-/* #undef _POSIX_SAVED_IDS */
-
 
 #if 0
 

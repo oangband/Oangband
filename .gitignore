@@ -33,3 +33,6 @@ lib/user/Makefile.in
 lib/user/Makefile
 lib/xtra/Makefile.in
 lib/xtra/Makefile
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake

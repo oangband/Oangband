@@ -46,17 +46,13 @@
 #include <time.h>
 
 /** POSIX headers **/
-
 #if defined(SET_UID) || defined(MACH_O_CARBON)
 # include <pwd.h>
 # include <sys/stat.h>
 # include <unistd.h>
 #endif /* SET_UID */
 
-
-
 /** Other headers **/
-
 #include <fcntl.h>
 
 /*** Define the basic game types ***/
@@ -184,14 +180,11 @@ typedef int errr;
 
 /*
  * Note that all "index" values must be "lowercase letters", while
- * all "digits" must be "digits".  Control characters can be made
- * from any legal characters.  XXX XXX XXX
+ * all "digits" must be "digits".
  */
 #define A2I(X)	((X) - 'a')
 #define I2A(X)	((X) + 'a')
 #define D2I(X)	((X) - '0')
 #define I2D(X)	((X) + '0')
-#define KTRL(X)	((X) & 0x1F)
-#define ESCAPE	'\033'
 
 #endif /* INCLUDED_H_BASIC_H */

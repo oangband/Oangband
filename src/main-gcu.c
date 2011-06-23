@@ -200,7 +200,10 @@ static void keymap_game_prepare(void)
 	/* Force "Ctrl-Z" to suspend */
 	game_termios.c_cc[VSUSP] = (char)26;
 
-	/* Hack -- Leave "VSTART/VSTOP" alone */
+#ifdef VDSUSP
+	/* Hack -- disable "Ctrl-Y" on *BSD */
+	game_termios.c_cc[VDSUSP] = (char)-1;
+#endif
 
 	/* Disable the standard control characters */
 	game_termios.c_cc[VQUIT] = (char)-1;
@@ -400,6 +403,35 @@ void get_gcu_term_size(int i, int *rows, int *cols, int *y, int *x)
 		*rows = *cols = *y = *x = 0;
 	}
 }
+
+
+/*
+ * Query ncurses for new screen size and try to resize the GCU terms.
+ */
+void do_gcu_resize(void)
+{
+	int i, rows, cols, y, x;
+	term *old_t = Term;
+
+	for (i = 0; i < MAX_TERM_DATA; i++)
+	{
+		/* If we're using a big screen, we only care about Term-0 */
+		if (use_big_screen && i > 0) break;
+
+		/* Activate the current Term */
+		Term_activate(&data[i].t);
+
+		/* If we can resize the curses window, then resize the Term */
+		get_gcu_term_size(i, &rows, &cols, &y, &x);
+		if (wresize(data[i].win, rows, cols) == OK)
+			Term_resize(cols, rows);
+
+		/* Activate the old term */
+		Term_activate(old_t);
+	}
+	do_cmd_redraw();
+}
+
 
 /*
  * Process events, with optional wait
@@ -603,7 +635,7 @@ static errr Term_wipe_gcu(int x, int y, int n)
 	else
 	{
 		/* Clear some characters */
-		while (n-- > 0) waddch(td->win, ' ');
+		whline(td->win, ' ', n);
 	}
 
 	return 0;
@@ -624,7 +656,7 @@ static errr Term_text_gcu(int x, int y, int n, byte a, const char *s)
 
 #ifdef A_COLOR
 	/* Set the color */
-	if (can_use_color) wattrset(td->win, colortable[a & 0x0F]);
+	if (can_use_color) (void)wattrset(td->win, colortable[a & 255]);
 #endif
 
 	/* Move the cursor */

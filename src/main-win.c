@@ -71,6 +71,7 @@
 
 #include "angband.h"
 
+#define uint unsigned int
 
 #ifdef WINDOWS
 
@@ -163,7 +164,11 @@
 #define IDM_OPTIONS_GRAPHICS_OLD    401
 #define IDM_OPTIONS_GRAPHICS_ADAM   402
 #define IDM_OPTIONS_GRAPHICS_DAVID  403
-#define IDM_OPTIONS_SOUND           410
+#define IDM_OPTIONS_GRAPHICS_NOMAD  404
+#define IDM_OPTIONS_GRAPHICS_NICE   405
+#define IDM_OPTIONS_TRPTILE         407
+#define IDM_OPTIONS_DBLTILE         408
+#define IDM_OPTIONS_BIGTILE         409
 #define IDM_OPTIONS_LOW_PRIORITY    420
 #define IDM_OPTIONS_SAVER           430
 #define IDM_OPTIONS_MAP             440
@@ -354,7 +359,6 @@ struct _term_data
 	uint pos_y;
 	uint size_wid;
 	uint size_hgt;
-
 	uint size_ow1;
 	uint size_oh1;
 	uint size_ow2;
@@ -383,7 +387,6 @@ struct _term_data
 	uint map_tile_wid;
 	uint map_tile_hgt;
 
-	bool variable_rows;
 	bool map_active;
 };
 
@@ -817,15 +820,12 @@ static void term_getsize(term_data *td)
 	rc.top = 0;
 	rc.bottom = rc.top + hgt;
 
-
 	/* Get total window size (without menu for sub-windows) */
-	AdjustWindowRectEx(&rc, td->dwStyle, td->variable_rows, td->dwExStyle);
+	AdjustWindowRectEx(&rc, td->dwStyle, TRUE, td->dwExStyle);
 
-	/* Calculate total window dimensions */
-
+	/* Total size */
 	td->size_wid = rc.right - rc.left;
 	td->size_hgt = rc.bottom - rc.top;
-
 
 	/* See CreateWindowEx */
 	if (!td->w) return;
@@ -857,14 +857,13 @@ static void save_prefs_aux(term_data *td, const char *sec_name)
 	strcpy(buf, td->visible ? "1" : "0");
 	WritePrivateProfileString(sec_name, "Visible", buf, ini_file);
 
-	/* Bizarre */
-	strcpy(buf, td->bizarre ? "1" : "0");
-	WritePrivateProfileString(sec_name, "Bizarre", buf, ini_file);
-
-
 	/* Font */
 	strcpy(buf, td->font_file ? td->font_file : DEFAULT_LARGE_FONT);
 	WritePrivateProfileString(sec_name, "Font", buf, ini_file);
+
+	/* Bizarre */
+	strcpy(buf, td->bizarre ? "1" : "0");
+	WritePrivateProfileString(sec_name, "Bizarre", buf, ini_file);
 
 	/* Tile size (x) */
 	wsprintf(buf, "%d", td->tile_wid);
@@ -881,8 +880,6 @@ static void save_prefs_aux(term_data *td, const char *sec_name)
 	/* Window size (y) */
 	wsprintf(buf, "%d", td->rows);
 	WritePrivateProfileString(sec_name, "NumRows", buf, ini_file);
-
-
 
 	/* Get window placement and dimensions */
 	lpwndpl.length = sizeof(WINDOWPLACEMENT);
@@ -957,13 +954,11 @@ static void load_prefs_aux(term_data *td, const char *sec_name)
 	/* Maximized */
 	td->maximized = (GetPrivateProfileInt(sec_name, "Maximized", td->maximized, ini_file) != 0);
 
-	/* Bizarre */
-	td->bizarre = (GetPrivateProfileInt(sec_name, "Bizarre", TRUE, ini_file) != 0);
-
-
-
 	/* Desired font, with default */
 	GetPrivateProfileString(sec_name, "Font", DEFAULT_LARGE_FONT, tmp, 127, ini_file);
+
+	/* Bizarre */
+	td->bizarre = (GetPrivateProfileInt(sec_name, "Bizarre", TRUE, ini_file) != 0);
 
 	/* Analyze font, save desired font name */
 	td->font_want = string_make(analyze_font(tmp, &wid, &hgt));
@@ -1402,6 +1397,25 @@ static void term_window_resize(const term_data *td)
 
 
 /*
+ * Remove a font, given its filename.
+ */
+static void term_remove_font(const char *name)
+{
+	char buf[1024];
+
+	/* Build path to the file */
+	my_strcpy(buf, ANGBAND_DIR_XTRA_FONT, sizeof(buf));
+	my_strcat(buf, "\\", sizeof(buf));
+	my_strcat(buf, name, sizeof(buf));
+
+	/* Remove it */
+	RemoveFontResource(buf);
+
+	return;
+}
+
+
+/*
  * Force the use of a new "font file" for a term_data
  *
  * This function may be called before the "window" is ready
@@ -1419,6 +1433,8 @@ static errr term_force_font(term_data *td, const char *path)
 	char buf[1024];
 
 
+	/* Check we have a path */
+	if (!path) return (1);
 
 	/* Remove old font from the system, free system resources */
 	RemoveFontResource(td->font_file);
@@ -1430,9 +1446,6 @@ static errr term_force_font(term_data *td, const char *path)
 	/* Forget it */
 	td->font_file = NULL;
 
-
-	/* No path given */
-	if (!path) return (1);
 
 
 	/* Local copy */
@@ -1450,12 +1463,11 @@ static errr term_force_font(term_data *td, const char *path)
 	/* Load the new font */
 	if (!AddFontResource(buf)) return (1);
 
-	/* Notify other applications that a new font is available  XXX XXX XXX */
-	SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
+	/* Notify other applications that a new font is available  XXX */
+	PostMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
 
 	/* Save new font name */
 	td->font_file = string_make(base);
-
 
 	/* Remove the "suffix" */
 	base[strlen(base)-4] = '\0';
@@ -1787,14 +1799,10 @@ static errr Term_xtra_win_event(int v)
 	}
 
 	/* Check for an event */
-	else
+	else if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		/* Check */
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 
 	/* Success */
@@ -1864,18 +1872,15 @@ static errr Term_xtra_win_noise(void)
 /*
  * Hack -- make a sound
  */
-static errr Term_xtra_win_sound(int v)
+static void Term_xtra_win_sound(int v)
 {
 #ifdef USE_SOUND
 	int i;
 	char buf[1024];
 #endif /* USE_SOUND */
 
-	/* Sound disabled */
-	if (!use_sound) return (1);
-
 	/* Illegal sound */
-	if ((v < 0) || (v >= MSG_MAX)) return (1);
+	if ((v < 0) || (v >= MSG_MAX)) return;
 
 #ifdef USE_SOUND
 
@@ -1887,18 +1892,18 @@ static errr Term_xtra_win_sound(int v)
 	}
 
 	/* No sample */
-	if (i == 0) return (1);
+	if (i == 0) return;
 
 	/* Build the path */
-	path_build(buf, sizeof(buf), ANGBAND_DIR_XTRA_SOUND, sound_file[v][rand_int(i)]);
+	path_build(buf, sizeof(buf), ANGBAND_DIR_XTRA_SOUND, sound_file[v][0]);
 
 	/* Play the sound, catch errors */
-	return (PlaySound(buf, 0, SND_FILENAME | SND_ASYNC));
+	PlaySound(buf, 0, SND_FILENAME | SND_ASYNC);
 
 #else /* USE_SOUND */
 
 	/* Oops */
-	return (1);
+	return;
 
 #endif /* USE_SOUND */
 }
@@ -1929,12 +1934,6 @@ static errr Term_xtra_win(int n, int v)
 		case TERM_XTRA_NOISE:
 		{
 			return (Term_xtra_win_noise());
-		}
-
-		/* Make a special sound */
-		case TERM_XTRA_SOUND:
-		{
-			return (Term_xtra_win_sound(v));
 		}
 
 		/* Process random events */
@@ -2011,8 +2010,48 @@ static errr Term_curs_win(int x, int y)
 	rc.right = rc.left + tile_wid;
 	rc.top = y * tile_hgt + td->size_oh1;
 	rc.bottom = rc.top + tile_hgt;
-	rc.top = rc.bottom - 1;
 
+	/* Cursor is done as a yellow "box" */
+	hdc = GetDC(td->w);
+	FrameRect(hdc, &rc, hbrYellow);
+	ReleaseDC(td->w, hdc);
+
+	/* Success */
+	return 0;
+}
+
+
+/*
+ * Low level graphics (Assumes valid input).
+ *
+ * Draw a "cursor" at (x,y), using a "yellow box".
+ */
+static errr Term_bigcurs_win(int x, int y)
+{
+	term_data *td = (term_data*)(Term->data);
+
+	RECT rc;
+	HDC hdc;
+
+	int tile_wid, tile_hgt;
+
+	if (td->map_active)
+	{
+		/* Normal cursor in map window */
+		Term_curs_win(x, y);
+		return 0;
+	}
+	else
+	{
+		tile_wid = td->tile_wid;
+		tile_hgt = td->tile_hgt;
+	}
+
+	/* Frame the grid */
+	rc.left = x * tile_wid + td->size_ow1;
+	rc.right = rc.left + tile_width * tile_wid;
+	rc.top = y * tile_hgt + td->size_oh1;
+	rc.bottom = rc.top + tile_height * tile_hgt;
 
 	/* Cursor is done as a yellow "box" */
 	hdc = GetDC(td->w);
@@ -2042,11 +2081,9 @@ static errr Term_wipe_win(int x, int y, int n)
 	rc.top = y * td->tile_hgt + td->size_oh1;
 	rc.bottom = rc.top + td->tile_hgt;
 
-
 	hdc = GetDC(td->w);
 	SetBkColor(hdc, RGB(0, 0, 0));
 	SelectObject(hdc, td->font_id);
-
 	ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
 	ReleaseDC(td->w, hdc);
 
@@ -2072,11 +2109,6 @@ static errr Term_text_win(int x, int y, int n, byte a, const char *s)
 	RECT rc;
 	HDC hdc;
 
-	/* Acquire DC */
-	hdc = GetDC(td->w);
-
-	/* Use the font */
-	SelectObject(hdc, td->font_id);
 
 	/* Total rectangle */
 	rc.left = x * td->tile_wid + td->size_ow1;
@@ -2084,6 +2116,8 @@ static errr Term_text_win(int x, int y, int n, byte a, const char *s)
 	rc.top = y * td->tile_hgt + td->size_oh1;
 	rc.bottom = rc.top + td->tile_hgt;
 
+	/* Acquire DC */
+	hdc = GetDC(td->w);
 
 	/* Background color */
 	SetBkColor(hdc, RGB(0, 0, 0));
@@ -2095,12 +2129,15 @@ static errr Term_text_win(int x, int y, int n, byte a, const char *s)
 	}
 	else if (paletted)
 	{
-		SetTextColor(hdc, win_clr[a&0x0F]);
+		SetTextColor(hdc, win_clr[a & (BASIC_COLORS-1)]);
 	}
 	else
 	{
 		SetTextColor(hdc, win_clr[a]);
 	}
+
+	/* Use the font */
+	SelectObject(hdc, td->font_id);
 
 	/* Bizarre size */
 	if (td->bizarre ||
@@ -2354,7 +2391,7 @@ static void windows_map_aux(void)
 		}
 	}
 
-	/* Hilite the player */
+	/* Highlight the player */
 	Term_curs_win(p_ptr->px - min_x, p_ptr->py - min_y);
 }
 
@@ -2410,7 +2447,6 @@ static void term_data_link(term_data *td)
 	/* Initialize the term */
 	term_init(t, td->cols, td->rows, td->keys);
 
-
 	/* Use a "software" cursor */
 	t->soft_cursor = TRUE;
 
@@ -2430,6 +2466,7 @@ static void term_data_link(term_data *td)
 	/* Prepare the template hooks */
 	t->xtra_hook = Term_xtra_win;
 	t->curs_hook = Term_curs_win;
+	t->bigcurs_hook = Term_bigcurs_win;
 	t->wipe_hook = Term_wipe_win;
 	t->text_hook = Term_text_win;
 	t->pict_hook = Term_pict_win;
@@ -2465,7 +2502,6 @@ static void init_windows(void)
 	td->rows = 24;
 	td->cols = 80;
 	td->visible = TRUE;
-	td->variable_rows = TRUE;
 	td->size_ow1 = 2;
 	td->size_ow2 = 2;
 	td->size_oh1 = 2;
@@ -2483,7 +2519,6 @@ static void init_windows(void)
 		td->rows = 24;
 		td->cols = 80;
 		td->visible = FALSE;
-		td->variable_rows = FALSE;
 		td->size_ow1 = 1;
 		td->size_ow2 = 1;
 		td->size_oh1 = 1;
@@ -2754,7 +2789,6 @@ static void setup_menus(void)
 		{
 			EnableMenuItem(hm, IDM_WINDOW_D_WID_0 + i,
 			               MF_BYCOMMAND | MF_ENABLED);
-
 		}
 	}
 
@@ -2768,7 +2802,6 @@ static void setup_menus(void)
 		{
 			EnableMenuItem(hm, IDM_WINDOW_I_HGT_0 + i,
 			               MF_BYCOMMAND | MF_ENABLED);
-
 		}
 	}
 
@@ -2782,7 +2815,6 @@ static void setup_menus(void)
 		{
 			EnableMenuItem(hm, IDM_WINDOW_D_HGT_0 + i,
 			               MF_BYCOMMAND | MF_ENABLED);
-
 		}
 	}
 
@@ -2793,9 +2825,17 @@ static void setup_menus(void)
 	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_ADAM,
 	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+	EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_NOMAD,
+	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_DAVID,
 	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-	EnableMenuItem(hm, IDM_OPTIONS_SOUND,
+	EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_NICE,
+	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+	EnableMenuItem(hm, IDM_OPTIONS_TRPTILE,
+	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+	EnableMenuItem(hm, IDM_OPTIONS_DBLTILE,
+	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+	EnableMenuItem(hm, IDM_OPTIONS_BIGTILE,
 	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	EnableMenuItem(hm, IDM_OPTIONS_SAVER,
 	               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
@@ -2818,8 +2858,14 @@ static void setup_menus(void)
 	              (arg_graphics == GRAPHICS_ADAM_BOLT ? MF_CHECKED : MF_UNCHECKED));
 	CheckMenuItem(hm, IDM_OPTIONS_GRAPHICS_DAVID,
 	              (arg_graphics == GRAPHICS_DAVID_GERVAIS ? MF_CHECKED : MF_UNCHECKED));
-	CheckMenuItem(hm, IDM_OPTIONS_SOUND,
-	              (arg_sound ? MF_CHECKED : MF_UNCHECKED));
+
+	CheckMenuItem(hm, IDM_OPTIONS_TRPTILE,
+	              (tile_height == 3 ? MF_CHECKED : MF_UNCHECKED));
+	CheckMenuItem(hm, IDM_OPTIONS_DBLTILE,
+	              (tile_height == 2 ? MF_CHECKED : MF_UNCHECKED));
+	CheckMenuItem(hm, IDM_OPTIONS_BIGTILE,
+	              (tile_width == (2 * tile_height) ? MF_CHECKED : MF_UNCHECKED));
+
 #ifdef USE_SAVER
 	CheckMenuItem(hm, IDM_OPTIONS_SAVER,
 	              (hwndSaver ? MF_CHECKED : MF_UNCHECKED));
@@ -2838,14 +2884,6 @@ static void setup_menus(void)
 		EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_DAVID, MF_ENABLED);
 	}
 #endif /* USE_GRAPHICS */
-
-#ifdef USE_SOUND
-	if (inkey_flag && initialized)
-	{
-		/* Menu "Options", Item "Sound" */
-		EnableMenuItem(hm, IDM_OPTIONS_SOUND, MF_ENABLED);
-	}
-#endif /* USE_SOUND */
 
 #ifdef USE_SAVER
 	/* Menu "Options", Item "ScreenSaver" */
@@ -2882,8 +2920,7 @@ static void check_for_save_file(LPSTR cmd_line)
 	if (p) *p = '\0';
 
 	/* Extract filename */
-	*savefile = '\0';
-	strncat(savefile, s, sizeof(savefile) - 1);
+	my_strcpy(savefile, s, sizeof(savefile));
 
 	/* Validate the file */
 	validate_file(savefile);
@@ -3469,27 +3506,6 @@ static void process_menus(WORD wCmd)
 				/* Hack -- Force redraw */
 				Term_key_push(KTRL('R'));
 			}
-
-			break;
-		}
-
-		case IDM_OPTIONS_SOUND:
-		{
-			/* Paranoia */
-			if (!inkey_flag || !initialized)
-			{
-				plog("You may not do that right now.");
-				break;
-			}
-
-			/* Toggle "arg_sound" */
-			arg_sound = !arg_sound;
-
-			/* React to changes */
-			Term_xtra_win_react();
-
-			/* Hack -- Force redraw */
-			Term_key_push(KTRL('R'));
 
 			break;
 		}
@@ -4340,7 +4356,7 @@ LRESULT FAR PASCAL AngbandSaverProc(HWND hWnd, UINT uMsg,
 /*
  * Display warning message (see "z-util.c")
  */
-static void hack_plog(const char * str)
+static void hack_plog(const char *str)
 {
 	/* Give a warning */
 	if (str)
@@ -4354,7 +4370,7 @@ static void hack_plog(const char * str)
 /*
  * Display error message and quit (see "z-util.c")
  */
-static void hack_quit(const char * str)
+static void hack_quit(const char *str)
 {
 	/* Give a warning */
 	if (str)
@@ -4385,7 +4401,7 @@ static void hack_quit(const char * str)
 /*
  * Display warning message (see "z-util.c")
  */
-static void hook_plog(const char * str)
+static void hook_plog(const char *str)
 {
 #ifdef USE_SAVER
 	if (screensaver_active) return;
@@ -4403,7 +4419,7 @@ static void hook_plog(const char * str)
 /*
  * Display error message and quit (see "z-util.c")
  */
-static void hook_quit(const char * str)
+static void hook_quit(const char *str)
 {
 	int i;
 
@@ -4416,12 +4432,12 @@ static void hook_quit(const char * str)
 	if (!screensaver_active)
 #endif /* USE_SAVER */
 	{
-			/* Give a warning */
-			if (str)
-			{
+		/* Give a warning */
+		if (str)
+		{
 			MessageBox(data[0].w, str, "Error",
 			           MB_ICONEXCLAMATION | MB_OK | MB_ICONSTOP);
-			}
+		}
 
 		/* Save the preferences */
 		save_prefs();
@@ -4751,7 +4767,7 @@ int FAR PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 	ReleaseDC(NULL, hdc);
 
 	/* Initialize the colors */
-	for (i = 0; i < 256; i++)
+	for (i = 0; i < MAX_COLORS; i++)
 	{
 		byte rv, gv, bv;
 

@@ -33,6 +33,7 @@ confusion and fear), to encourage their use.
 - Transparency is turned on permanently.
 - Removed extra main-mac-carbon file.
 - Added more basic colors, to get the same number a V.
+- Only allow change of /lib/user with command-line option.
 
 Coding changes
 ==============
@@ -59,4 +60,5 @@ Coding changes
 - Use z-msg package.
 - Merged h-system.h into h-basic.h.
 - check_modification_date now uses file_newer.
+- Added ui-event header.
 

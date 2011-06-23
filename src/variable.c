@@ -170,11 +170,6 @@ char *mp_c = NULL;
 byte *mp_ta = NULL;
 char *mp_tc = NULL;
 
-/*
- * Player info
- */
-int player_euid;
-
 
 /*
  * Buffer to hold the current savefile name

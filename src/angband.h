@@ -28,6 +28,7 @@
 #include "z-term.h"
 #include "z-quark.h"
 #include "z-msg.h"
+#include "ui-event.h"
 
 /*
  * Include the high-level includes.

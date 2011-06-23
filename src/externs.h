@@ -173,7 +173,6 @@ extern byte *mp_a;
 extern char *mp_c;
 extern byte *mp_ta;
 extern char *mp_tc;
-extern int player_euid;
 extern char savefile[1024];
 extern s16b macro__num;
 extern const char * *macro__pat;

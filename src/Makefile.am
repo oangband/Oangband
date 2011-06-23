@@ -25,7 +25,7 @@ oangband_SOURCES = \
   generate.c dungeon.c init1.c init2.c randart.c \
   squelch.c info.c attack.c \
   angband.h config.h defines.h externs.h h-basic.h \
-  h-config.h init.h \
+  h-config.h init.h ui-event.h \
   types.h z-form.h z-rand.h z-term.h z-util.h z-quark.h \
   z-virt.h z-file.h z-msg.h main.h 
 

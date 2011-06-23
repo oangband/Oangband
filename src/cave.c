@@ -1330,7 +1330,7 @@ void lite_spot(int y, int x)
 		map_info(y, x, &a, &c, &ta, &tc);
 
 		/* Hack -- Queue it */
-		Term_queue_char(x - panel_col_prt, y - panel_row_prt, a, c, ta, tc);
+		Term_queue_char(Term, x - panel_col_prt, y - panel_row_prt, a, c, ta, tc);
 	}
 }
 

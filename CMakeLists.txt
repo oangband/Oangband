@@ -3,8 +3,24 @@ project(Oangband)
 
 cmake_minimum_required(VERSION 2.6)
 
+INCLUDE(FeatureSummary)
+
+# Figure out how to set a define from these:
+IF(UNIX)
+ SET(SET_UID ON)
+ENDIF(UNIX)
+IF(WIN32)
+ SET(WINDOWS ON)
+ENDIF(WIN32)
+
 INCLUDE(FindCurses)
+IF(CURSES_FOUND)
+ SET(USE_GCU ON)
+ENDIF(CURSES_FOUND)
 INCLUDE(FindX11)
+IF(X11_FOUND)
+ SET(USE_X11 ON)
+ENDIF(X11_FOUND)
 
 INCLUDE(CheckIncludeFile)
 CHECK_INCLUDE_FILE(dirent.h HAVE_DIRENT_H)
@@ -21,3 +37,8 @@ CHECK_FUNCTION_EXISTS(setegid HAVE_SETEGID)
 CHECK_FUNCTION_EXISTS(setresgid HAVE_SETRESGID)
 CHECK_FUNCTION_EXISTS(stat HAVE_STAT)
 CHECK_FUNCTION_EXISTS(usleep HAVE_USLEEP)
+
+CONFIGURE_FILE(cmakeconfig.h.in cmakeconfig.h)
+
+# Print out a summary of features.
+PRINT_ENABLED_FEATURES()

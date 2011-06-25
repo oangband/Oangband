@@ -13,3 +13,45 @@ TODO list:
 
 - Change the way dungeon lit up under infra-vision - red instead of
   yellow.
+
+
+From Bahman Rabii:
+For what it's worth, in the unlikely event that I start working
+actively, Oangband is FAR from done. There are a huge number of
+fundamental gameplay improvements still waiting to happen. Some would
+require heavy refactoring, some would not. My gameplay priorities:
+- Further improvement to AI. This would really want a cleaner internal
+API for the AI module. Add cooldowns to monsters spells; and make the
+monsters even smarter.
+- Further reductions in tedium. Even fewer, even better drops. Remove
+the incentive to grind for consumables. Further rework stat gain.
+- Extend the idea of archery spells with more combat magic.
+- Give more nifty tricks to Warriors, but without losing the pure
+fighter feel. Possibly by implementing combat techniques as
+activations or side effects for weapons and/or armor. Also with more
+warrior-friendly sources of shapeshifting.
+- Make the early game a little more forgiving. Ramp up late game difficulty.
+- Solve the big-three balance breaking abilities: Banishment,
+Teleport-Away, Destruction.
+- Reduce the role of speed. Add in more "specialized speed" for
+casting, combat, and archery. Somehow make this smoother and less
+confusing than it currently is (i.e. specialized speed to affect
+cooldowns rather than
+- Add cooldowns to many player abilities and rebalance around them.
+- Add good things from Angband: gain/lose potions, new identify
+semantics, no_sell as default
+- Generally rebalance artifact weapons. Some are way too general
+(*cough* Ulmo *cough*) and I would like to make sure each class always
+have different favorites.
+- Reduce damage spikiness in the late game, and restrict high-end healing.
+
+Fixes to things I was never really happy with:
+- Set items. Maybe ditch them.
+- Variable weapon dice. These are great, but they need to interact
+better with squelching and pseudo-id.
+- The Ent player race. I don't know... they are super cool, and yet
+they feel weird.
+- Druids are too good at too many things. Maybe move martial arts to
+the specialty list for them, rather than default?
+- Remove some of the more boring specialities and develop/balance/add
+the ones that really affect gameplay. 

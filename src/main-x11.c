@@ -1609,6 +1609,7 @@ static term_data data[MAX_TERM_DATA];
 /*
  * Path to the X11 settings file
  */
+static const char *x11_prefs = "x11-settings.prf";
 char settings[1024];
 
 
@@ -2111,22 +2112,22 @@ static errr Term_text_x11(int x, int y, int n, byte a, const char *s)
 }
 
 
+
+
 static void save_prefs(void)
 {
-	FILE *fff;
+	ang_file *fff;
 	int i;
 
 	/* Open the settings file */
-	fff = my_fopen(settings, "w");
-
-	/* Oops */
+	fff = file_open(settings, MODE_WRITE, FTYPE_TEXT);
 	if (!fff) return;
 
 	/* Header */
-	fprintf(fff, "# %s X11 settings\n\n", VERSION_NAME);
+	file_putf(fff, "# %s X11 settings\n\n", VERSION_NAME);
 
 	/* Number of term windows to open */
-	fprintf(fff, "TERM_WINS=%d\n\n", term_windows_open);
+	file_putf(fff, "TERM_WINS=%d\n\n", term_windows_open);
 
 	/* Save window prefs */
 	for (i = 0; i < MAX_TERM_DATA; i++)
@@ -2136,7 +2137,7 @@ static void save_prefs(void)
 		if (!td->t.mapped_flag) continue;
 
 		/* Header */
-		fprintf(fff, "# Term %d\n", i);
+		file_putf(fff, "# Term %d\n", i);
 
 		/*
 		 * This doesn't seem to work under various WMs
@@ -2149,38 +2150,38 @@ static void save_prefs(void)
 		 */
 
 		/* Window specific location (x) */
-		fprintf(fff, "AT_X_%d=%d\n", i, td->win->x_save);
+		file_putf(fff, "AT_X_%d=%d\n", i, td->win->x_save);
 
 		/* Window specific location (y) */
-		fprintf(fff, "AT_Y_%d=%d\n", i, td->win->y_save);
+		file_putf(fff, "AT_Y_%d=%d\n", i, td->win->y_save);
 
 		/* Window specific cols */
-		fprintf(fff, "COLS_%d=%d\n", i, td->t.wid);
+		file_putf(fff, "COLS_%d=%d\n", i, td->t.wid);
 
 		/* Window specific rows */
-		fprintf(fff, "ROWS_%d=%d\n", i, td->t.hgt);
+		file_putf(fff, "ROWS_%d=%d\n", i, td->t.hgt);
 
 		/* Window specific inner border offset (ox) */
-		fprintf(fff, "IBOX_%d=%d\n", i, td->win->ox);
+		file_putf(fff, "IBOX_%d=%d\n", i, td->win->ox);
 
 		/* Window specific inner border offset (oy) */
-		fprintf(fff, "IBOY_%d=%d\n", i, td->win->oy);
+		file_putf(fff, "IBOY_%d=%d\n", i, td->win->oy);
 
 		/* Window specific font name */
-		fprintf(fff, "FONT_%d=%s\n", i, td->fnt->name);
+		file_putf(fff, "FONT_%d=%s\n", i, td->fnt->name);
 
 		/* Window specific tile width */
-		fprintf(fff, "TILE_WIDTH_%d=%d\n", i, td->tile_wid);
+		file_putf(fff, "TILE_WIDTH_%d=%d\n", i, td->tile_wid);
 
 		/* Window specific tile height */
-		fprintf(fff, "TILE_HEIGHT_%d=%d\n", i, td->tile_hgt);
+		file_putf(fff, "TILE_HEIGHT_%d=%d\n", i, td->tile_hgt);
 
 		/* Footer */
-		fprintf(fff, "\n");
+		file_putf(fff, "\n");
 	}
 
 	/* Close */
-	(void)my_fclose(fff);
+	file_close(fff);
 }
 
 
@@ -2217,7 +2218,7 @@ static errr term_data_init(term_data *td, int i)
 
 	XSizeHints *sh;
 
-	FILE *fff;
+	ang_file *fff;
 
 	char buf[1024];
 	char cmd[40];
@@ -2228,17 +2229,14 @@ static errr term_data_init(term_data *td, int i)
 	/* Get default font for this term */
 	font = get_default_font(i);
 
-	/* Build the filename */
-	path_build(settings, sizeof(settings), ANGBAND_DIR_USER, "x11-settings.prf");
-
 	/* Open the file */
-	fff = my_fopen(settings, "r");
+	fff = file_open(settings, MODE_READ, -1);
 
 	/* File exists */
 	if (fff)
 	{
 		/* Process the file */
-		while (0 == my_fgets(fff, buf, sizeof(buf)))
+		while (file_getl(fff, buf, sizeof(buf)))
 		{
 			/* Count lines */
 			line++;
@@ -2354,7 +2352,7 @@ static errr term_data_init(term_data *td, int i)
 		}
 
 		/* Close */
-		my_fclose(fff);
+		file_close(fff);
 	}
 
 	/*
@@ -2529,6 +2527,7 @@ static errr term_data_init(term_data *td, int i)
 	/* Hooks */
 	t->xtra_hook = Term_xtra_x11;
 	t->curs_hook = Term_curs_x11;
+	t->bigcurs_hook = Term_bigcurs_x11;
 	t->wipe_hook = Term_wipe_x11;
 	t->text_hook = Term_text_x11;
 
@@ -2604,59 +2603,14 @@ errr init_x11(int argc, char **argv)
 
 	const char *dpy_name = "";
 
-	int num_term = 1;
+	int num_term = -1;
 
-	FILE *fff;
+	ang_file *fff;
 
 	char buf[1024];
 	const char *str;
 	int val;
 	int line = 0;
-
-
-	/*
-	 * Check x11-settings for the number of windows before handling
-	 * command line options allow for easy override
-	 */
-
-	/* Build the filename */
-	(void)path_build(settings, sizeof(settings), ANGBAND_DIR_USER, "x11-settings.prf");
-
-	/* Open the file */
-	fff = my_fopen(settings, "r");
-
-	/* File exists */
-	if (fff)
-	{
-		/* Process the file */
-		while (0 == my_fgets(fff, buf, sizeof(buf)))
-		{
-			/* Count lines */
-			line++;
-
-			/* Skip "empty" lines */
-			if (!buf[0]) continue;
-
-			/* Skip "blank" lines */
-			if (isspace((unsigned char)buf[0])) continue;
-
-			/* Skip comments */
-			if (buf[0] == '#') continue;
-
-			/* Number of terminal windows */
-			if (prefix(buf, "TERM_WINS"))
-			{
-				str = strstr(buf, "=");
-				val = (str != NULL) ? atoi(str + 1) : -1;
-				if (val > 0) num_term = val;
-				continue;
-			}
-		}
-
-		/* Close */
-		(void)my_fclose(fff);
-	}
-
 
 	/* Parse args */
 	for (i = 1; i < argc; i++)
@@ -2675,7 +2629,57 @@ errr init_x11(int argc, char **argv)
 			continue;
 		}
 
+		if (prefix(argv[i], "-x"))
+		{
+			x11_prefs = argv[i] + 2;
+			continue;
+		}
+
 		plog_fmt("Ignoring option: %s", argv[i]);
+	}
+
+
+	if (num_term == -1)
+	{
+		num_term = 1;
+
+		/* Build the filename */
+		(void)path_build(settings, sizeof(settings), ANGBAND_DIR_USER, "x11-settings.prf");
+
+		/* Open the file */
+		fff = file_open(settings, MODE_READ, -1);
+
+		/* File exists */
+		if (fff)
+		{
+			/* Process the file */
+			while (file_getl(fff, buf, sizeof(buf)))
+			{
+				/* Count lines */
+				line++;
+
+				/* Skip "empty" lines */
+				if (!buf[0]) continue;
+
+				/* Skip "blank" lines */
+				if (isspace((unsigned char)buf[0])) continue;
+
+				/* Skip comments */
+				if (buf[0] == '#') continue;
+
+				/* Number of terminal windows */
+				if (prefix(buf, "TERM_WINS"))
+				{
+					str = strstr(buf, "=");
+					val = (str != NULL) ? atoi(str + 1) : -1;
+					if (val > 0) num_term = val;
+					continue;
+				}
+			}
+
+			/* Close */
+			(void)file_close(fff);
+		}
 	}
 
 

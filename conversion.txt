@@ -46,10 +46,13 @@ main-crb:
 - Not worked on
 
 main-gcu:
-- Slight changes
+- Decent progress
 
 main-win:
-- Not worked on
+- Some changes
 
 main-x11:
-- Decent progress
+- Nearly complete, with the following missing:
+-- new input event system.
+-- help strings (requires changes to main.c and main.h)
+-- Some changes in the resize code.

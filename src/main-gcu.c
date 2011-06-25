@@ -42,6 +42,16 @@
 #define USE_TPOSIX
 
 
+/*
+ * Hack -- Windows Console mode uses PDCURSES and cannot do any terminal stuff
+ * Hack -- Windows needs Sleep(), and I really don't want to pull in all
+ *         the Win32 headers for this one function
+ */
+#if defined(WIN32_CONSOLE_MODE)
+# undef USE_TPOSIX
+_stdcall void Sleep(int);
+#define usleep(v) Sleep(v / 1000)
+#endif
 
 /*
  * POSIX stuff
@@ -84,8 +94,7 @@ static struct termios  game_termios;
 /*
  * Information about a term
  */
-typedef struct term_data
-{
+typedef struct term_data {
 	term t;                 /* All term info */
 	WINDOW *win;            /* Pointer to the curses window */
 } term_data;
@@ -227,9 +236,8 @@ static void keymap_game_prepare(void)
  */
 static errr Term_xtra_gcu_alive(int v)
 {
-	/* Suspend */
-	if (!v)
-	{
+	if (!v) {
+		/* Suspend */
 		int x, y;
 
 		/* Go to normal keymap mode */
@@ -257,11 +265,10 @@ static errr Term_xtra_gcu_alive(int v)
 
 		/* Flush the output */
 		fflush(stdout);
-	}
 
-	/* Resume */
-	else
-	{
+	} else {
+		/* Resume */
+
 		/* Refresh */
 		/* (void)touchwin(curscr); */
 		/* (void)wrefresh(curscr); */
@@ -361,45 +368,32 @@ static void Term_nuke_gcu(term *t)
  */
 void get_gcu_term_size(int i, int *rows, int *cols, int *y, int *x)
 {
-	if (use_big_screen && i == 0)
-	{
+	if (use_big_screen && i == 0) {
 		*rows = LINES;
 		*cols = COLS;
 		*y = *x = 0;
-	}
-	else if (use_big_screen)
-	{
+	} else if (use_big_screen) {
 		*rows = *cols = *y = *x = 0;
-	}
-	else if (i == 0)
-	{
+	} else if (i == 0) {
 		*rows = 24;
 		*cols = 80;
 		*y = *x = 0;
-	}
-	else if (i == 1)
-	{
+	} else if (i == 1) {
 		*rows = LINES - 25;
 		*cols = 80;
 		*y = 25;
 		*x = 0;
-	}
-	else if (i == 2)
-	{
+	} else if (i == 2) {
 		*rows = 24;
 		*cols = COLS - 81;
 		*y = 0;
 		*x = 81;
-	}
-	else if (i == 3)
-	{
+	} else if (i == 3) {
 		*rows = LINES - 25;
 		*cols = COLS - 81;
 		*y = 25;
 		*x = 81;
-	}
-	else
-	{
+	} else {
 		*rows = *cols = *y = *x = 0;
 	}
 }
@@ -413,8 +407,7 @@ void do_gcu_resize(void)
 	int i, rows, cols, y, x;
 	term *old_t = Term;
 
-	for (i = 0; i < MAX_TERM_DATA; i++)
-	{
+	for (i = 0; i < MAX_TERM_DATA; i++) {
 		/* If we're using a big screen, we only care about Term-0 */
 		if (use_big_screen && i > 0) break;
 
@@ -494,8 +487,7 @@ int create_color(int i, int scale)
 	int rgb = 16 + scale * scale * r + scale * g + b;
 
 	/* In the case of white and black we need to use the ANSI colors */
-	if (r == g && g == b)
-	{
+	if (r == g && g == b) {
 		if (b == 0) rgb = 0;
 		if (b == scale) rgb = 15;
 	}
@@ -511,8 +503,7 @@ static errr Term_xtra_gcu_react(void)
 {
 
 #ifdef A_COLOR
-	if (COLORS == 256 || COLORS == 88)
-	{
+	if (COLORS == 256 || COLORS == 88) {
 		/* If we have more than 16 colors, find the best matches. These numbers
 		 * correspond to xterm/rxvt's builtin color numbers--they do not
 		 * correspond to curses' constants OR with curses' color pairs.
@@ -526,8 +517,7 @@ static errr Term_xtra_gcu_react(void)
 		int i;
 		int scale = COLORS == 256 ? 6 : 4;
 
-		for (i = 0; i < BASIC_COLORS; i++)
-		{
+		for (i = 0; i < BASIC_COLORS; i++) {
 			int fg = create_color(i, scale);
 			init_pair(i + 1, fg, bg_color);
 			if (bold_extended)
@@ -550,8 +540,7 @@ static errr Term_xtra_gcu(int n, int v)
 	term_data *td = (term_data *)(Term->data);
 
 	/* Analyze the request */
-	switch (n)
-	{
+	switch (n) {
 		/* Clear screen */
 		case TERM_XTRA_CLEAR:
 		touchwin(td->win);
@@ -769,8 +758,7 @@ errr init_gcu(int argc, char **argv)
 	int num_term = MAX_TERM_DATA, next_win = 0;
 
 	/* Parse args */
-	for (i = 1; i < argc; i++)
-	{
+	for (i = 1; i < argc; i++) {
 		if (prefix(argv[i], "-b"))
 			use_big_screen = TRUE;
 		else
@@ -809,8 +797,7 @@ errr init_gcu(int argc, char **argv)
 	                 (COLORS >= 8) && (COLOR_PAIRS >= 8));
 
 	/* Attempt to use colors */
-	if (can_use_color)
-	{
+	if (can_use_color) {
 		/* Prepare the color pairs */
 		/* PAIR_WHITE (pair 0) is *always* WHITE on BLACK */
 		init_pair(PAIR_RED, COLOR_RED, bg_color);
@@ -866,8 +853,7 @@ errr init_gcu(int argc, char **argv)
 	keymap_game_prepare();
 
 	/*** Now prepare the term(s) ***/
-	for (i = 0; i < num_term; i++)
-	{
+	for (i = 0; i < num_term; i++) {
 		if (use_big_screen && i > 0) break;
 
 		/* Get the terminal dimensions; if the user asked for a big screen

@@ -46,7 +46,11 @@ main-crb:
 - Not worked on
 
 main-gcu:
-- Decent progress
+- Decent progress, at least the following missing:
+-- new input event system.
+-- help string
+-- "graphics" changes.
+-- misc other stuff.
 
 main-win:
 - Some changes

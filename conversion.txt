@@ -49,7 +49,6 @@ main-gcu:
 - Decent progress, at least the following missing:
 -- new input event system.
 -- help string
--- "graphics" changes.
 -- misc other stuff.
 
 main-win:

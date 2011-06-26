@@ -108,6 +108,21 @@ static term_data data[MAX_TERM_DATA];
 /* Number of initialized "term" structures */
 static int active = 0;
 
+#define CTRL_ORE 1
+#define CTRL_WALL 2
+#define CTRL_ROCK 3
+
+static char ctrl_char[32] = {
+	'\0', '*', '#', '%', '?', '?', '?', '\'', '+', '?', '?', '+',
+	'+', '+', '+', '+', '~', '-', '-', '-', '_', '+', '+', '+',
+	'+', '|', '?', '?', '?', '?', '?', '.'
+};
+
+static int ctrl_attr[32] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0
+};
 
 #ifdef A_COLOR
 
@@ -147,13 +162,6 @@ static int bg_color = COLOR_BLACK;
 #define PAIR_MAGENTA 5
 #define PAIR_CYAN 6
 #define PAIR_BLACK 7
-
-#endif
-
-
-#ifdef USE_GRAPHICS
-
-static bool use_blocks = FALSE;
 
 #endif
 
@@ -269,10 +277,6 @@ static errr Term_xtra_gcu_alive(int v)
 	} else {
 		/* Resume */
 
-		/* Refresh */
-		/* (void)touchwin(curscr); */
-		/* (void)wrefresh(curscr); */
-
 		/* Restore the settings */
 		cbreak();
 		noecho();
@@ -285,7 +289,6 @@ static errr Term_xtra_gcu_alive(int v)
 	/* Success */
 	return 0;
 }
-
 
 
 
@@ -631,17 +634,28 @@ static errr Term_wipe_gcu(int x, int y, int n)
 }
 
 
+/* Hack - replace non-ASCII characters to
+ * avoid display glitches in selectors.
+ *
+ * Note that we do this after the ACS mapping,
+ * because the display glitches we are avoiding
+ * are in curses itself.
+ */
+char filter_char(char c)
+{
+	if (c < ' ' || c >= 127)
+		return '?';
+	else
+		return c;
+}
+
+
 /*
  * Place some text on the screen using an attribute
  */
 static errr Term_text_gcu(int x, int y, int n, byte a, const char *s)
 {
 	term_data *td = (term_data *)(Term->data);
-
-	int i;
-#ifdef USE_GRAPHICS
-	int pic;
-#endif
 
 #ifdef A_COLOR
 	/* Set the color */
@@ -651,45 +665,28 @@ static errr Term_text_gcu(int x, int y, int n, byte a, const char *s)
 	/* Move the cursor */
 	wmove(td->win, y, x);
 
-	/* Draw each character */
-	for (i = 0; i < n; i++)
-	{
-#ifdef USE_GRAPHICS
-		/* Special characters? */
-		if (use_blocks)
-		{
+	/* Write to screen */
+	while (n--) {
+		unsigned char c = *(s++);
 
-			/* Determine picture to use */
-			if (s[i] == '#')
-			{
-				/* Walls */
-				pic = ACS_CKBOARD;
-
-				/*
-				 *  Note that veins are '#' as well now.
-				 *  Trees are '%' now - and this looks bad when redefined.
-				 */
-			}
-			else
-			{
-			        pic = s[i];
-			}
-
-			/* Draw the picture */
-			waddch(td->win, pic);
-
-			/* Next character */
-			continue;
+		if (c < 32) {
+			wattron(td->win, ctrl_attr[c]);
+			waddch(td->win, filter_char(ctrl_char[c]));
+			wattroff(td->win, ctrl_attr[c]);
+		} else {
+			waddch(td->win, filter_char(c));
 		}
-#endif
-
-		/* Draw a normal character */
-		waddch(td->win, s[i]);
 	}
+
+#if defined(A_COLOR)
+	/* Unset the color */
+	if (can_use_color) wattrset(td->win, A_NORMAL);
+#endif
 
 	/* Success */
 	return (0);
 }
+
 
 /*
  * Create a window for the given "term_data" argument.
@@ -756,15 +753,24 @@ errr init_gcu(int argc, char **argv)
 
 	int rows, cols, y, x;
 	int num_term = MAX_TERM_DATA, next_win = 0;
+	bool graphics = TRUE;
 
 	/* Parse args */
 	for (i = 1; i < argc; i++) {
 		if (prefix(argv[i], "-b"))
 			use_big_screen = TRUE;
+		else if (prefix(argv[i], "-a"))
+			graphics = FALSE;
 		else
 			plog_fmt("Ignoring option: %s", argv[i]);
 	}
 
+	if (graphics) {
+		ctrl_char[CTRL_WALL] = ' ';
+		ctrl_attr[CTRL_ORE] = A_REVERSE;
+		ctrl_attr[CTRL_WALL] = A_REVERSE;
+		ctrl_attr[CTRL_ROCK] = A_REVERSE;
+	}
 
 	/* Extract the normal keymap */
 	keymap_norm_prepare();
@@ -779,14 +785,6 @@ errr init_gcu(int argc, char **argv)
 	/* Require standard size screen */
 	if (LINES < 24 || COLS < 80)
 		quit("Angband needs at least an 80x24 'curses' screen");
-
-#ifdef USE_GRAPHICS
-	/* Set graphics flag */
-	use_graphics = FALSE;
-
-	/* Use the graphical wall tiles? */
-	use_blocks = arg_graphics;
-#endif
 
 #ifdef A_COLOR
 

@@ -1273,67 +1273,44 @@ static bool init_graphics(void)
 		char buf[1024];
 		int wid, hgt;
 		const char *name;
-		const char *mask = NULL;
 
-		if (arg_graphics == GRAPHICS_DAVID_GERVAIS)
-		{
+		if (arg_graphics == GRAPHICS_DAVID_GERVAIS) {
 			wid = 32;
 			hgt = 32;
-
-			name = "32x32.bmp";
-			mask = "mask32.bmp";
-
+			name = "32x32.png";
 			ANGBAND_GRAF = "david";
-
 			use_transparency = FALSE;
-		}
-		else if (arg_graphics == GRAPHICS_ADAM_BOLT)
-		{
+		} else if (arg_graphics == GRAPHICS_ADAM_BOLT) {
 			wid = 16;
 			hgt = 16;
-
-			name = "16X16.BMP";
-			mask = "mask.bmp";
-
+			name = "16x16.png";
 			ANGBAND_GRAF = "new";
-
 			use_transparency = TRUE;
-		}
-		else
-		{
+		} else if (arg_graphics == GRAPHICS_NOMAD) {
+			wid = 16;
+			hgt = 16;
+			name = "8x16.png";
+			ANGBAND_GRAF = "nomad";
+			use_transparency = TRUE;
+		} else {
 			wid = 8;
 			hgt = 8;
-
-			name = "8X8.BMP";
+			name = "8x8.png";
 			ANGBAND_GRAF = "old";
 		}
 
 		/* Access the bitmap file */
 		path_build(buf, sizeof(buf), ANGBAND_DIR_XTRA_GRAF, name);
 
-		/* Load the bitmap or quit */
-		if (!ReadDIB(data[0].w, buf, &infGraph))
-		{
-			plog_fmt("Cannot read bitmap file '%s'", name);
-			return (FALSE);
+		/* Load the image or quit */
+		if (!ReadDIB2_PNG(data[0].w, buf, &infGraph, &infMask)) {
+			plog_fmt("Cannot read file '%s'", name);
+			return FALSE;
 		}
 
 		/* Save the new sizes */
 		infGraph.CellWidth = wid;
 		infGraph.CellHeight = hgt;
-
-		if (mask)
-		{
-			/* Access the mask file */
-			path_build(buf, sizeof(buf), ANGBAND_DIR_XTRA_GRAF, mask);
-
-			/* Load the bitmap or quit */
-			if (!ReadDIB(data[0].w, buf, &infMask))
-			{
-				plog_fmt("Cannot read bitmap file '%s'", buf);
-				return (FALSE);
-			}
-		}
 
 		/* Activate a palette */
 		if (!new_palette())
@@ -1426,6 +1403,8 @@ static void term_remove_font(const char *name)
  */
 static errr term_force_font(term_data *td, const char *path)
 {
+	int i;
+
 	int wid, hgt;
 
 	char *base;
@@ -1436,15 +1415,36 @@ static errr term_force_font(term_data *td, const char *path)
 	/* Check we have a path */
 	if (!path) return (1);
 
-	/* Remove old font from the system, free system resources */
-	RemoveFontResource(td->font_file);
-	DeleteObject(td->font_id);
 
-	/* Free the old name */
-	string_free(td->font_file);
+	/* Forget the old font (if needed) */
+	if (td->font_id) DeleteObject(td->font_id);
 
-	/* Forget it */
-	td->font_file = NULL;
+	/* Forget old font */
+	if (td->font_file)
+	{
+		bool used = FALSE;
+
+		/* Scan windows */
+		for (i = 0; i < MAX_TERM_DATA; i++)
+		{
+			/* Check "screen" */
+			if ((td != &data[i]) &&
+			    (data[i].font_file) &&
+			    (streq(data[i].font_file, td->font_file)))
+			{
+				used = TRUE;
+			}
+		}
+
+		/* Remove unused font resources */
+		if (!used) term_remove_font(td->font_file);
+
+		/* Free the old name */
+		string_free(td->font_file);
+
+		/* Forget it */
+		td->font_file = NULL;
+	}
 
 
 
@@ -1638,6 +1638,9 @@ static errr Term_xtra_win_react(void)
 	int i;
 
 
+	/* Get the main window */
+	term_data *td = &data[0];
+
 	/* Simple color */
 	if (colors16)
 	{
@@ -1720,6 +1723,22 @@ static errr Term_xtra_win_react(void)
 
 #ifdef USE_GRAPHICS
 
+	/* Handle "arg_grahics_nice" */
+	if (use_graphics_nice != arg_graphics_nice)
+	{
+		/* Change setting */
+		use_graphics_nice = arg_graphics_nice;
+
+		/* HACK - Assume bizarre */
+		td->bizarre = TRUE;
+
+		/* Analyze the font */
+		term_getsize(td);
+
+		/* Resize the window */
+		term_window_resize(td);
+	}
+
 	/* Handle "arg_graphics" */
 	if (use_graphics != arg_graphics)
 	{
@@ -1743,8 +1762,33 @@ static errr Term_xtra_win_react(void)
 		/* Change setting */
 		use_graphics = arg_graphics;
 
+		if (use_graphics_nice)
+		{
+			/* HACK - Assume bizarre */
+			td->bizarre = TRUE;
+
+			/* Analyze the font */
+			term_getsize(td);
+
+			/* Resize the window */
+			term_window_resize(td);
+		}
+
 		/* Reset visuals */
 		reset_visuals(TRUE);
+	}
+
+	/* Handle "change_tilesize" */
+	if (change_tilesize)
+	{
+		/* Reset visuals */
+		reset_visuals(TRUE);
+
+		/* Reset the panel */
+		verify_panel();
+
+		/* Reset the flag */
+		change_tilesize = FALSE;
 	}
 
 #endif /* USE_GRAPHICS */

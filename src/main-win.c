@@ -4532,17 +4532,15 @@ static void hook_quit(const char *str)
 	for (i = MAX_TERM_DATA - 1; i >= 0; --i)
 	{
 		/* Remove all fonts from the system, free resources */
-		if (data[i].font_file) RemoveFontResource(data[i].font_file);
+		if (data[i].font_file) term_remove_font(data[i].font_file);
 		if (data[i].font_id) DeleteObject(data[i].font_id);
 		if (data[i].font_want) string_free(data[i].font_want);
 
 		/* Kill the window */
 		if (data[i].w) DestroyWindow(data[i].w);
 		data[i].w = 0;
-
 		term_nuke(&data[i].t);
 	}
-
 
 #ifdef USE_GRAPHICS
 	/* Free the bitmap stuff */
@@ -4576,10 +4574,6 @@ static void hook_quit(const char *str)
 	/* Free strings */
 	string_free(ini_file);
 	string_free(argv0);
-	string_free(ANGBAND_DIR_XTRA_FONT);
-	string_free(ANGBAND_DIR_XTRA_GRAF);
-	string_free(ANGBAND_DIR_XTRA_SOUND);
-	string_free(ANGBAND_DIR_XTRA_HELP);
 
 #ifdef HAS_CLEANUP
 	cleanup_angband();
@@ -4588,6 +4582,40 @@ static void hook_quit(const char *str)
 	exit(0);
 }
 
+
+static errr get_init_cmd()
+{
+	MSG msg;
+
+	/* Prompt the user */
+	prt("[Choose 'New' or 'Open' from the 'File' menu]", 23, 17);
+	Term_fresh();
+
+	/* Process messages forever */
+	while (cmd.command == CMD_NULL && GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	/* Bit of a hack, we'll do this when we leave the INIT context in future. */
+	game_in_progress = TRUE;
+
+	/* Push command into the queue. */
+	cmd_insert_s(&cmd);
+
+	/* Everything's OK. */
+	return 0;
+}
+
+/* Command dispatcher for windows build */
+static errr win_get_cmd(cmd_context context, bool wait)
+{
+	if (context == CMD_INIT)
+		return get_init_cmd();
+	else
+		return textui_get_cmd(context, wait);
+}
 
 
 /*** Initialize ***/
@@ -4604,7 +4632,6 @@ static void init_stuff(void)
 #ifdef USE_SAVER
 	char tmp[1024];
 #endif /* USE_SAVER */
-
 
 	/* Get program name with full path */
 	if (GetModuleFileName(hInstance, path, sizeof(path)) == 0)
@@ -4674,9 +4701,6 @@ static void init_stuff(void)
 	validate_dir(ANGBAND_DIR_SAVE);
 	validate_dir(ANGBAND_DIR_USER);
 	validate_dir(ANGBAND_DIR_XTRA);
-#ifdef USE_SCRIPT
-	validate_dir(ANGBAND_DIR_SCRIPT);
-#endif /* USE_SCRIPT */
 
 	/* Build the filename */
 	path_build(path, sizeof(path), ANGBAND_DIR_FILE, "news.txt");
@@ -4703,12 +4727,6 @@ static void init_stuff(void)
 
 #ifdef USE_GRAPHICS
 
-	/* Build the "graf" path */
-	path_build(path, sizeof(path), ANGBAND_DIR_XTRA, "graf");
-
-	/* Allocate the path */
-	ANGBAND_DIR_XTRA_GRAF = string_make(path);
-
 	/* Validate the "graf" directory */
 	validate_dir(ANGBAND_DIR_XTRA_GRAF);
 
@@ -4717,22 +4735,10 @@ static void init_stuff(void)
 
 #ifdef USE_SOUND
 
-	/* Build the "sound" path */
-	path_build(path, sizeof(path), ANGBAND_DIR_XTRA, "sound");
-
-	/* Allocate the path */
-	ANGBAND_DIR_XTRA_SOUND = string_make(path);
-
 	/* Validate the "sound" directory */
 	validate_dir(ANGBAND_DIR_XTRA_SOUND);
 
 #endif /* USE_SOUND */
-
-	/* Build the "help" path */
-	path_build(path, sizeof(path), ANGBAND_DIR_XTRA, "help");
-
-	/* Allocate the path */
-	ANGBAND_DIR_XTRA_HELP = string_make(path);
 }
 
 

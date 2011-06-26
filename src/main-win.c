@@ -923,9 +923,17 @@ static void save_prefs(void)
 	sprintf(buf, "%d", arg_graphics);
 	WritePrivateProfileString(VERSION_NAME, "Graphics", buf, ini_file);
 
-	/* Save the "arg_sound" flag */
-	strcpy(buf, arg_sound ? "1" : "0");
-	WritePrivateProfileString(VERSION_NAME, "Sound", buf, ini_file);
+	/* Save the "use_graphics_nice" flag */
+	strcpy(buf, arg_graphics_nice ? "1" : "0");
+	WritePrivateProfileString(VERSION_NAME, "Graphics_Nice", buf, ini_file);
+
+	/* Save the tile width */
+	wsprintf(buf, "%d", tile_width);
+	WritePrivateProfileString(VERSION_NAME, "TileWidth", buf, ini_file);
+
+	/* Save the tile height */
+	wsprintf(buf, "%d", tile_height);
+	WritePrivateProfileString(VERSION_NAME, "TileHeight", buf, ini_file);
 
 	/* Save window prefs */
 	for (i = 0; i < MAX_TERM_DATA; i++)
@@ -3330,6 +3338,12 @@ static void process_menus(WORD wCmd)
 
 			term_change_font(td);
 
+			if (use_graphics_nice)
+			{
+				/* Hack -- Force redraw */
+				Term_key_push(KTRL('R'));
+			}
+
 			break;
 		}
 
@@ -3529,6 +3543,31 @@ static void process_menus(WORD wCmd)
 
 			break;
 		}
+
+		case IDM_OPTIONS_GRAPHICS_NOMAD:
+		{
+			/* Paranoia */
+			if (!inkey_flag || !initialized)
+			{
+				plog("You may not do that right now.");
+				break;
+			}
+
+			/* Toggle "arg_graphics" */
+			if (arg_graphics != GRAPHICS_NOMAD)
+			{
+				arg_graphics = GRAPHICS_NOMAD;
+
+				/* React to changes */
+				Term_xtra_win_react();
+
+				/* Hack -- Force redraw */
+				Term_key_push(KTRL('R'));
+			}
+
+			break;
+		}
+
 
 		case IDM_OPTIONS_GRAPHICS_DAVID:
 		{

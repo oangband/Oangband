@@ -61,4 +61,6 @@ Coding changes
 - Merged h-system.h into h-basic.h.
 - check_modification_date now uses file_newer.
 - Added ui-event header.
+- Removed old sound interface. (A new one has not been added, since O
+has no sound files.)
 

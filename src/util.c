@@ -1104,7 +1104,7 @@ void sound(int val)
 	if (!use_sound) return;
 
 	/* Make a sound (if allowed) */
-	Term_xtra(TERM_XTRA_SOUND, val);
+	/* Old sound interface removed, add new here */
 }
 
 

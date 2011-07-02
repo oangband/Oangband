@@ -244,27 +244,24 @@ struct term
  * The "TERM_XTRA_EVENT" action uses "v" to "wait" for an event
  * The "TERM_XTRA_SHAPE" action uses "v" to "show" the cursor
  * The "TERM_XTRA_FROSH" action uses "v" for the index of the row
- * The "TERM_XTRA_SOUND" action uses "v" for the index of a sound
  * The "TERM_XTRA_ALIVE" action uses "v" to "activate" (or "close")
  * The "TERM_XTRA_LEVEL" action uses "v" to "resume" (or "suspend")
  * The "TERM_XTRA_DELAY" action uses "v" as a "millisecond" value
  *
  * The other actions do not need a "v" code, so "zero" is used.
  */
-#define TERM_XTRA_EVENT	1	/* Process some pending events */
-#define TERM_XTRA_FLUSH 2	/* Flush all pending events */
-#define TERM_XTRA_CLEAR 3	/* Clear the entire window */
-#define TERM_XTRA_SHAPE 4	/* Set cursor shape (optional) */
-#define TERM_XTRA_FROSH 5	/* Flush one row (optional) */
-#define TERM_XTRA_FRESH 6	/* Flush all rows (optional) */
-#define TERM_XTRA_NOISE 7	/* Make a noise (optional) */
-#define TERM_XTRA_SOUND 8	/* Make a sound (optional) */
-#define TERM_XTRA_BORED 9	/* Handle stuff when bored (optional) */
-#define TERM_XTRA_REACT 10	/* React to global changes (optional) */
-#define TERM_XTRA_ALIVE 11	/* Change the "hard" level (optional) */
-#define TERM_XTRA_LEVEL 12	/* Change the "soft" level (optional) */
-#define TERM_XTRA_DELAY 13	/* Delay some milliseconds (optional) */
-
+#define TERM_XTRA_EVENT    1    /* Process some pending events */
+#define TERM_XTRA_FLUSH 2    /* Flush all pending events */
+#define TERM_XTRA_CLEAR 3    /* Clear the entire window */
+#define TERM_XTRA_SHAPE 4    /* Set cursor shape (optional) */
+#define TERM_XTRA_FROSH 5    /* Flush one row (optional) */
+#define TERM_XTRA_FRESH 6    /* Flush all rows (optional) */
+#define TERM_XTRA_NOISE 7    /* Make a noise (optional) */
+#define TERM_XTRA_BORED 9    /* Handle stuff when bored (optional) */
+#define TERM_XTRA_REACT 10    /* React to global changes (optional) */
+#define TERM_XTRA_ALIVE 11    /* Change the "hard" level (optional) */
+#define TERM_XTRA_LEVEL 12    /* Change the "soft" level (optional) */
+#define TERM_XTRA_DELAY 13    /* Delay some milliseconds (optional) */
 
 
 /*** Color constants ***/

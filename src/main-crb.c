@@ -2517,16 +2517,6 @@ static errr Term_xtra_mac(int n, int v)
 			return (0);
 		}
 
-		/* Make a sound */
-		case TERM_XTRA_SOUND:
-		{
-			/* Play sound */
-			play_sound(v, sound_volume);
-
-			/* Success */
-			return (0);
-		}
-
 		/* Process random events */
 		case TERM_XTRA_BORED:
 		{

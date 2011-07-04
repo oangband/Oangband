@@ -47,7 +47,6 @@ main-crb:
 
 main-gcu:
 - Decent progress, at least the following missing:
--- new input event system.
 -- help string
 -- misc other stuff.
 
@@ -56,6 +55,6 @@ main-win:
 
 main-x11:
 - Nearly complete, with the following missing:
--- new input event system.
 -- help strings (requires changes to main.c and main.h)
 -- Some changes in the resize code.
+-- Enable mouse events.

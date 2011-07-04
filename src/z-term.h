@@ -12,6 +12,7 @@
 #define INCLUDED_Z_TERM_H
 
 #include "h-basic.h"
+#include "ui-event.h"
 
 
 /*
@@ -182,7 +183,7 @@ struct term
 	byte attr_blank;
 	char char_blank;
 
-	char *key_queue;
+	ui_event *key_queue;
 
 	u16b key_head;
 	u16b key_tail;
@@ -348,8 +349,9 @@ extern errr Term_locate(int *x, int *y);
 extern errr Term_what(int x, int y, byte *a, char *c);
 
 extern errr Term_flush(void);
-extern errr Term_keypress(int k);
+extern errr Term_keypress(keycode_t k, byte mods);
 extern errr Term_key_push(int k);
+extern errr Term_event_push(const ui_event *ke);
 extern errr Term_inkey(char *ch, bool wait, bool take);
 
 extern errr Term_save(void);

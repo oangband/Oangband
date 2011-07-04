@@ -434,28 +434,19 @@ void do_gcu_resize(void)
  */
 static errr Term_xtra_gcu_event(int v)
 {
-	int i, k;
+	int i, j, k;
 
-	/* Wait */
-	if (v)
-	{
-		/* Paranoia -- Wait for it */
-		nodelay(stdscr, FALSE);
-
-		/* Get a keypress */
+	if (v) {
+		/* Wait for a keypress; use halfdelay(1) so if the user takes more */
+		/* than 0.2 seconds we get a chance to do updates. */
+		halfdelay(2);
 		i = getch();
-
-		/* Mega-Hack -- allow graceful "suspend" */
-		for (k = 0; (k < 10) && (i == ERR); k++) i = getch();
-
-		/* Broken input is special */
-		if (i == ERR) exit_game_panic();
-		if (i == EOF) exit_game_panic();
-	}
-
-	/* Do not wait */
-	else
-	{
+		while (i == ERR) {
+			i = getch();
+			/* idle_update(); */
+		}
+		cbreak();
+	} else {
 		/* Do not wait for it */
 		nodelay(stdscr, TRUE);
 
@@ -470,8 +461,105 @@ static errr Term_xtra_gcu_event(int v)
 		if (i == EOF) return (1);
 	}
 
+	/* Not sure if this is portable to non-ncurses platforms */
+	#ifdef USE_NCURSES
+	if (i == KEY_RESIZE) {
+		/* wait until we go one second (10 deci-seconds) before actually
+		 * doing the resizing. users often end up triggering multiple
+		 * KEY_RESIZE events while changing window size. */
+		halfdelay(10);
+		do {
+			i = getch();
+		} while (i == KEY_RESIZE);
+		cbreak();
+		do_gcu_resize();
+		if (i == ERR) return (1);
+	}
+	#endif
+
+	/* This might be a bad idea, but...
+	 *
+	 * Here we try to second-guess ncurses. In some cases, keypad() mode will
+	 * fail to translate multi-byte escape sequences into things like number
+	 * pad actions, function keys, etc. So we can hardcode a small list of some
+	 * of the most common sequences here, just in case.
+	 *
+	 * Notice that we turn nodelay() on. This means, that we won't accidentally
+	 * interpret sequences as valid unless all the bytes are immediately
+	 * available; this seems like an acceptable risk to fix problems associated
+	 * with various terminal emulators (I'm looking at you PuTTY).
+	 */
+	if (i == 27) { /* ESC */
+		nodelay(stdscr, TRUE);
+		j = getch();
+		switch (j) {
+			case 'O': {
+				k = getch();
+				switch (k) {
+					/* PuTTY number pad */
+					case 'q': i = '1'; break;
+					case 'r': i = '2'; break;
+					case 's': i = '3'; break;
+					case 't': i = '4'; break;
+					case 'u': i = '5'; break;
+					case 'v': i = '6'; break;
+					case 'w': i = '7'; break;
+					case 'x': i = '8'; break;
+					case 'y': i = '9'; break;
+
+					/* no match */
+					case ERR: break;
+					default: ungetch(k); ungetch(j);
+				}
+				break;
+			}
+
+			/* no match */
+			case ERR: break;
+			default: ungetch(j);
+		}
+		nodelay(stdscr, FALSE);
+	}
+
+#ifdef KEY_DOWN
+	/* Handle arrow keys */
+	switch (i) {
+		case KEY_DOWN:  i = ARROW_DOWN;  break;
+		case KEY_UP:    i = ARROW_UP;    break;
+		case KEY_LEFT:  i = ARROW_LEFT;  break;
+		case KEY_RIGHT: i = ARROW_RIGHT; break;
+
+		/* keypad keys */
+		case 0xFC: i = '0'; break;
+		case 0xFD: i = '.'; break;
+		case 0xC0: i = '\b'; break;
+		case 0xDF: i = '1'; break;
+		case 0xF5: i = '3'; break;
+		case 0xE9: i = '5'; break;
+		case 0xC1: i = '7'; break;
+		case 0xF4: i = '9'; break;
+
+		/* try to compensate for inadequate terminfo */
+		case 263: i = '\b'; break;
+
+		default: {
+			if (i < KEY_MIN) break;
+
+			/* Mega-Hack -- Fold, spindle, and mutilate
+			 * the keys to fit in 7 bits.
+			 */
+
+			if (i >= 252) i = KEY_F(63) - (i - 252);
+			if (i >= ARROW_DOWN) i += 4;
+
+			i = 128 + (i & 127);
+			break;
+		}
+	}
+#endif
+
 	/* Enqueue the keypress */
-	Term_keypress(i);
+	Term_keypress(i, 0);
 
 	/* Success */
 	return (0);
@@ -759,6 +847,8 @@ errr init_gcu(int argc, char **argv)
 	for (i = 1; i < argc; i++) {
 		if (prefix(argv[i], "-b"))
 			use_big_screen = TRUE;
+		else if (prefix(argv[i], "-B"))
+			bold_extended = TRUE;
 		else if (prefix(argv[i], "-a"))
 			graphics = FALSE;
 		else
@@ -775,6 +865,11 @@ errr init_gcu(int argc, char **argv)
 	/* Extract the normal keymap */
 	keymap_norm_prepare();
 
+	/* We do it like this to prevent a link error with curseses that
+	 * lack ESCDELAY.
+	 */
+	if (!getenv("ESCDELAY"))
+		putenv("ESCDELAY=20");
 
 	/* Initialize */
 	if (initscr() == NULL) return (-1);
@@ -792,7 +887,7 @@ errr init_gcu(int argc, char **argv)
 
 	/* Do we have color, and enough color, available? */
 	can_use_color = ((start_color() != ERR) && has_colors() &&
-	                 (COLORS >= 8) && (COLOR_PAIRS >= 8));
+			 (COLORS >= 8) && (COLOR_PAIRS >= 8));
 
 	/* Attempt to use colors */
 	if (can_use_color) {
@@ -846,6 +941,9 @@ errr init_gcu(int argc, char **argv)
 	cbreak();
 	noecho();
 	nonl();
+
+	/* Tell curses to rewrite escape sequences to KEY_UP and friends */
+	keypad(stdscr, TRUE);
 
 	/* Extract the game keymap */
 	keymap_game_prepare();

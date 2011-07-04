@@ -34,7 +34,7 @@ z-rand:
 - Not touched
 
 z-term:
-- Some progress
+- Good progress
 
 z-util:
 - Complete, except for some streq oddness
@@ -57,4 +57,3 @@ main-x11:
 - Nearly complete, with the following missing:
 -- help strings (requires changes to main.c and main.h)
 -- Some changes in the resize code.
--- Enable mouse events.

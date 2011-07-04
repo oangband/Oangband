@@ -1814,9 +1814,6 @@ static errr CheckEvent(bool wait)
 	/* Switch on the Type */
 	switch (xev->type)
 	{
-
-#if 0
-
 		case ButtonPress:
 		{
 			bool press = (xev->type == ButtonPress);
@@ -1841,8 +1838,6 @@ static errr CheckEvent(bool wait)
 
 			break;
 		}
-
-#endif
 
 		case KeyPress:
 		{

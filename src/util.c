@@ -1350,7 +1350,7 @@ void msg_format(const char * fmt, ...)
 	va_start(vp, fmt);
 
 	/* Format the args, save the length */
-	(void)vstrnfmt(buf, 1024, fmt, vp);
+	(void)vstrnfmt(buf, sizeof(buf), fmt, vp);
 
 	/* End the Varargs Stuff */
 	va_end(vp);
@@ -1445,7 +1445,7 @@ void screen_load(void)
  * At the given location, using the given attribute, if allowed,
  * add the given string.  Do not clear the line.
  */
-void c_put_str(byte attr, const char * str, int row, int col)
+void c_put_str(byte attr, const char *str, int row, int col)
 {
 	/* Position cursor, Dump the attr/text */
 	Term_putstr(col, row, -1, attr, str);
@@ -1455,7 +1455,7 @@ void c_put_str(byte attr, const char * str, int row, int col)
 /*
  * As above, but in "white"
  */
-void put_str(const char * str, int row, int col)
+void put_str(const char *str, int row, int col)
 {
 	/* Spawn */
 	Term_putstr(col, row, -1, TERM_WHITE, str);
@@ -1465,7 +1465,7 @@ void put_str(const char * str, int row, int col)
 /*
  * As above, but centered horizontally
  */
-void put_str_center(const char * str, int row)
+void put_str_center(const char *str, int row)
 {
 	int len = strlen(str);
 	int col = (Term->wid - len) / 2;
@@ -1478,7 +1478,7 @@ void put_str_center(const char * str, int row)
  * Display a string on the screen using an attribute, and clear
  * to the end of the line.
  */
-void c_prt(byte attr, const char * str, int row, int col)
+void c_prt(byte attr, const char *str, int row, int col)
 {
 	/* Clear line, position cursor */
 	Term_erase(col, row, 255);
@@ -1491,7 +1491,7 @@ void c_prt(byte attr, const char * str, int row, int col)
 /*
  * As above, but in "white"
  */
-void prt(const char * str, int row, int col)
+void prt(const char *str, int row, int col)
 {
 	/* Spawn */
 	c_prt(TERM_WHITE, str, row, col);
@@ -1501,7 +1501,7 @@ void prt(const char * str, int row, int col)
 /*
  * As above, but in "white"
  */
-void prt_center(const char * str, int row)
+void prt_center(const char *str, int row)
 {
 	int len = strlen(str);
 	int col = (Term->wid - len) / 2;
@@ -1528,7 +1528,7 @@ void prt_center(const char * str, int row)
  * This function will correctly handle any width up to the maximum legal
  * value of 256, though it works best for a standard 80 character width.
  */
-void c_roff(byte a, const char * str, byte l_margin, byte r_margin)
+void c_roff(byte a, const char *str, byte l_margin, byte r_margin)
 {
 	int x, y;
 
@@ -1640,7 +1640,7 @@ void c_roff(byte a, const char * str, byte l_margin, byte r_margin)
 /*
  * As above, but in "white"
  */
-void roff(const char * str, byte l_margin, byte r_margin)
+void roff(const char *str, byte l_margin, byte r_margin)
 {
 	/* Spawn */
 	c_roff(TERM_WHITE, str, l_margin, r_margin);
@@ -1814,7 +1814,7 @@ bool get_string(const char * prompt, char *buf, int len)
  *
  * Allow "p_ptr->command_arg" to specify a quantity
  */
-s16b get_quantity(const char * prompt, int max)
+s16b get_quantity(const char *prompt, int max)
 {
 	int amt = 1;
 
@@ -1848,14 +1848,14 @@ s16b get_quantity(const char * prompt, int max)
 		if (!prompt)
 		{
 			/* Build a prompt */
-			sprintf(tmp, "Quantity (0-%d): ", max);
+			strnfmt(tmp, sizeof(tmp), "Quantity (0-%d): ", max);
 
 			/* Use that prompt */
 			prompt = tmp;
 		}
 
 		/* Build the default */
-		sprintf(buf, "%d", amt);
+		strnfmt(buf, sizeof(buf), "%d", amt);
 
 		/* Ask for a quantity */
 		if (!get_string(prompt, buf, 6)) return (0);
@@ -1891,7 +1891,7 @@ s16b get_quantity(const char * prompt, int max)
  *
  * Note that "[y/n]" is appended to the prompt.
  */
-bool get_check(const char * prompt)
+bool get_check(const char *prompt)
 {
 	int i;
 
@@ -2652,11 +2652,10 @@ void build_gamma_table(int gamma)
 
 		/*
 		 * Store the value in the table so that the
-		 * floating point pow function isn't needed .
+		 * floating point pow function isn't needed.
 		 */
 		gamma_table[i] = ((long)(value / 256) * i) / 256;
 	}
 }
 
 #endif /* SUPPORT_GAMMA */
-

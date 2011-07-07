@@ -850,11 +850,10 @@ char (*inkey_hack)(int flush_first) = NULL;
  */
 char inkey(void)
 {
-	int v;
-
 	char kk;
 
 	char ch = 0;
+	bool cursor_state;
 
 	bool done = FALSE;
 
@@ -908,18 +907,18 @@ char inkey(void)
 
 
 	/* Access cursor state */
-	(void)Term_get_cursor(&v);
+	(void)Term_get_cursor(&cursor_state);
 
 	/* Show the cursor if waiting, except sometimes in "command" mode */
 	if (!inkey_scan && (!inkey_flag || hilite_player || character_icky))
 	{
 		/* Show the cursor */
-		(void)Term_set_cursor(1);
+		(void)Term_set_cursor(TRUE);
 	}
 
 
 	/* Hack -- Activate main screen */
-	Term_activate(angband_term[0]);
+	Term_activate(term_screen);
 
 	/* Get a key */
 	while (!ch)
@@ -942,7 +941,7 @@ char inkey(void)
 			Term_fresh();
 
 			/* Hack -- activate main screen */
-			Term_activate(angband_term[0]);
+			Term_activate(term_screen);
 
 			/* Mega-Hack -- reset saved flag */
 			character_saved = FALSE;
@@ -1062,7 +1061,7 @@ char inkey(void)
 
 
 	/* Restore the cursor */
-	Term_set_cursor(v);
+	Term_set_cursor(cursor_state);
 
 
 	/* Cancel the various "global parameters" */

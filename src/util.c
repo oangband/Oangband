@@ -1219,14 +1219,20 @@ static void msg_flush(int x)
  * Hack -- Note that "msg_print(NULL)" will clear the top line even if no
  * messages are pending.
  */
-static void msg_print_aux(u16b type, const char * msg)
+static void msg_print_aux(u16b type, const char *msg)
 {
 	static int p = 0;
 	int n;
 	char *t;
 	char buf[1024];
 	byte color = TERM_WHITE;
+	int w, h;
 
+	if (!Term)
+		return;
+
+	/* Obtain the size */
+	(void)Term_get_size(&w, &h);
 
 	/* Hack -- Reset */
 	if (!msg_flag) p = 0;
@@ -1235,7 +1241,7 @@ static void msg_print_aux(u16b type, const char * msg)
 	n = (msg ? strlen(msg) : 0);
 
 	/* Hack -- flush when requested or needed */
-	if (p && (!msg || ((p + n) > 72)))
+	if (p && (!msg || ((p + n) > (w - 8))))
 	{
 		/* Flush */
 		msg_flush(p);
@@ -1263,7 +1269,7 @@ static void msg_print_aux(u16b type, const char * msg)
 	p_ptr->window |= (PW_MESSAGE);
 
 	/* Copy it */
-	strcpy(buf, msg);
+	my_strcpy(buf, msg, sizeof(buf));
 
 	/* Analyze the buffer */
 	t = buf;
@@ -1275,21 +1281,18 @@ static void msg_print_aux(u16b type, const char * msg)
 	if (color == TERM_DARK) color = TERM_WHITE;
 
 	/* Split message */
-	while (n > 72)
+	while (n > w - 1)
 	{
 		char oops;
 
 		int check, split;
 
 		/* Default split */
-		split = 72;
+		split = w - 8;
 
-		/* Find the "best" split point */
-		for (check = 40; check < 72; check++)
-		{
-			/* Found a valid split point */
+		/* Find the rightmost split point */
+		for (check = (w / 2); check < w - 8; check++)
 			if (t[check] == ' ') split = check;
-		}
 
 		/* Save the split character */
 		oops = t[split];
@@ -1330,7 +1333,7 @@ static void msg_print_aux(u16b type, const char * msg)
 /*
  * Print a message in the default color (white)
  */
-void msg_print(const char * msg)
+void msg_print(const char *msg)
 {
 	msg_print_aux(MSG_GENERIC, msg);
 }
@@ -1339,7 +1342,7 @@ void msg_print(const char * msg)
 /*
  * Display a formatted message, using "vstrnfmt()" and "msg_print()".
  */
-void msg_format(const char * fmt, ...)
+void msg_format(const char *fmt, ...)
 {
 	va_list vp;
 

@@ -3659,11 +3659,6 @@
 #define SOUND_SHUTDOOR  23
 #define SOUND_TPLEVEL   24
 
-/*
- * Mega-Hack -- maximum known sounds
- */
-#define SOUND_MAX 25
-
 
 /*** Hack ***/
 

@@ -24,8 +24,7 @@ z-form:
 
 z-msg:
 - .c file complete
-- .h file had less messages than vanilla, has some formating changes
-to add to V
+- .h has some formating changes to add to V
 
 z-quark:
 - COMPLETE

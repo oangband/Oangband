@@ -3519,7 +3519,7 @@ void do_cmd_activate(void)
 
 
 	/* Activate the artifact */
-	message(MSG_ZAP, 0, "You activate it...");
+	message(MSG_ZAP_ROD, 0, "You activate it...");
 
 	/* Sound */
 	sound(SOUND_ZAP);

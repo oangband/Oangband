@@ -44,7 +44,7 @@ void do_cmd_go_up(void)
 	p_ptr->energy_use = 100;
 
 	/* Success */
-	message(MSG_STAIRS, 0, "You enter a maze of up staircases.");
+	message(MSG_STAIRS_DOWN, 0, "You enter a maze of up staircases.");
 
 	/* Create a way back */
 	p_ptr->create_down_stair = TRUE;
@@ -109,7 +109,7 @@ void do_cmd_go_down(void)
 	p_ptr->energy_use = 100;
 
 	/* Success */
-	message(MSG_STAIRS, 0, "You enter a maze of down staircases.");
+	message(MSG_STAIRS_DOWN, 0, "You enter a maze of down staircases.");
 
 	/* Create a way back */
 	p_ptr->create_up_stair = TRUE;

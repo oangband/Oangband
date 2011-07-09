@@ -1363,24 +1363,13 @@ void msg_format(const char *fmt, ...)
 
 
 /*
- * Display a message and play the associated sound.
- *
- * The "extra" parameter is currently unused.
- */
-void message(u16b message_type, s16b extra, const char * message)
-{
-	sound(message_type);
-
-	msg_print_aux(message_type, message);
-}
-
-/*
  * Display a formatted message and play the associated sound.
  */
 void msgt(unsigned int type, const char *fmt, ...)
 {
 	va_list vp;
 	char buf[1024];
+
 	va_start(vp, fmt);
 	vstrnfmt(buf, sizeof(buf), fmt, vp);
 	va_end(vp);

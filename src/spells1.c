@@ -727,7 +727,7 @@ void teleport_player_level(bool friendly)
 
 	if (!p_ptr->depth)
 	{
-		message(MSG_TPLEVEL, 0, "You sink through the floor.");
+		msgt(MSG_TPLEVEL, "You sink through the floor.");
 
 		/* New depth */
 		p_ptr->depth++;
@@ -738,7 +738,7 @@ void teleport_player_level(bool friendly)
 
 	else if (is_quest(p_ptr->depth) || (p_ptr->depth >= MAX_DEPTH-1))
 	{
-		message(MSG_TPLEVEL, 0, "You rise up through the ceiling.");
+		msgt(MSG_TPLEVEL, "You rise up through the ceiling.");
 
 		/* New depth */
 		p_ptr->depth--;
@@ -749,7 +749,7 @@ void teleport_player_level(bool friendly)
 
 	else if (rand_int(100) < 50)
 	{
-		message(MSG_TPLEVEL, 0, "You rise up through the ceiling.");
+		msgt(MSG_TPLEVEL, "You rise up through the ceiling.");
 
 		/* New depth */
 		p_ptr->depth--;
@@ -760,7 +760,7 @@ void teleport_player_level(bool friendly)
 
 	else
 	{
-		message(MSG_TPLEVEL, 0, "You sink through the floor.");
+		msgt(MSG_TPLEVEL, "You sink through the floor.");
 
 		/* New depth */
 		p_ptr->depth++;
@@ -1000,7 +1000,7 @@ void take_hit(int dam, const char * kb_str)
 		sound(SOUND_DEATH);
 
 		/* Hack -- Note death */
-		message(MSG_DEATH, 0, "You die.");
+		msgt(MSG_DEATH, "You die.");
 		msg_print(NULL);
 
 		/* Note cause of death */

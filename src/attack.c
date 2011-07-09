@@ -348,18 +348,18 @@ static int critical_melee(int chance, int sleeping_bonus, bool visible,
 			/* More "interesting" messages if we get a seriously good hit. */
 			if ((add_dice >= 4) && (check_ability(SP_BACKSTAB)))
 			{
-				message(MSG_HIT, 0, "You ruthlessly sneak attack!");
+				msgt(MSG_HIT, "You ruthlessly sneak attack!");
 			}
 
 			/* Standard "wakeup call". */
 			else
 			{
-				message(MSG_HIT, 0, "You rudely awaken the monster.");
+				msgt(MSG_HIT, "You rudely awaken the monster.");
 			}
 		}
 
                 /* Credit where credit is due - but not if we already have a special message */
-                else if (armsman) message(MSG_HIT, 0, "Armsman hit!");
+                else if (armsman) msgt(MSG_HIT, "Armsman hit!");
 
 		/* Print special messages if monster is visible. */
 		if (visible)
@@ -499,17 +499,17 @@ static int critical_shot(int chance, int sleeping_bonus, bool thrown_weapon,
 		{
 			if ((thrown_weapon) && (add_dice >= 2))
 			{
-				message(MSG_HIT, 0, "Assassin strike!");
+				msgt(MSG_HIT, "Assassin strike!");
 			}
 
 			else
 			{
-				message(MSG_HIT, 0, "You rudely awaken the monster.");
+				msgt(MSG_HIT, "You rudely awaken the monster.");
 			}
 		}
 
                 /* Credit where credit is due - but not if we already have a special message */
-                else if (marksman) message(MSG_HIT, 0, "Marksmanship!");
+                else if (marksman) msgt(MSG_HIT, "Marksmanship!");
 
 		/* Print special messages if monster is visible. */
 		if (visible)
@@ -1174,7 +1174,7 @@ void py_attack(int y, int x)
 	/* Try to get in a shield bash. */
 	if (bash_chance > rand_int(240 + r_ptr->level * 9))
 	{
-		message(MSG_HIT, 0, "You get in a shield bash!");
+		msgt(MSG_HIT, "You get in a shield bash!");
 
 		/* Calculate attack quality, a mix of momentum and accuracy. */
 		bash_quality = p_ptr->skill_thn + (p_ptr->wt / 8) +
@@ -1199,7 +1199,7 @@ void py_attack(int y, int x)
 		/* Encourage the player to keep wearing that heavy shield. */
 		if (randint(bash_dam) > 30 + randint(bash_dam / 2))
 		{
-			message(MSG_HIT, 0, "WHAMM!");
+			msgt(MSG_HIT, "WHAMM!");
 		}
 
 		/* Damage, check for fear and death. */
@@ -1259,7 +1259,7 @@ void py_attack(int y, int x)
 		{
 			blows -= randint(blows);
 
-			message(MSG_GENERIC, 0, "You stumble!");
+			msgt(MSG_GENERIC, "You stumble!");
 		}
 	}
 
@@ -1351,7 +1351,7 @@ void py_attack(int y, int x)
 					m_ptr->mana -= burn;
 					dice++;
 
-					message(MSG_HIT, 0, "Mana Burn!");
+					msgt(MSG_HIT, "Mana Burn!");
 				}
 
 				/* Get the average value of a single damage die. (x10) */
@@ -1431,7 +1431,7 @@ void py_attack(int y, int x)
 			{
 				/* Message */
 				if (!( p_ptr->special_attack & (ATTACK_DRUID_CONFU)))
-				  message(MSG_HIT, 0, "Your hands stop glowing.");
+				  msgt(MSG_HIT, "Your hands stop glowing.");
 
 				/* Cancel special confusion attack */
 				p_ptr->special_attack &= ~(ATTACK_CONFUSE);

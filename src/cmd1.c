@@ -1882,7 +1882,7 @@ void move_player(int dir, int do_pickup)
 				/* Closed door */
 				if (cave_feat[y][x] < FEAT_SECRET)
 				{
-					message(MSG_HITWALL, 0, "You feel a door blocking your way.");
+					msgt(MSG_HITWALL, "You feel a door blocking your way.");
 					cave_info[y][x] |= (CAVE_MARK);
 					lite_spot(y, x);
 				}
@@ -1890,7 +1890,7 @@ void move_player(int dir, int do_pickup)
 				/* Wall (or secret door) */
 				else
 				{
-					message(MSG_HITWALL, 0, "You feel a wall blocking your way.");
+					msgt(MSG_HITWALL, "You feel a wall blocking your way.");
 					cave_info[y][x] |= (CAVE_MARK);
 					lite_spot(y, x);
 				}
@@ -1917,13 +1917,13 @@ void move_player(int dir, int do_pickup)
 					}
 
 					/* Otherwise, a message. */
-					message(MSG_HITWALL, 0, "There is a door blocking your way.");
+					msgt(MSG_HITWALL, "There is a door blocking your way.");
 				}
 
 				/* Wall (or secret door) */
 				else
 				{
-					message(MSG_HITWALL, 0, "There is a wall blocking your way.");
+					msgt(MSG_HITWALL, "There is a wall blocking your way.");
 				}
 			}
 

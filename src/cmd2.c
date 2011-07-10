@@ -44,7 +44,7 @@ void do_cmd_go_up(void)
 	p_ptr->energy_use = 100;
 
 	/* Success */
-	message(MSG_STAIRS, 0, "You enter a maze of up staircases.");
+	msgt(MSG_STAIRS_DOWN, "You enter a maze of up staircases.");
 
 	/* Create a way back */
 	p_ptr->create_down_stair = TRUE;
@@ -109,7 +109,7 @@ void do_cmd_go_down(void)
 	p_ptr->energy_use = 100;
 
 	/* Success */
-	message(MSG_STAIRS, 0, "You enter a maze of down staircases.");
+	msgt(MSG_STAIRS_DOWN, "You enter a maze of down staircases.");
 
 	/* Create a way back */
 	p_ptr->create_up_stair = TRUE;
@@ -700,7 +700,7 @@ static bool do_cmd_open_chest(int y, int x, s16b o_idx)
 			/* We may continue repeating */
 			more = TRUE;
 			if (flush_failure) flush();
-			message(MSG_LOCKPICK_FAIL, 0, "You failed to pick the lock.");
+			msgt(MSG_LOCKPICK_FAIL, "You failed to pick the lock.");
 		}
 	}
 
@@ -957,7 +957,7 @@ static bool do_cmd_open_test(int y, int x)
 	      (cave_feat[y][x] <= FEAT_DOOR_TAIL)))
 	{
 		/* Message */
-		message(MSG_NOTHING_TO_OPEN, 0, "You see nothing there to open.");
+		msgt(MSG_NOTHING_TO_OPEN, "You see nothing there to open.");
 
 		/* Nope */
 		return (FALSE);
@@ -1016,7 +1016,7 @@ static bool do_cmd_open_aux(int y, int x)
 		if (rand_int(100) < j)
 		{
 			/* Message */
-			message(MSG_OPENDOOR, 0, "You have picked the lock.");
+			msgt(MSG_OPENDOOR, "You have picked the lock.");
 
 			/* Open the door */
 			cave_set_feat(y, x, FEAT_OPEN);
@@ -1038,7 +1038,7 @@ static bool do_cmd_open_aux(int y, int x)
 			if (flush_failure) flush();
 
 			/* Message */
-			message(MSG_LOCKPICK_FAIL, 0, "You failed to pick the lock.");
+			msgt(MSG_LOCKPICK_FAIL, "You failed to pick the lock.");
 
 			/* We may keep trying */
 			more = TRUE;
@@ -1963,7 +1963,7 @@ static bool do_cmd_bash_aux(int y, int x)
 	if (rand_int(100) < temp)
 	{
 		/* Message */
-		message(MSG_OPENDOOR, 0, "The door crashes open!");
+		msgt(MSG_OPENDOOR, "The door crashes open!");
 
 		/* Break down the door */
 		if (rand_int(100) < 50)

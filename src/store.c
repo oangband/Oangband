@@ -274,7 +274,7 @@ static void purchase_analyze(s32b price, s32b value, s32b guess)
 	if ((value <= 0) && (price > value))
 	{
 		/* Comment */
-		message(MSG_STORE1, 0, comment_7a[rand_int(MAX_COMMENT_7A)]);
+		msgt(MSG_STORE1, comment_7a[rand_int(MAX_COMMENT_7A)]);
 
 		/* Sound */
 		sound(SOUND_STORE1);
@@ -284,7 +284,7 @@ static void purchase_analyze(s32b price, s32b value, s32b guess)
 	else if ((value < guess) && (price > value))
 	{
 		/* Comment */
-		message(MSG_STORE2, 0, comment_7b[rand_int(MAX_COMMENT_7B)]);
+		msgt(MSG_STORE2, comment_7b[rand_int(MAX_COMMENT_7B)]);
 
 		/* Sound */
 		sound(SOUND_STORE2);
@@ -294,7 +294,7 @@ static void purchase_analyze(s32b price, s32b value, s32b guess)
 	else if ((value > guess) && (value < (4 * guess)) && (price < value))
 	{
 		/* Comment */
-		message(MSG_STORE3, 0, comment_7c[rand_int(MAX_COMMENT_7C)]);
+		msgt(MSG_STORE3, comment_7c[rand_int(MAX_COMMENT_7C)]);
 
 		/* Sound */
 		sound(SOUND_STORE3);
@@ -304,7 +304,7 @@ static void purchase_analyze(s32b price, s32b value, s32b guess)
 	else if ((value > guess) && (price < value))
 	{
 		/* Comment */
-		message(MSG_STORE4, 0, comment_7d[rand_int(MAX_COMMENT_7D)]);
+		msgt(MSG_STORE4, comment_7d[rand_int(MAX_COMMENT_7D)]);
 
 		/* Sound */
 		sound(SOUND_STORE4);

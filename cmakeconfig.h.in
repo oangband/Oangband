@@ -1,0 +1,21 @@
+
+#cmakedefine SET_UID
+#cmakedefine WINDOWS
+
+#cmakedefine USE_GCU
+#cmakedefine USE_X11
+
+#cmakedefine HAVE_DIRENT_H
+#cmakedefine HAVE_FCNTL_H
+#cmakedefine HAVE_STDBOOL_H
+#cmakedefine HAVE_STDINT_H
+#cmakedefine HAVE_TERMIOS_H
+#cmakedefine HAVE_UNISTD_H
+
+#cmakedefine HAVE_MKDIR
+#cmakedefine HAVE_SELECT
+#cmakedefine HAVE_SETEGID
+#cmakedefine HAVE_SETRESGID
+#cmakedefine HAVE_STAT
+#cmakedefine HAVE_USLEEP
+

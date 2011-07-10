@@ -3632,7 +3632,7 @@
 /*
  * Mega-Hack -- some primitive sound support (see "main-win.c")
  *
- * Some "sound" constants for "Term_xtra(TERM_XTRA_SOUND, val)"
+ * Some "sound" constants
  */
 #define SOUND_HIT	    1
 #define SOUND_MISS	    2
@@ -3658,11 +3658,6 @@
 #define SOUND_OPENDOOR  22
 #define SOUND_SHUTDOOR  23
 #define SOUND_TPLEVEL   24
-
-/*
- * Mega-Hack -- maximum known sounds
- */
-#define SOUND_MAX 25
 
 
 /*** Hack ***/

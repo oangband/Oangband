@@ -24,8 +24,7 @@ z-form:
 
 z-msg:
 - .c file complete
-- .h file had less messages than vanilla, has some formating changes
-to add to V
+- .h has some formating changes to add to V
 
 z-quark:
 - COMPLETE
@@ -34,7 +33,7 @@ z-rand:
 - Not touched
 
 z-term:
-- Some progress
+- Good progress
 
 z-util:
 - Complete, except for some streq oddness
@@ -46,10 +45,14 @@ main-crb:
 - Not worked on
 
 main-gcu:
-- Slight changes
+- Decent progress, at least the following missing:
+-- help string
+-- misc other stuff.
 
 main-win:
-- Not worked on
+- Some changes
 
 main-x11:
-- Decent progress
+- Nearly complete, with the following missing:
+-- help strings (requires changes to main.c and main.h)
+-- Some changes in the resize code.

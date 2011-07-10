@@ -15,11 +15,8 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
 #include "angband.h"
-
 #include "z-term.h"
-
 #include "z-virt.h"
 
 
@@ -662,7 +659,6 @@ static void Term_fresh_row_pict(int y, int x1, int x2)
 
 	byte nta;
 	char ntc;
-
 
 	/* Pending length */
 	int fn = 0;
@@ -1987,13 +1983,38 @@ errr Term_flush(void)
 /*
  * Add a keypress to the "queue"
  */
-errr Term_keypress(int k)
+errr Term_keypress(keycode_t k, byte mods)
 {
 	/* Hack -- Refuse to enqueue non-keys */
 	if (!k) return (-1);
 
 	/* Store the char, advance the queue */
-	Term->key_queue[Term->key_head++] = k;
+	Term->key_queue[Term->key_head].type = EVT_KBRD;
+	Term->key_queue[Term->key_head].key.code = k;
+	Term->key_queue[Term->key_head].key.mods = mods;
+	Term->key_head++;
+
+	/* Circular queue, handle wrap */
+	if (Term->key_head == Term->key_size) Term->key_head = 0;
+
+	/* Success (unless overflow) */
+	if (Term->key_head != Term->key_tail) return (0);
+
+	/* Problem */
+	return (1);
+}
+
+/*
+ * Add a mouse event to the "queue"
+ */
+errr Term_mousepress(int x, int y, char button)
+{
+	/* Store the char, advance the queue */
+	Term->key_queue[Term->key_head].type = EVT_MOUSE;
+	Term->key_queue[Term->key_head].mouse.x = x;
+	Term->key_queue[Term->key_head].mouse.y = y;
+	Term->key_queue[Term->key_head].mouse.button = button;
+	Term->key_head++;
 
 	/* Circular queue, handle wrap */
 	if (Term->key_head == Term->key_size) Term->key_head = 0;
@@ -2016,14 +2037,28 @@ errr Term_keypress(int k)
  */
 errr Term_key_push(int k)
 {
-	/* Hack -- Refuse to enqueue non-keys */
+	ui_event ke;
+
 	if (!k) return (-1);
+
+	ke.type = EVT_KBRD;
+	ke.key.code = k;
+	ke.key.mods = 0;
+
+	return Term_event_push(&ke);
+}
+
+errr Term_event_push(const ui_event *ke)
+{
+	/* Hack -- Refuse to enqueue non-keys */
+	if (!ke) return (-1);
 
 	/* Hack -- Overflow may induce circular queue */
 	if (Term->key_tail == 0) Term->key_tail = Term->key_size;
 
 	/* Back up, Store the char */
-	Term->key_queue[--Term->key_tail] = k;
+	/* Store the char, advance the queue */
+	Term->key_queue[--Term->key_tail] = *ke;
 
 	/* Success (unless overflow) */
 	if (Term->key_head != Term->key_tail) return (0);
@@ -2053,8 +2088,11 @@ errr Term_key_push(int k)
  */
 errr Term_inkey(char *ch, bool wait, bool take)
 {
+	ui_event ke;
+
 	/* Assume no key */
 	(*ch) = '\0';
+	memset(&ke, 0, sizeof ke);
 
 	/* Hack -- get bored */
 	if (!Term->never_bored)
@@ -2089,7 +2127,18 @@ errr Term_inkey(char *ch, bool wait, bool take)
 	if (Term->key_head == Term->key_tail) return (1);
 
 	/* Extract the next keypress */
-	(*ch) = Term->key_queue[Term->key_tail];
+	ke = Term->key_queue[Term->key_tail];
+
+	if (ke.type == EVT_ESCAPE || ke.type == EVT_KBRD)
+	{
+		if (ke.type == EVT_ESCAPE) {
+			ke.type = EVT_KBRD;
+			ke.key.code = ESCAPE;
+			ke.key.mods = 0;
+		}
+
+		(*ch) = ke.key.code;
+	}
 
 	/* If requested, advance the queue, wrap around if necessary */
 	if (take && (++Term->key_tail == Term->key_size)) Term->key_tail = 0;
@@ -2186,6 +2235,7 @@ errr Term_load(void)
 	/* Success */
 	return (0);
 }
+
 
 
 /*
@@ -2494,7 +2544,7 @@ errr term_init(term *t, int w, int h, int k)
 	t->key_size = k;
 
 	/* Allocate the input queue */
-	t->key_queue = C_ZNEW(t->key_size, char);
+	t->key_queue = C_ZNEW(t->key_size, ui_event);
 
 
 	/* Save the size */

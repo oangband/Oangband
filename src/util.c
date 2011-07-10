@@ -850,11 +850,10 @@ char (*inkey_hack)(int flush_first) = NULL;
  */
 char inkey(void)
 {
-	int v;
-
 	char kk;
 
 	char ch = 0;
+	bool cursor_state;
 
 	bool done = FALSE;
 
@@ -908,18 +907,18 @@ char inkey(void)
 
 
 	/* Access cursor state */
-	(void)Term_get_cursor(&v);
+	(void)Term_get_cursor(&cursor_state);
 
 	/* Show the cursor if waiting, except sometimes in "command" mode */
 	if (!inkey_scan && (!inkey_flag || hilite_player || character_icky))
 	{
 		/* Show the cursor */
-		(void)Term_set_cursor(1);
+		(void)Term_set_cursor(TRUE);
 	}
 
 
 	/* Hack -- Activate main screen */
-	Term_activate(angband_term[0]);
+	Term_activate(term_screen);
 
 	/* Get a key */
 	while (!ch)
@@ -942,7 +941,7 @@ char inkey(void)
 			Term_fresh();
 
 			/* Hack -- activate main screen */
-			Term_activate(angband_term[0]);
+			Term_activate(term_screen);
 
 			/* Mega-Hack -- reset saved flag */
 			character_saved = FALSE;
@@ -1062,7 +1061,7 @@ char inkey(void)
 
 
 	/* Restore the cursor */
-	Term_set_cursor(v);
+	Term_set_cursor(cursor_state);
 
 
 	/* Cancel the various "global parameters" */
@@ -1104,7 +1103,7 @@ void sound(int val)
 	if (!use_sound) return;
 
 	/* Make a sound (if allowed) */
-	Term_xtra(TERM_XTRA_SOUND, val);
+	/* Old sound interface removed, add new here */
 }
 
 
@@ -1220,14 +1219,20 @@ static void msg_flush(int x)
  * Hack -- Note that "msg_print(NULL)" will clear the top line even if no
  * messages are pending.
  */
-static void msg_print_aux(u16b type, const char * msg)
+static void msg_print_aux(u16b type, const char *msg)
 {
 	static int p = 0;
 	int n;
 	char *t;
 	char buf[1024];
 	byte color = TERM_WHITE;
+	int w, h;
 
+	if (!Term)
+		return;
+
+	/* Obtain the size */
+	(void)Term_get_size(&w, &h);
 
 	/* Hack -- Reset */
 	if (!msg_flag) p = 0;
@@ -1236,7 +1241,7 @@ static void msg_print_aux(u16b type, const char * msg)
 	n = (msg ? strlen(msg) : 0);
 
 	/* Hack -- flush when requested or needed */
-	if (p && (!msg || ((p + n) > 72)))
+	if (p && (!msg || ((p + n) > (w - 8))))
 	{
 		/* Flush */
 		msg_flush(p);
@@ -1264,7 +1269,7 @@ static void msg_print_aux(u16b type, const char * msg)
 	p_ptr->window |= (PW_MESSAGE);
 
 	/* Copy it */
-	strcpy(buf, msg);
+	my_strcpy(buf, msg, sizeof(buf));
 
 	/* Analyze the buffer */
 	t = buf;
@@ -1276,21 +1281,18 @@ static void msg_print_aux(u16b type, const char * msg)
 	if (color == TERM_DARK) color = TERM_WHITE;
 
 	/* Split message */
-	while (n > 72)
+	while (n > w - 1)
 	{
 		char oops;
 
 		int check, split;
 
 		/* Default split */
-		split = 72;
+		split = w - 8;
 
-		/* Find the "best" split point */
-		for (check = 40; check < 72; check++)
-		{
-			/* Found a valid split point */
+		/* Find the rightmost split point */
+		for (check = (w / 2); check < w - 8; check++)
 			if (t[check] == ' ') split = check;
-		}
 
 		/* Save the split character */
 		oops = t[split];
@@ -1331,7 +1333,7 @@ static void msg_print_aux(u16b type, const char * msg)
 /*
  * Print a message in the default color (white)
  */
-void msg_print(const char * msg)
+void msg_print(const char *msg)
 {
 	msg_print_aux(MSG_GENERIC, msg);
 }
@@ -1340,7 +1342,7 @@ void msg_print(const char * msg)
 /*
  * Display a formatted message, using "vstrnfmt()" and "msg_print()".
  */
-void msg_format(const char * fmt, ...)
+void msg_format(const char *fmt, ...)
 {
 	va_list vp;
 
@@ -1350,7 +1352,7 @@ void msg_format(const char * fmt, ...)
 	va_start(vp, fmt);
 
 	/* Format the args, save the length */
-	(void)vstrnfmt(buf, 1024, fmt, vp);
+	(void)vstrnfmt(buf, sizeof(buf), fmt, vp);
 
 	/* End the Varargs Stuff */
 	va_end(vp);
@@ -1361,39 +1363,18 @@ void msg_format(const char * fmt, ...)
 
 
 /*
- * Display a message and play the associated sound.
- *
- * The "extra" parameter is currently unused.
- */
-void message(u16b message_type, s16b extra, const char * message)
-{
-	sound(message_type);
-
-	msg_print_aux(message_type, message);
-}
-
-/*
  * Display a formatted message and play the associated sound.
- *
- * The "extra" parameter is currently unused.
  */
-void message_format(u16b message_type, s16b extra, const char * fmt, ...)
+void msgt(unsigned int type, const char *fmt, ...)
 {
 	va_list vp;
-
 	char buf[1024];
 
-	/* Begin the Varargs Stuff */
 	va_start(vp, fmt);
-
-	/* Format the args, save the length */
-	(void)vstrnfmt(buf, 1024, fmt, vp);
-
-	/* End the Varargs Stuff */
+	vstrnfmt(buf, sizeof(buf), fmt, vp);
 	va_end(vp);
-
-	/* Display */
-	message(message_type, extra, buf);
+	sound(type);
+	msg_print_aux(type, buf);
 }
 
 /*
@@ -1445,7 +1426,7 @@ void screen_load(void)
  * At the given location, using the given attribute, if allowed,
  * add the given string.  Do not clear the line.
  */
-void c_put_str(byte attr, const char * str, int row, int col)
+void c_put_str(byte attr, const char *str, int row, int col)
 {
 	/* Position cursor, Dump the attr/text */
 	Term_putstr(col, row, -1, attr, str);
@@ -1455,7 +1436,7 @@ void c_put_str(byte attr, const char * str, int row, int col)
 /*
  * As above, but in "white"
  */
-void put_str(const char * str, int row, int col)
+void put_str(const char *str, int row, int col)
 {
 	/* Spawn */
 	Term_putstr(col, row, -1, TERM_WHITE, str);
@@ -1465,7 +1446,7 @@ void put_str(const char * str, int row, int col)
 /*
  * As above, but centered horizontally
  */
-void put_str_center(const char * str, int row)
+void put_str_center(const char *str, int row)
 {
 	int len = strlen(str);
 	int col = (Term->wid - len) / 2;
@@ -1478,7 +1459,7 @@ void put_str_center(const char * str, int row)
  * Display a string on the screen using an attribute, and clear
  * to the end of the line.
  */
-void c_prt(byte attr, const char * str, int row, int col)
+void c_prt(byte attr, const char *str, int row, int col)
 {
 	/* Clear line, position cursor */
 	Term_erase(col, row, 255);
@@ -1491,7 +1472,7 @@ void c_prt(byte attr, const char * str, int row, int col)
 /*
  * As above, but in "white"
  */
-void prt(const char * str, int row, int col)
+void prt(const char *str, int row, int col)
 {
 	/* Spawn */
 	c_prt(TERM_WHITE, str, row, col);
@@ -1501,7 +1482,7 @@ void prt(const char * str, int row, int col)
 /*
  * As above, but in "white"
  */
-void prt_center(const char * str, int row)
+void prt_center(const char *str, int row)
 {
 	int len = strlen(str);
 	int col = (Term->wid - len) / 2;
@@ -1528,7 +1509,7 @@ void prt_center(const char * str, int row)
  * This function will correctly handle any width up to the maximum legal
  * value of 256, though it works best for a standard 80 character width.
  */
-void c_roff(byte a, const char * str, byte l_margin, byte r_margin)
+void c_roff(byte a, const char *str, byte l_margin, byte r_margin)
 {
 	int x, y;
 
@@ -1640,7 +1621,7 @@ void c_roff(byte a, const char * str, byte l_margin, byte r_margin)
 /*
  * As above, but in "white"
  */
-void roff(const char * str, byte l_margin, byte r_margin)
+void roff(const char *str, byte l_margin, byte r_margin)
 {
 	/* Spawn */
 	c_roff(TERM_WHITE, str, l_margin, r_margin);
@@ -1814,7 +1795,7 @@ bool get_string(const char * prompt, char *buf, int len)
  *
  * Allow "p_ptr->command_arg" to specify a quantity
  */
-s16b get_quantity(const char * prompt, int max)
+s16b get_quantity(const char *prompt, int max)
 {
 	int amt = 1;
 
@@ -1848,14 +1829,14 @@ s16b get_quantity(const char * prompt, int max)
 		if (!prompt)
 		{
 			/* Build a prompt */
-			sprintf(tmp, "Quantity (0-%d): ", max);
+			strnfmt(tmp, sizeof(tmp), "Quantity (0-%d): ", max);
 
 			/* Use that prompt */
 			prompt = tmp;
 		}
 
 		/* Build the default */
-		sprintf(buf, "%d", amt);
+		strnfmt(buf, sizeof(buf), "%d", amt);
 
 		/* Ask for a quantity */
 		if (!get_string(prompt, buf, 6)) return (0);
@@ -1891,7 +1872,7 @@ s16b get_quantity(const char * prompt, int max)
  *
  * Note that "[y/n]" is appended to the prompt.
  */
-bool get_check(const char * prompt)
+bool get_check(const char *prompt)
 {
 	int i;
 
@@ -2652,11 +2633,10 @@ void build_gamma_table(int gamma)
 
 		/*
 		 * Store the value in the table so that the
-		 * floating point pow function isn't needed .
+		 * floating point pow function isn't needed.
 		 */
 		gamma_table[i] = ((long)(value / 256) * i) / 256;
 	}
 }
 
 #endif /* SUPPORT_GAMMA */
-

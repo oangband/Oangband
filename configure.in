@@ -165,7 +165,7 @@ dnl Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(mkdir select usleep setegid can_change_color stresgid stat)
+AC_CHECK_FUNCS(mkdir select usleep setegid can_change_color setresgid stat)
 
 AC_CONFIG_FILES([Makefile src/Makefile lib/Makefile A-readmes/Makefile lib/apex/Makefile lib/bone/Makefile lib/data/Makefile lib/edit/Makefile lib/file/Makefile lib/help/Makefile lib/info/Makefile lib/save/Makefile lib/user/Makefile lib/xtra/Makefile lib/pref/Makefile])
 AC_OUTPUT
